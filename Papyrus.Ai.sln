@@ -1,0 +1,40 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Papyrus.Ai", "Papyrus.Ai\Papyrus.Ai.csproj", "{3F8F8E79-BE98-4EF1-BE26-6507E0E62876}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Papyrus.Api.Contracts", "Papyrus.Api.Contracts\Papyrus.Api.Contracts.csproj", "{A14BABD5-2A3F-430C-A723-A4208BD23E91}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Papyrus.Domain", "Papyrus.Domain\Papyrus.Domain.csproj", "{306524AD-7B12-417A-B736-100B82747EC4}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Papyrus.Perstistance.Interfaces", "Papyrus.Perstistance.Interfaces\Papyrus.Perstistance.Interfaces.csproj", "{3AA7B616-39B8-488D-BE25-27F8E5BA7B4A}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Papyrus.Persistence.MongoDb", "Papyrus.Persistence.MongoDb\Papyrus.Persistence.MongoDb.csproj", "{059E4D01-3672-4629-ACC8-99408C268599}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{3F8F8E79-BE98-4EF1-BE26-6507E0E62876}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{3F8F8E79-BE98-4EF1-BE26-6507E0E62876}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{3F8F8E79-BE98-4EF1-BE26-6507E0E62876}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{3F8F8E79-BE98-4EF1-BE26-6507E0E62876}.Release|Any CPU.Build.0 = Release|Any CPU
+		{A14BABD5-2A3F-430C-A723-A4208BD23E91}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{A14BABD5-2A3F-430C-A723-A4208BD23E91}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{A14BABD5-2A3F-430C-A723-A4208BD23E91}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{A14BABD5-2A3F-430C-A723-A4208BD23E91}.Release|Any CPU.Build.0 = Release|Any CPU
+		{306524AD-7B12-417A-B736-100B82747EC4}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{306524AD-7B12-417A-B736-100B82747EC4}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{306524AD-7B12-417A-B736-100B82747EC4}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{306524AD-7B12-417A-B736-100B82747EC4}.Release|Any CPU.Build.0 = Release|Any CPU
+		{3AA7B616-39B8-488D-BE25-27F8E5BA7B4A}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{3AA7B616-39B8-488D-BE25-27F8E5BA7B4A}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{3AA7B616-39B8-488D-BE25-27F8E5BA7B4A}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{3AA7B616-39B8-488D-BE25-27F8E5BA7B4A}.Release|Any CPU.Build.0 = Release|Any CPU
+		{059E4D01-3672-4629-ACC8-99408C268599}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{059E4D01-3672-4629-ACC8-99408C268599}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{059E4D01-3672-4629-ACC8-99408C268599}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{059E4D01-3672-4629-ACC8-99408C268599}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+EndGlobal
