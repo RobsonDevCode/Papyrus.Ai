@@ -19,6 +19,7 @@ public sealed class DocumentReaderService : IDocumentReaderService
         _memoryCache = memoryCache;
         _mapper = mapper;
     }
+
     public async Task<PageModel?> GetPageByIdAsync(Guid documentGroupId, int? page,
         CancellationToken cancellationToken)
     {
@@ -34,6 +35,16 @@ public sealed class DocumentReaderService : IDocumentReaderService
 
             var response = await _documentReader.GetPageById(documentGroupId, (int)page, cancellationToken);
             return response is null ? null : _mapper.MapToDomain(response);
+        });
+    }
+
+    public async ValueTask<string?> GetDocumentNameAsync(Guid documentGroupId, CancellationToken cancellationToken)
+    {
+        return await _memoryCache.GetOrCreateAsync($"name-{documentGroupId}", async entry =>
+        {
+            entry.SetAbsoluteExpiration(TimeSpan.FromMinutes(10));
+            var response = await _documentReader.GetNameById(documentGroupId, cancellationToken);
+            return response;
         });
     }
 }

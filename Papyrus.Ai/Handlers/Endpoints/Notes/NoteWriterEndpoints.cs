@@ -1,9 +1,11 @@
-﻿using FluentValidation;
+﻿using System.Diagnostics;
+using FluentValidation;
 using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.AspNetCore.Mvc;
 using Papyrus.Ai.Constants;
 using Papyrus.Api.Contracts.Contracts.Requests;
 using Papyrus.Api.Contracts.Contracts.Responses;
+using Papyrus.Domain.Clients;
 using Papyrus.Domain.Mappers;
 using Papyrus.Domain.Services.Interfaces.Notes;
 using static Papyrus.Ai.Constants.LoggingCategories;
@@ -15,9 +17,11 @@ internal static class NoteWriterEndpoints
     internal static void MapNoteWriterEndpoints(this WebApplication app)
     {
         var noteGroup = app.MapGroup("notes");
+        
+        noteGroup.MapGet("", WriteNote);
     }
 
-    internal static async Task<Results<Ok<NoteResponse>, BadRequest<string>>> WriteNote(
+    private static async Task<Results<Ok<NoteResponse>, BadRequest<string>>> WriteNote(
         [FromRoute] Guid documentGroupId,
         [AsParameters] WriteNotesOptions options,
         [FromServices] IValidator<WriteNotesOptions> noteValidator,

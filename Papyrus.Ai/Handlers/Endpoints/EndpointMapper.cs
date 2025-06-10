@@ -1,14 +1,14 @@
 ﻿using Papyrus.Ai.Handlers.Endpoints.Documents;
+using Papyrus.Ai.Handlers.Endpoints.Notes;
 
 namespace Papyrus.Ai.Handlers.Endpoints;
 
 public static class EndpointMapper
 {
-    public static WebApplication MapEndpoints(this WebApplication app)
+    public static void MapEndpoints(this WebApplication app)
     {
         app.MapDocumentWriterEndpoints();
         app.MapDocumentReaderEndpoints();
-
-        return app;
+        app.MapNoteWriterEndpoints();
     }
 }

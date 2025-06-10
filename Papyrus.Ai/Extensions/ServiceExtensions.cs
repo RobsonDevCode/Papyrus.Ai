@@ -2,6 +2,7 @@
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.OpenApi.Models;
 using Papyrus.Ai.Validators;
+using Papyrus.Domain.Clients;
 using Papyrus.Domain.Mappers;
 using Papyrus.Domain.Services;
 using Papyrus.Domain.Services.Interfaces;
@@ -27,6 +28,7 @@ public static class ServiceExtensions
     {
         serviceCollection.AddScoped<IDocumentWriterService, DocumentWriterService>();
         serviceCollection.AddScoped<IDocumentReaderService, DocumentReaderService>();
+        serviceCollection.AddSingleton<IPapyrusAiClient, PapyrusAiClient>();
         serviceCollection.AddSingleton<IMapper, Mapper>();
         serviceCollection.AddMemoryCache();
     }

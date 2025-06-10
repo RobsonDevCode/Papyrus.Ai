@@ -15,11 +15,13 @@ builder.Services.AddDomain();
 builder.Services.AddPersistance();
 builder.Services.AddPapyrusSwagger();
 builder.Services.AddValidators();
-
+builder.Services.AddPapyrusAiClient(builder.Configuration);
+builder.Services.AddCors();
 var app = builder.Build();
 
 app.UseExceptionHandler();
 app.UseHttpsRedirection();
+app.UseCors(policy => policy.AllowAnyOrigin().AllowAnyHeader().AllowAnyMethod());
 
 if (app.Environment.IsDevelopment())
 {

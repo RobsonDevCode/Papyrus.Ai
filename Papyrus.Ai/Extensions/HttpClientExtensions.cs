@@ -1,7 +1,9 @@
 ﻿using System.Net.Http.Headers;
+using Microsoft.Extensions.Http.Resilience;
 using Microsoft.IdentityModel.Protocols.Configuration;
 using Papyrus.Ai.Configuration;
 using Papyrus.Domain.Clients;
+using Polly;
 
 namespace Papyrus.Ai.Extensions;
 
@@ -20,6 +22,25 @@ public static class HttpClientExtensions
             client.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
             client.BaseAddress = options.BaseUrl;
         })
-        .AddStandardResilienceHandler();
+        .AddResilienceHandler("Ai", pipeline =>
+        {
+            pipeline.AddTimeout(TimeSpan.FromMinutes(2)); //we have a long timeout because local LLMS are slow asf
+
+            pipeline.AddRetry(new HttpRetryStrategyOptions
+            {
+                MaxRetryAttempts = 3,
+                BackoffType = DelayBackoffType.Exponential,
+                UseJitter = true,
+                Delay = TimeSpan.FromMilliseconds(500)
+            });
+
+            pipeline.AddCircuitBreaker(new HttpCircuitBreakerStrategyOptions
+            {
+                SamplingDuration = TimeSpan.FromMinutes(5),
+                FailureRatio = 0.9,
+                MinimumThroughput = 3,
+                BreakDuration = TimeSpan.FromSeconds(5)
+            });
+        });
     }
 }
