@@ -4,7 +4,7 @@ public record Pagination
 {
     public int Page { get; init; } = 1;
 
-    public int Size { get; init; } = 250;
+    public int Size { get; init; } = 100;
 
     public required int Total { get; init; } = 0;
 }

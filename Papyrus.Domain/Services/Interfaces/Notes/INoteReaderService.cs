@@ -1,9 +1,11 @@
 ﻿using Papyrus.Domain.Models;
 using Papyrus.Domain.Models.Filters;
+using Papyrus.Domain.Models.Pagination;
 
 namespace Papyrus.Domain.Services.Interfaces.Notes;
 
 public interface INoteReaderService
 {
-    Task<NoteModel> GetNotesAsync(NoteRequestModel noteRequest, CancellationToken cancellationToken);
+    ValueTask<NoteModel?> GetNoteAsync(Guid id, CancellationToken cancellationToken);
+    Task<PagedResponseModel<NoteModel?>> GetNotesAsync(PaginationRequestModel paginationRequestModel, CancellationToken cancellationToken);
 }

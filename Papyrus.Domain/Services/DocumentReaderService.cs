@@ -37,14 +37,5 @@ public sealed class DocumentReaderService : IDocumentReaderService
             return response is null ? null : _mapper.MapToDomain(response);
         });
     }
-
-    public async ValueTask<string?> GetDocumentNameAsync(Guid documentGroupId, CancellationToken cancellationToken)
-    {
-        return await _memoryCache.GetOrCreateAsync($"name-{documentGroupId}", async entry =>
-        {
-            entry.SetAbsoluteExpiration(TimeSpan.FromMinutes(10));
-            var response = await _documentReader.GetNameById(documentGroupId, cancellationToken);
-            return response;
-        });
-    }
+  
 }

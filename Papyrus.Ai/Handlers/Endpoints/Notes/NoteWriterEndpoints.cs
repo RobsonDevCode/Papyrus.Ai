@@ -1,11 +1,9 @@
-﻿using System.Diagnostics;
-using FluentValidation;
+﻿using FluentValidation;
 using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.AspNetCore.Mvc;
 using Papyrus.Ai.Constants;
 using Papyrus.Api.Contracts.Contracts.Requests;
 using Papyrus.Api.Contracts.Contracts.Responses;
-using Papyrus.Domain.Clients;
 using Papyrus.Domain.Mappers;
 using Papyrus.Domain.Services.Interfaces.Notes;
 using static Papyrus.Ai.Constants.LoggingCategories;
@@ -18,13 +16,12 @@ internal static class NoteWriterEndpoints
     {
         var noteGroup = app.MapGroup("notes");
         
-        noteGroup.MapGet("", WriteNote);
+        noteGroup.MapPost("", WriteNote);
     }
 
     private static async Task<Results<Ok<NoteResponse>, BadRequest<string>>> WriteNote(
-        [FromRoute] Guid documentGroupId,
-        [AsParameters] WriteNotesOptions options,
-        [FromServices] IValidator<WriteNotesOptions> noteValidator,
+        [FromBody] WriteNoteRequest request,
+        [FromServices] IValidator<WriteNoteRequest> noteValidator,
         [FromServices] INoteWriterService writerService,
         [FromServices] ILoggerFactory loggerFactory,
         [FromServices] IMapper mapper,
@@ -34,21 +31,25 @@ internal static class NoteWriterEndpoints
         using var _ = logger.BeginScope(new Dictionary<string, object>
         {
             [Operation] = "Write Note",
-            [Filter] = (string.IsNullOrWhiteSpace(options.Text) ? options.Page.ToString() : options.Text) ??
-                       string.Empty
+            [Filter] = request
         });
 
-        var validationResult = await noteValidator.ValidateAsync(options, cancellationToken);
+        logger.LogInformation("Starting writing note request");
+        
+        var validationResult = await noteValidator.ValidateAsync(request, cancellationToken);
         if (!validationResult.IsValid)
         {
             var errors = string.Join(" | ", validationResult.Errors.Select(x => x.ErrorMessage));
             return TypedResults.BadRequest(errors);
         }
 
-        var mappedRequest = mapper.MapToDomain(documentGroupId, options);
+        var mappedRequest = mapper.MapToDomain(request);
         var result = await writerService.WriteNotesAsync(mappedRequest, cancellationToken);
 
         var mappedToResponse = mapper.MapToResponse(result);
+        
+        logger.LogInformation("Successfully wrote and saved note");
+        
         return TypedResults.Ok(mappedToResponse);
     }
 }

@@ -4,7 +4,7 @@ public record NoteRequestModel
 {
     public required Guid DocumentTypeId { get; init; }
     
-    public int? Page { get; init; } = null;
+    public int? Page { get; init; }
 
-    public string? Text { get; init; } = null;
+    public string? Text { get; init; }
 }

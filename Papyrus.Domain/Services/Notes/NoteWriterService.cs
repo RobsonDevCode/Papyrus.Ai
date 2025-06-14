@@ -29,36 +29,30 @@ public sealed class NoteWriterService : INoteWriterService
 
     public async Task<NoteModel> WriteNotesAsync(NoteRequestModel request, CancellationToken cancellationToken)
     {
-        string name;
-        string prompt;
-        
-        if(string.IsNullOrWhiteSpace(request.Text))
-        {
-            var response =
-                await _documentReaderService.GetPageByIdAsync(request.DocumentTypeId, request.Page, cancellationToken);
+        var page =
+            await _documentReaderService.GetPageByIdAsync(request.DocumentTypeId, request.Page, cancellationToken);
 
-            if (response is null)
-            {
-                throw new Exception("No document found");
-            }
-
-            name = response.DocumentName;
-            prompt = response.Content;
-        }
-        else
+        if (page is null)
         {
-            name = await _documentReaderService.GetDocumentNameAsync(request.DocumentTypeId,cancellationToken) ?? "";
-            if (string.IsNullOrEmpty(name))
-            {
-                throw new Exception("No document found");
-            }
-            
-            prompt = request.Text;
+            throw new Exception("No document found");
         }
-        
-        var llmResonse = await _papyrusAiClient.CreateNoteAsync(name, prompt, cancellationToken);
-        
-        //TODO save note
-        throw new NotImplementedException();
-    } 
+
+        var prompt = string.IsNullOrWhiteSpace(request.Text) ? page.Content : request.Text;
+
+        var llmResponse = await _papyrusAiClient.CreateNoteAsync(page.DocumentName, prompt, cancellationToken);
+
+        var mapped = _mapper.MapToPersistance(llmResponse, page); 
+
+        await _noteWriter.SaveNoteAsync(mapped, cancellationToken);
+
+        return new NoteModel
+        {
+            Id = mapped.Id,
+            DocumentGroupId = page.DocumentGroupId,
+            Note = llmResponse.Repsonse,
+            CreatedAt = llmResponse.CreatedAt,
+            UpdatedAt = llmResponse.CreatedAt,
+            PageReference = page.PageNumber
+        };
+    }
 }

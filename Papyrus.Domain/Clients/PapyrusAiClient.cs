@@ -9,6 +9,7 @@ namespace Papyrus.Domain.Clients;
 public sealed class PapyrusAiClient : IPapyrusAiClient
 {
     private readonly HttpClient _httpClient;
+    private const string _model = "gemma2:2b";
     private readonly ILogger<PapyrusAiClient> _logger;
 
     public PapyrusAiClient(HttpClient httpClient, ILogger<PapyrusAiClient> logger)
@@ -22,7 +23,7 @@ public sealed class PapyrusAiClient : IPapyrusAiClient
     {
         var requestBody = new AiRequestModel
         {
-            Model = "llama3.2:3b",
+            Model = _model,
             Stream = false,
             Options = new AiRequestOptionsModel
             {
@@ -32,9 +33,8 @@ public sealed class PapyrusAiClient : IPapyrusAiClient
         };
 
         requestBody.Prompt = !string.IsNullOrWhiteSpace(book)
-            ? $"Create detailed notes on this text from {book}. Add relevant context and supplementary information where helpful. Provide only the notes without commentary. {prompt}"
-            : $"Create comprehensive notes on the following text. Expand with relevant additional information where appropriate. Provide only the notes without any introductory or concluding remarks. {prompt}";
-
+            ? $"Create detailed notes on this text using numbered or normal bullet points from {book}. Add relevant context and supplementary information where helpful. Provide only the notes without commentary. {prompt}"
+            : $"Create comprehensive notes on the following text using numbered or normal bullet points. Expand with relevant additional information where appropriate. Provide only the notes without any introductory or concluding remarks. {prompt}";
         
         var json = JsonSerializer.Serialize(requestBody);
         var content = new StringContent(json, Encoding.UTF8, "application/json");

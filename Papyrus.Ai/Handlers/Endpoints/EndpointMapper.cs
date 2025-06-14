@@ -10,5 +10,6 @@ public static class EndpointMapper
         app.MapDocumentWriterEndpoints();
         app.MapDocumentReaderEndpoints();
         app.MapNoteWriterEndpoints();
+        app.MapNoteReaderEndpoints();
     }
 }

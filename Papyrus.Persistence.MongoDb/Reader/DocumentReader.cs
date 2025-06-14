@@ -25,15 +25,9 @@ public sealed class DocumentReader : IDocumentReader
             page = 1;
         }
 
-        var result = await _pageCollection.FindAsync(p => p.DocumentGroupId == documentGroupId
-                                                          && p.PageNumber == page,
-            cancellationToken: cancellationToken);
-        return result.FirstOrDefault();
-    }
-
-    public async Task<string?> GetNameById(Guid documentGroupId, CancellationToken cancellationToken)
-    {
-        return (await _pageCollection.FindAsync(p => p.DocumentGroupId == documentGroupId,
-                cancellationToken: cancellationToken)).FirstOrDefault().DocumentName;
+        var result = await _pageCollection.Find(p => p.DocumentGroupId == documentGroupId && p.PageNumber == page)
+                                 .SingleOrDefaultAsync(cancellationToken);
+        
+        return result;
     }
 }

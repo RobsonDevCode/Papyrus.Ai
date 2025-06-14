@@ -8,8 +8,6 @@ public record OllamaResponse
     public string Repsonse  { get; set; }
     
     [JsonPropertyName("created_at")]
-    public DateTime Created { get; set; }
+    public DateTime CreatedAt { get; set; }
     
-    [JsonPropertyName("done")]
-    public bool Done { get; set; }
 }

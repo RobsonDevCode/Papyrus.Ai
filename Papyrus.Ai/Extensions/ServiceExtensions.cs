@@ -2,10 +2,13 @@
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.OpenApi.Models;
 using Papyrus.Ai.Validators;
+using Papyrus.Api.Contracts.Contracts.Requests;
 using Papyrus.Domain.Clients;
 using Papyrus.Domain.Mappers;
 using Papyrus.Domain.Services;
 using Papyrus.Domain.Services.Interfaces;
+using Papyrus.Domain.Services.Interfaces.Notes;
+using Papyrus.Domain.Services.Notes;
 using Papyrus.Persistence.MongoDb;
 using Papyrus.Persistence.MongoDb.Reader;
 using Papyrus.Persistence.MongoDb.Writer;
@@ -17,10 +20,12 @@ namespace Papyrus.Ai.Extensions;
 
 public static class ServiceExtensions
 {
-    public static void AddPersistance(this IServiceCollection serviceCollection)
+    public static void AddPersistence(this IServiceCollection serviceCollection)
     {
         serviceCollection.AddScoped<IDocumentWriter, DocumentWriter>();
         serviceCollection.AddScoped<IDocumentReader, DocumentReader>();
+        serviceCollection.AddScoped<INoteReader, NoteReader>();
+        serviceCollection.AddScoped<INoteWriter, NoteWriter>();
         serviceCollection.AddSingleton<IMongoBookDbConnector, MongoBookDbConnector>();
     }
 
@@ -28,6 +33,8 @@ public static class ServiceExtensions
     {
         serviceCollection.AddScoped<IDocumentWriterService, DocumentWriterService>();
         serviceCollection.AddScoped<IDocumentReaderService, DocumentReaderService>();
+        serviceCollection.AddScoped<INoteWriterService, NoteWriterService>();
+        serviceCollection.AddScoped<INoteReaderService, NoteReaderService>();
         serviceCollection.AddSingleton<IPapyrusAiClient, PapyrusAiClient>();
         serviceCollection.AddSingleton<IMapper, Mapper>();
         serviceCollection.AddMemoryCache();
@@ -69,5 +76,6 @@ public static class ServiceExtensions
     public static void AddValidators(this IServiceCollection serviceCollection)
     {
         serviceCollection.AddScoped<IValidator<FormFile>, FormFileValidator>();
+        serviceCollection.AddScoped<IValidator<WriteNoteRequest>, WriteNotesValidator>();
     }
 }

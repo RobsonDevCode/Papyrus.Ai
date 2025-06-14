@@ -53,6 +53,7 @@ internal static class DocumentWriterEndpoints
 
         await documentWriterService.StoreDocumentAsync(document, cancellationToken);
 
+        logger.LogInformation("Document Saved");
         return TypedResults.Ok();
     }
 

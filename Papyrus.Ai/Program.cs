@@ -12,7 +12,7 @@ builder.Services.AddEndpointsApiExplorer();
 builder.Services.Configure<MongoDbSettings>(builder.Configuration.GetSection("MongoDb"));
 
 builder.Services.AddDomain();
-builder.Services.AddPersistance();
+builder.Services.AddPersistence();
 builder.Services.AddPapyrusSwagger();
 builder.Services.AddValidators();
 builder.Services.AddPapyrusAiClient(builder.Configuration);
