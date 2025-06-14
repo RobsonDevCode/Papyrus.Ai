@@ -22,4 +22,6 @@ public record Page
     public DateTime CreatedAt { get; init; }
 
     public DateTime UpdatedAt { get; init; }
+    
+    public double Y { get; init; }
 }

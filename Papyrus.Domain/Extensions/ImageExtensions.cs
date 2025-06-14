@@ -12,7 +12,9 @@ public static class ImageExtensions
             Bytes = Convert.ToBase64String(image.RawBytes.ToArray()),
             Width = image.WidthInSamples,
             Height = image.HeightInSamples,
-            PageReference = pageNumber
+            PageReference = pageNumber,
+            X = image.Bounds.Left,
+            Y = image.Bounds.Bottom
         }).ToList();
     }
     

@@ -27,18 +27,18 @@ public sealed class DocumentWriterService : IDocumentWriterService
 
     public async Task StoreDocumentAsync(DocumentModel documentModel, CancellationToken cancellationToken)
     {
-        using var pdfDoc= PdfDocument.Open(documentModel.PdfStream);
-        
+        using var pdfDoc = PdfDocument.Open(documentModel.PdfStream);
+
         var totalPages = pdfDoc.NumberOfPages;
         if (totalPages == 0)
         {
             throw new InvalidOperationException("Cannot store empty document.");
         }
-        
+
         var groupId = Guid.NewGuid();
 
         var pagesToSave = new List<Page>(totalPages);
-        
+
         for (var i = 0; i < totalPages; i++)
         {
             var pdfPageNumber = i + 1;
@@ -48,23 +48,65 @@ public sealed class DocumentWriterService : IDocumentWriterService
                 _logger.LogWarning("Cannot extract page {pageNum} as its null skipping it.", pdfPageNumber);
                 continue;
             }
-            
+
+            // Get all content with positions
+            var allContent = new List<(double Y, double X, object Content)>();
+
+            // Add words
+            foreach (var word in page.GetWords())
+            {
+                allContent.Add((
+                    Y: word.BoundingBox.Bottom,
+                    X: word.BoundingBox.Left,
+                    Content: word.Text
+                ));
+            }
+
+            // Add images and text placeholders
+            var images = new List<ImageModel>();
+            var imageIndex = 0;
+            foreach (var image in page.GetImages())
+            {
+                allContent.Add((
+                    Y: image.Bounds.Bottom,
+                    X: image.Bounds.Left,
+                    Content: $"$$IMAGE_{imageIndex}$$" //will be used to put the image in the correct position
+                ));
+
+                images.Add(new ImageModel
+                {
+                    Bytes = Convert.ToBase64String(image.RawBytes.ToArray()),
+                    Width = image.WidthInSamples,
+                    Height = image.HeightInSamples,
+                    PageReference = pdfPageNumber
+                });
+                
+                imageIndex++;
+            }
+
+            // Sort and build single content string
+            var orderedContent = allContent
+                .OrderByDescending(coords => coords.Y)
+                .ThenBy(coords => coords.X)
+                .Select(coords => coords.Content.ToString())
+                .ToList();
+
             var mappedPage = new Page
             {
                 DocumentGroupId = groupId,
                 DocumentName = documentModel.Name,
-                Content = string.Join(" ", page.GetWords()),
+                Content = string.Join(" ", orderedContent),
                 PageNumber = pdfPageNumber, // Pages are 1-indexed
                 DocumentType = "Pdf",
                 CreatedAt = DateTime.UtcNow,
                 UpdatedAt = DateTime.UtcNow,
-                Images = _mapper.Map(page.GetImagesFromPage(pdfPageNumber))
+                Images = _mapper.Map(images)
             };
-            
+
             pagesToSave.Add(mappedPage);
-            
+
             // Force cleanup of Letter objects after 5 pages
-            if (i % 20 == 0) 
+            if (i % 20 == 0)
             {
                 GC.Collect();
                 GC.WaitForPendingFinalizers();
@@ -75,9 +117,6 @@ public sealed class DocumentWriterService : IDocumentWriterService
         {
             MaxDegreeOfParallelism = Environment.ProcessorCount,
             CancellationToken = cancellationToken
-        }, async (i, ctx) =>
-        {
-            await _documentWriter.WriteDocumentAsync(pagesToSave[i], ctx);
-        });
+        }, async (i, ctx) => { await _documentWriter.WriteDocumentAsync(pagesToSave[i], ctx); });
     }
 }
