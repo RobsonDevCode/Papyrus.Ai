@@ -10,7 +10,7 @@ namespace Papyrus.Domain.Services.Notes;
 
 public sealed class NoteReaderService : INoteReaderService
 {
-    private readonly INoteReader _noteReader; 
+    private readonly INoteReader _noteReader;
     private readonly IMemoryCache _memoryCache;
     private readonly IMapper _mapper;
 
@@ -27,15 +27,20 @@ public sealed class NoteReaderService : INoteReaderService
         {
             entry.SetSlidingExpiration(TimeSpan.FromMinutes(1));
             entry.SetAbsoluteExpiration(TimeSpan.FromMinutes(2));
-            
+
             var response = await _noteReader.GetNoteAsync(id, cancellationToken);
 
             return response == null ? null : _mapper.MapToDomain(response);
         });
     }
 
-    public Task<PagedResponseModel<NoteModel?>> GetNotesAsync(PaginationRequestModel paginationRequestModel, CancellationToken cancellationToken)
+    public async Task<PagedResponseModel<NoteModel?>> GetNotesAsync(PaginationRequestModel paginationRequestModel,
+        int? pdfPageNumber,
+        CancellationToken cancellationToken)
     {
-        throw new NotImplementedException();
+        var response = await _noteReader.GetPagedNotesAsync(paginationRequestModel.Page, paginationRequestModel.Size,
+            pdfPageNumber, cancellationToken);
+        
+        return _mapper.MapToResponse(response);
     }
 }

@@ -2,6 +2,7 @@
 using System.Text;
 using System.Text.Json;
 using Microsoft.Extensions.Logging;
+using Papyrus.Domain.Models;
 using Papyrus.Domain.Models.Client;
 
 namespace Papyrus.Domain.Clients;
@@ -19,7 +20,7 @@ public sealed class PapyrusAiClient : IPapyrusAiClient
     }
 
     public async Task<OllamaResponse> CreateNoteAsync(string book, string prompt,
-        CancellationToken cancellationToken)
+       List<ImageModel>? images, CancellationToken cancellationToken)
     {
         var requestBody = new AiRequestModel
         {
@@ -32,9 +33,18 @@ public sealed class PapyrusAiClient : IPapyrusAiClient
             }
         };
 
-        requestBody.Prompt = !string.IsNullOrWhiteSpace(book)
-            ? $"Create detailed notes on this text using numbered or normal bullet points from {book}. Add relevant context and supplementary information where helpful. Provide only the notes without commentary. {prompt}"
-            : $"Create comprehensive notes on the following text using numbered or normal bullet points. Expand with relevant additional information where appropriate. Provide only the notes without any introductory or concluding remarks. {prompt}";
+        if (images != null)
+        {
+            requestBody.ImageBytes = images.Select(x => x.Bytes).ToArray();
+            requestBody.Prompt =
+                $"Analyze this text and images from {book} and create detailed bullet point notes. Add context where helpful. Use plain text only. $$IMAGE_X$$ markers show where images appear in the text (X = image array index). {prompt}";
+        }
+        else
+        {
+            requestBody.Prompt =
+                $"Create detailed notes on this text using numbered or normal bullet points from {book}. Add relevant context and supplementary information where helpful. Provide only the notes without commentary. {prompt}";
+        }
+        
         
         var json = JsonSerializer.Serialize(requestBody);
         var content = new StringContent(json, Encoding.UTF8, "application/json");

@@ -1,10 +1,10 @@
-﻿using System.Text;
+﻿using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Logging;
-using Papyrus.Domain.Extensions;
 using Papyrus.Domain.Mappers;
 using Papyrus.Domain.Models;
 using Papyrus.Domain.Services.Interfaces;
 using Papyrus.Perstistance.Interfaces.Contracts;
+using Papyrus.Perstistance.Interfaces.Reader;
 using Papyrus.Perstistance.Interfaces.Writer;
 using UglyToad.PdfPig;
 
@@ -13,22 +13,29 @@ namespace Papyrus.Domain.Services;
 public sealed class DocumentWriterService : IDocumentWriterService
 {
     private readonly IDocumentWriter _documentWriter;
+    private readonly IDocumentReader _documentReader;
     private readonly IMapper _mapper;
     private readonly ILogger<DocumentWriterService> _logger;
 
     public DocumentWriterService(IDocumentWriter documentWriter,
+        IDocumentReader documentReader,
         IMapper mapper,
         ILogger<DocumentWriterService> logger)
     {
         _documentWriter = documentWriter;
+        _documentReader = documentReader;
         _mapper = mapper;
         _logger = logger;
     }
 
-    public async Task StoreDocumentAsync(DocumentModel documentModel, CancellationToken cancellationToken)
+    public async Task StoreDocumentAsync(DocumentModel document, CancellationToken cancellationToken)
     {
-        using var pdfDoc = PdfDocument.Open(documentModel.PdfStream);
-
+        if (await _documentReader.ExistsAsync(document.Name, cancellationToken))
+        {
+            throw new BadHttpRequestException($"Document with name {document.Name} already exists.");
+        }
+        
+        using var pdfDoc = PdfDocument.Open(document.PdfStream);
         var totalPages = pdfDoc.NumberOfPages;
         if (totalPages == 0)
         {
@@ -36,7 +43,8 @@ public sealed class DocumentWriterService : IDocumentWriterService
         }
 
         var groupId = Guid.NewGuid();
-
+        document.Name = document.Name.Replace(".pdf", "");
+        
         var pagesToSave = new List<Page>(totalPages);
 
         for (var i = 0; i < totalPages; i++)
@@ -94,7 +102,7 @@ public sealed class DocumentWriterService : IDocumentWriterService
             var mappedPage = new Page
             {
                 DocumentGroupId = groupId,
-                DocumentName = documentModel.Name,
+                DocumentName = document.Name,
                 Content = string.Join(" ", orderedContent),
                 PageNumber = pdfPageNumber, // Pages are 1-indexed
                 DocumentType = "Pdf",

@@ -30,4 +30,10 @@ public sealed class DocumentReader : IDocumentReader
         
         return result;
     }
+
+    public async Task<bool> ExistsAsync(string documentName, CancellationToken cancellationToken)
+    {
+        var result = await _pageCollection.Find(p => p.DocumentName == documentName).AnyAsync(cancellationToken);
+        return result;
+    }
 }

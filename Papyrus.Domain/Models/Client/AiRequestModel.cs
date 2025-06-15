@@ -9,6 +9,9 @@ public record AiRequestModel
     
     [JsonPropertyName("prompt")]
     public string Prompt { get; set; }
+    
+    [JsonPropertyName("images")]
+    public string[] ImageBytes { get; set; }
 
     [JsonPropertyName("stream")]
     public bool Stream { get; init; } = false;

@@ -29,17 +29,16 @@ public sealed class NoteWriterService : INoteWriterService
 
     public async Task<NoteModel> WriteNotesAsync(NoteRequestModel request, CancellationToken cancellationToken)
     {
-        var page =
-            await _documentReaderService.GetPageByIdAsync(request.DocumentTypeId, request.Page, cancellationToken);
+        var page = await _documentReaderService.GetPageByIdAsync(request.DocumentTypeId, request.Page, cancellationToken);
 
         if (page is null)
         {
             throw new Exception("No document found");
         }
-
+        
         var prompt = string.IsNullOrWhiteSpace(request.Text) ? page.Content : request.Text;
 
-        var llmResponse = await _papyrusAiClient.CreateNoteAsync(page.DocumentName, prompt, cancellationToken);
+        var llmResponse = await _papyrusAiClient.CreateNoteAsync(page.DocumentName, prompt, page.Images, cancellationToken);
 
         var mapped = _mapper.MapToPersistance(llmResponse, page); 
 

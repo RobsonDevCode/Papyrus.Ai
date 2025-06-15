@@ -35,7 +35,7 @@ internal static class DocumentWriterEndpoints
             [Operation] = "Saving Document",
             [FileLength] = pdfFile.Length
         });
-
+        
         var validator = await pdfFileValidator.ValidateAsync(pdfFile, cancellationToken);
         if (!validator.IsValid)
         {
@@ -48,7 +48,8 @@ internal static class DocumentWriterEndpoints
         var document = new DocumentModel
         {
             PdfStream = pdfFile.OpenReadStream(),
-            Name = pdfFile.FileName
+            Name = pdfFile.FileName, 
+            Size = pdfFile.Length
         };
 
         await documentWriterService.StoreDocumentAsync(document, cancellationToken);

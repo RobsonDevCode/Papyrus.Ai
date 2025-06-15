@@ -49,6 +49,7 @@ internal static class NoteReaderEndpoints
     }
 
     private static async Task<Results<Ok<PagedResponse<NoteResponse>>, NotFound>> GetNotes([FromRoute] Guid documentId,
+        [FromQuery] int? pdfPageNumber, 
         [AsParameters] Pagination pagination,
         [FromServices] INoteReaderService noteReaderService,
         [FromServices] IMapper mapper,
@@ -59,7 +60,8 @@ internal static class NoteReaderEndpoints
         using var _ = logger.BeginScope(new Dictionary<string, object>
         {
             [Operation] = "Get Notes",
-            [DocumentGroupId] = documentId
+            [DocumentGroupId] = documentId,
+            [PdfPage] = pdfPageNumber ?? 0
         });
 
         logger.LogInformation("Getting notes page {pageNumber}, page size {pageSize}", pagination.Page,
@@ -69,7 +71,7 @@ internal static class NoteReaderEndpoints
         {
             Page = pagination.Page,
             Size = pagination.Size
-        }, cancellationToken);
+        }, pdfPageNumber, cancellationToken);
         
         var result = mapper.MapToResponse(response);
         return TypedResults.Ok(result);
