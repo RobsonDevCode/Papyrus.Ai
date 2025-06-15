@@ -5,5 +5,5 @@ namespace Papyrus.Perstistance.Interfaces.Reader;
 public interface INoteReader
 {
     Task<Note?> GetNoteAsync(Guid id, CancellationToken cancellationToken); 
-    Task<PagedResponse<Note?>> GetPagedNotesAsync(int pageNumber, int size, int? pdfPage, CancellationToken cancellationToken);
+    Task<PagedResponse<Note>> GetPagedNotesAsync(Guid documentId, PaginationOptions options, CancellationToken cancellationToken);
 }

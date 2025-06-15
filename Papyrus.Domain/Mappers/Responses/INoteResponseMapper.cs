@@ -10,6 +10,4 @@ public interface INoteResponseMapper
     NoteResponse MapToResponse(NoteModel note);
 
     PagedResponse<NoteResponse> MapToResponse(PagedResponseModel<NoteModel> pagedResponse);
-    
-    PagedResponseModel<NoteResponse> MapToResponse(Perstistance.Interfaces.Contracts.PagedResponse<NoteModel> pagedResponse);
 }

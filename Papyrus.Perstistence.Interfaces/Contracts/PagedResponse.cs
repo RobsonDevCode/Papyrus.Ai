@@ -2,7 +2,7 @@
 
 public record PagedResponse<T>
 {
-    public T[] Data { get; init; }
+    public List<T> Data { get; init; } = [];
     
-    public int TotalPages { get; init; }
+    public long TotalPages { get; init; }
 }

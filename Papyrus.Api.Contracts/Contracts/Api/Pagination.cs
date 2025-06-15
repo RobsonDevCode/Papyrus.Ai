@@ -6,5 +6,5 @@ public record Pagination
 
     public int Size { get; init; } = 100;
 
-    public required int Total { get; init; } = 0;
+    public required long Total { get; init; } 
 }

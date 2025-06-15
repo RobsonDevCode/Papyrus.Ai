@@ -1,6 +1,7 @@
 ﻿using Papyrus.Api.Contracts.Contracts.Requests;
 using Papyrus.Domain.Models;
 using Papyrus.Domain.Models.Filters;
+using Papyrus.Domain.Models.Pagination;
 using Papyrus.Perstistance.Interfaces.Contracts;
 
 namespace Papyrus.Domain.Mappers;
@@ -25,6 +26,20 @@ public partial class Mapper
             PageReference = note.RelatedPage,
             CreatedAt = note.CreatedAt,
             UpdatedAt = note.UpdatedAt
+        };
+    }
+
+    public PagedResponseModel<NoteModel> Map(PagedResponse<Note> response, int page, int size)
+    {
+        return new PagedResponseModel<NoteModel>
+        {
+            Items = response.Data.Select(MapToDomain).ToArray(),
+            Pagination = new PaginationModel
+            {
+                Page = page,
+                Size = size,
+                TotalPages = response.TotalPages,
+            }
         };
     }
 }

@@ -67,7 +67,7 @@ internal static class NoteReaderEndpoints
         logger.LogInformation("Getting notes page {pageNumber}, page size {pageSize}", pagination.Page,
             pagination.Size);
 
-        var response = await noteReaderService.GetNotesAsync(new PaginationRequestModel
+        var response = await noteReaderService.GetNotesAsync(documentId ,new PaginationRequestModel
         {
             Page = pagination.Page,
             Size = pagination.Size
