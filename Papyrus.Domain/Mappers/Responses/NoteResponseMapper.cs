@@ -1,7 +1,5 @@
-﻿using Papyrus.Api.Contracts.Contracts.Api;
-using Papyrus.Api.Contracts.Contracts.Responses;
+﻿using Papyrus.Api.Contracts.Contracts.Responses;
 using Papyrus.Domain.Models;
-using Papyrus.Domain.Models.Pagination;
 
 namespace Papyrus.Domain.Mappers;
 
@@ -19,23 +17,14 @@ public partial class Mapper
         };
     }
 
-    public PagedResponse<NoteResponse> MapToResponse(PagedResponseModel<NoteModel> pagedResponse)
+    public List<NoteResponse> MapToResponse(NoteModel[]? notes)
     {
-        return new PagedResponse<NoteResponse>
-        {
-            Items = MapToResponseArray(pagedResponse.Items),
-            Pagination = new Pagination
-            {
-                Size = pagedResponse.Pagination.Size,
-                Page = pagedResponse.Pagination.Page,
-                Total = pagedResponse.Pagination.TotalPages,
-            }
-        };
+        return notes == null ? [] : notes.Select(MapToResponse).ToList();
     }
-
-    public NoteResponse[] MapToResponseArray(NoteModel[] notes)
+    
+    public List<NoteResponse> MapToResponse(List<NoteModel>? notes)
     {
-        return notes.Select(MapToResponse).ToArray();
+        return notes == null ? [] : notes.Select(MapToResponse).ToList();
     }
     
 }

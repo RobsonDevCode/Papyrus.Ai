@@ -7,6 +7,8 @@ namespace Papyrus.Domain.Services.Interfaces.Notes;
 public interface INoteReaderService
 {
     ValueTask<NoteModel?> GetNoteAsync(Guid id, CancellationToken cancellationToken);
-    Task<PagedResponseModel<NoteModel>> GetNotesAsync(Guid documentId, PaginationRequestModel options,
-        int? pdfPageNumber, CancellationToken cancellationToken);
+    Task<PagedResponseModel<NoteModel>?> GetNotesAsync(Guid documentId, PaginationRequestModel options, CancellationToken cancellationToken);
+
+    ValueTask<List<NoteModel>?> GetNotesOnPageAsync(Guid documentGroupId, int pdfPage,
+        CancellationToken cancellationToken);
 }

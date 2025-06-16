@@ -25,6 +25,7 @@ public sealed class PapyrusAiClient : IPapyrusAiClient
         var requestBody = new AiRequestModel
         {
             Model = _model,
+            Prompt = prompt,
             Stream = false,
             Options = new AiRequestOptionsModel
             {
@@ -32,19 +33,11 @@ public sealed class PapyrusAiClient : IPapyrusAiClient
                 TopP = 0.9
             }
         };
-
+        
         if (images != null)
         {
             requestBody.ImageBytes = images.Select(x => x.Bytes).ToArray();
-            requestBody.Prompt =
-                $"Analyze this text and images from {book} and create detailed bullet point notes. Add context where helpful. Use plain text only. $$IMAGE_X$$ markers show where images appear in the text (X = image array index). {prompt}";
         }
-        else
-        {
-            requestBody.Prompt =
-                $"Create detailed notes on this text using numbered or normal bullet points from {book}. Add relevant context and supplementary information where helpful. Provide only the notes without commentary. {prompt}";
-        }
-        
         
         var json = JsonSerializer.Serialize(requestBody);
         var content = new StringContent(json, Encoding.UTF8, "application/json");

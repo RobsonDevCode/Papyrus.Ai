@@ -14,9 +14,12 @@ public partial class Mapper
             Content = page.Content,
             PageNumber = page.PageNumber,
             DocumentType = page.DocumentType,
+            Images = page.Images?.Select(MapToDomain).ToList() ?? [],
             CreatedAt = page.CreatedAt,
             UpdatedAt = page.UpdatedAt,
             Author = page.Author
         };
     }
+    
+    
 }

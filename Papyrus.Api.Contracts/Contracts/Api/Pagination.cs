@@ -2,9 +2,15 @@
 
 public record Pagination
 {
-    public int Page { get; init; } = 1;
+    public Pagination(int pageNumber, int pageSize, long total)
+    {
+        Page = pageNumber;
+        Size = pageSize;
+        Total = total;
+    }
+    
+    public int Page { get; init; }
 
-    public int Size { get; init; } = 100;
-
-    public required long Total { get; init; } 
+    public int Size { get; init; }
+    public long Total { get; init; } 
 }

@@ -16,6 +16,15 @@ public partial class Mapper
             Text = request.Text
         };
     }
+
+    public NoteModel MapToDomain(WriteImageNoteRequest request)
+    {
+        return new NoteModel
+        {
+            
+        }
+    }
+
     public NoteModel MapToDomain(Note note)
     {
         return new NoteModel
@@ -29,7 +38,12 @@ public partial class Mapper
         };
     }
 
-    public PagedResponseModel<NoteModel> Map(PagedResponse<Note> response, int page, int size)
+    public List<NoteModel> Map(List<Note> notes)
+    {
+        return notes.Select(MapToDomain).ToList();
+    } 
+
+    public PagedResponseModel<NoteModel>? Map(PagedResponse<Note> response, int page, int size)
     {
         return new PagedResponseModel<NoteModel>
         {

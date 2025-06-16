@@ -35,19 +35,41 @@ public sealed class NoteReaderService : INoteReaderService
         });
     }
 
-    public async Task<PagedResponseModel<NoteModel>> GetNotesAsync(Guid documentId, PaginationRequestModel options,
-        int? pdfPageNumber,
+    public async Task<PagedResponseModel<NoteModel>?> GetNotesAsync(Guid documentId, PaginationRequestModel options,
         CancellationToken cancellationToken)
     {
         var response = await _noteReader.GetPagedNotesAsync(documentId, new PaginationOptions
         {
             Page = options.Page,
             Size = options.Size,
-            PdfPage = pdfPageNumber
         }, cancellationToken);
 
-        return response.Data.Count is 0
-            ? new PagedResponseModel<NoteModel>()
-            : _mapper.Map(response, options.Page, options.Size);
+        if (response.Data.Count is 0)
+        {
+            return new PagedResponseModel<NoteModel>
+            {
+                Items = [],
+                Pagination = new PaginationModel
+                {
+                    Page = options.Page,
+                    Size = options.Size,
+                    TotalPages = response.TotalPages
+                }
+            };
+        }
+        
+        return _mapper.Map(response, options.Page, options.Size);
+    }
+
+    public async ValueTask<List<NoteModel>?> GetNotesOnPageAsync(Guid documentGroupId, int pdfPage,
+        CancellationToken cancellationToken)
+    {
+        return await _memoryCache.GetOrCreateAsync($"{documentGroupId}-{pdfPage}", async entry =>
+        {
+            entry.SetAbsoluteExpiration(TimeSpan.FromMinutes(2));
+            
+            var response = await _noteReader.GetNotesOnPageAsync(documentGroupId, pdfPage, cancellationToken);
+            return _mapper.Map(response);
+        });
     }
 }

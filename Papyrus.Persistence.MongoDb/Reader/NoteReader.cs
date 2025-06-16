@@ -22,17 +22,25 @@ public sealed class NoteReader : INoteReader
     public async Task<PagedResponse<Note>> GetPagedNotesAsync(Guid documentId, PaginationOptions options,
         CancellationToken cancellationToken)
     {
-        var notes = await _noteCollection.Find(n => n.Id == documentId)
+        var notes = await _noteCollection.Find(n => n.DocumentGroupId == documentId)
             .Skip((options.Page - 1) * options.Size)
             .Limit(options.Size)
             .ToListAsync(cancellationToken);
 
-        var totalCount = await _noteCollection.CountDocumentsAsync(x => x.Id == documentId, cancellationToken: cancellationToken);
+        var totalCount = await _noteCollection.CountDocumentsAsync(x => x.DocumentGroupId == documentId,
+            cancellationToken: cancellationToken);
 
         return new PagedResponse<Note>
         {
             Data = notes,
             TotalPages = totalCount
         };
+    }
+
+    public async Task<List<Note>> GetNotesOnPageAsync(Guid documentGroupId, int pdfPage,
+        CancellationToken cancellationToken)
+    {
+        return await _noteCollection.Find(n => n.DocumentGroupId == documentGroupId && n.RelatedPage == pdfPage)
+            .ToListAsync(cancellationToken);
     }
 }

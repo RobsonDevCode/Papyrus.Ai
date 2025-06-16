@@ -5,5 +5,5 @@ namespace Papyrus.Domain.Services.Interfaces.Notes;
 
 public interface INoteWriterService
 {
-    Task<NoteModel> WriteNotesAsync(NoteRequestModel request, CancellationToken cancellationToken);
+    Task<NoteModel> WriteNoteAsync(NoteRequestModel request, CancellationToken cancellationToken);
 }

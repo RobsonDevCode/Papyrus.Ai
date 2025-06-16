@@ -9,9 +9,10 @@ public class WriteNotesValidator : AbstractValidator<WriteNoteRequest>
     {
         RuleFor(x => x.DocumentGroupId).NotEmpty()
             .WithMessage("documentGroupId is required.");
-            
+        
         RuleFor(x => x.Page).NotEmpty()
             .GreaterThan(0)
-            .WithMessage("Either page or text is required!");
+            .WithMessage("Page is required!");
+        
     }
 }
