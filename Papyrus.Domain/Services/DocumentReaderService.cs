@@ -10,10 +10,10 @@ public sealed class DocumentReaderService : IDocumentReaderService
 {
     private readonly IDocumentReader _documentReader;
     private readonly IMemoryCache _memoryCache;
-
     private readonly IMapper _mapper;
 
-    public DocumentReaderService(IDocumentReader documentReader, IMemoryCache memoryCache, IMapper mapper)
+    public DocumentReaderService(IDocumentReader documentReader, IMemoryCache memoryCache, IMapper mapper
+    )
     {
         _documentReader = documentReader;
         _memoryCache = memoryCache;
@@ -37,5 +37,4 @@ public sealed class DocumentReaderService : IDocumentReaderService
             return response is null ? null : _mapper.MapToDomain(response);
         });
     }
-  
 }

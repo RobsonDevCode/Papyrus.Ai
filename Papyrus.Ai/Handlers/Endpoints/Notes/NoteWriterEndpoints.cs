@@ -52,28 +52,4 @@ internal static class NoteWriterEndpoints
         
         return TypedResults.Ok(mappedToResponse);
     }
-
-    private static async Task<Results<Ok<NoteResponse>, BadRequest<string>>> WriteNoteOnImage(
-        [FromBody] WriteImageNoteRequest request,
-        [FromServices] IValidator<WriteImageNoteRequest> noteValidator,
-        [FromServices] INoteWriterService writerService,
-        [FromServices] IMapper mapper,
-        [FromServices] ILoggerFactory loggerFactory,
-        CancellationToken cancellationToken)
-    {
-        var logger = loggerFactory.CreateLogger(Loggers.NoteWriter);
-        using var _ = logger.BeginScope(new Dictionary<string, object>
-        {
-            [Operation] = "Write Note On Image",
-            [Filter] = request
-        });
-        
-        var validationResult = await noteValidator.ValidateAsync(request, cancellationToken);
-        if (!validationResult.IsValid)
-        {
-            var errors = string.Join(" | ", validationResult.Errors.Select(x => x.ErrorMessage));
-            return TypedResults.BadRequest(errors);
-        }
-        var mappedRequest = mapper.MapToDomain()
-    }
 }

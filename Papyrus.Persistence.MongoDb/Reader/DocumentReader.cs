@@ -36,4 +36,5 @@ public sealed class DocumentReader : IDocumentReader
         var result = await _pageCollection.Find(p => p.DocumentName == documentName).AnyAsync(cancellationToken);
         return result;
     }
+    
 }

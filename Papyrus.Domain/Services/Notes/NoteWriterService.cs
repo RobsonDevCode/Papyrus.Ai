@@ -38,16 +38,21 @@ public sealed partial class NoteWriterService : INoteWriterService
             throw new Exception("No document found");
         }
 
+        if (request.ImageReference is not null)
+        {
+            return await WriteImageFocusedNoteAsync((int)request.ImageReference, page, cancellationToken);
+        }
+        
         if (!string.IsNullOrWhiteSpace(request.Text))
         {
-            return await HandleTextSelectionAsync(request.Text, page, cancellationToken);
+            return await WriteTextSelectedNoteAsync(request.Text, page, cancellationToken);
         }
         
         var prompt = page.Images is { Count: > 0 } 
             ? PromptGenerator.PromptTextWithImage(page.DocumentName, page.Content)
             : PromptGenerator.BasicNotePrompt(page.DocumentName, page.Content);
         
-        var llmResponse = await _papyrusAiClient.CreateNoteAsync(page.DocumentName, page.Content, page.Images, cancellationToken);
+        var llmResponse = await _papyrusAiClient.CreateNoteAsync(page.DocumentName, prompt, page.Images, cancellationToken);
 
         var mapped = _mapper.MapToPersistance(llmResponse, page); 
 
@@ -64,7 +69,17 @@ public sealed partial class NoteWriterService : INoteWriterService
         };
     }
 
-    private async Task<NoteModel> HandleTextSelectionAsync(string text, PageModel page,
+    private async Task<NoteModel> WriteImageFocusedNoteAsync(int imageReference, PageModel page, CancellationToken cancellationToken)
+    {
+        if (page.Images is not { Count: > 0 })
+        {
+            throw new Exception($"No images found on {page.DocumentName}");
+        }
+        
+        throw new NotImplementedException();
+    }
+    
+    private async Task<NoteModel> WriteTextSelectedNoteAsync(string text, PageModel page,
         CancellationToken cancellationToken)
     {
         var images = new List<ImageModel>();
@@ -91,7 +106,6 @@ public sealed partial class NoteWriterService : INoteWriterService
             PageReference = page.PageNumber
         };
     }
-
     private bool TryExtractImageReferences(string text, out List<int> imagesRefs)
     {
         try

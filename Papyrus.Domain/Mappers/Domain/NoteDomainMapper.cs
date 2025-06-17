@@ -17,12 +17,14 @@ public partial class Mapper
         };
     }
 
-    public NoteModel MapToDomain(WriteImageNoteRequest request)
+    public WriteImageNoteRequestModel MapToDomain(WriteImageNoteRequest request)
     {
-        return new NoteModel
+        return new WriteImageNoteRequestModel
         {
-            
-        }
+            DocumentGroupId = request.DocumentGroupId,
+            Page = request.Page,
+            ImageReference = request.ImageReference
+        };
     }
 
     public NoteModel MapToDomain(Note note)

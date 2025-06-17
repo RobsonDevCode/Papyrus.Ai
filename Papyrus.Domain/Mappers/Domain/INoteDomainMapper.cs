@@ -9,7 +9,7 @@ namespace Papyrus.Domain.Mappers.Domain;
 public interface INoteDomainMapper
 {
     NoteRequestModel MapToDomain(WriteNoteRequest request);
-    NoteModel MapToDomain(WriteImageNoteRequest request);
+    WriteImageNoteRequestModel MapToDomain(WriteImageNoteRequest request);
     NoteModel MapToDomain(Note note);
     List<NoteModel> Map(List<Note> notes);
     PagedResponseModel<NoteModel>? Map(PagedResponse<Note> response, int page, int size);

@@ -11,7 +11,7 @@ public sealed class NoteWriter : INoteWriter
 
     public NoteWriter(IMongoBookDbConnector connector)
     {
-        _notesCollection = connector.GetCollection<Note>(nameof(Note));    
+        _notesCollection = connector.GetCollection<Note>("note");    
     }        
     
     public async Task SaveNoteAsync(Note note, CancellationToken cancellationToken)

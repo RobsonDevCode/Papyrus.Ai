@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Logging;
+using Papyrus.Domain.Extensions;
 using Papyrus.Domain.Mappers;
 using Papyrus.Domain.Models;
 using Papyrus.Domain.Services.Interfaces;
@@ -51,54 +52,35 @@ public sealed class DocumentWriterService : IDocumentWriterService
         {
             var pdfPageNumber = i + 1;
             var page = pdfDoc.GetPage(pdfPageNumber);
-            if (string.IsNullOrWhiteSpace(page.Text))
+            
+            if (string.IsNullOrWhiteSpace(page.Text) && !page.GetImages().Any())
             {
                 _logger.LogWarning("Cannot extract page {pageNum} as its null skipping it.", pdfPageNumber);
                 continue;
             }
 
-            // Get all content with positions
-            var allContent = new List<(double Y, double X, object Content)>();
-
-            // Add words
-            foreach (var word in page.GetWords())
+            if (string.IsNullOrWhiteSpace(page.Text) && page.GetImages().Any())
             {
-                allContent.Add((
-                    Y: word.BoundingBox.Bottom,
-                    X: word.BoundingBox.Left,
-                    Content: word.Text
-                ));
-            }
-
-            // Add images and text placeholders
-            var images = new List<ImageModel>();
-            var imageIndex = 0;
-            foreach (var image in page.GetImages())
-            {
-                allContent.Add((
-                    Y: image.Bounds.Bottom,
-                    X: image.Bounds.Left,
-                    Content: $"$$IMAGE_{imageIndex}$$" //will be used to put the image in the correct position
-                ));
-
-                images.Add(new ImageModel
+                var imageOnlyPage = new Page
                 {
-                    Bytes = Convert.ToBase64String(image.RawBytes.ToArray()),
-                    Width = image.WidthInSamples,
-                    Height = image.HeightInSamples,
-                    PageReference = pdfPageNumber
-                });
+                    DocumentGroupId = groupId,
+                    DocumentName = document.Name,
+                    Content = null,
+                    PageNumber = pdfPageNumber, // Pages are 1-indexed
+                    DocumentType = "Pdf",
+                    IsImageOnly = string.IsNullOrWhiteSpace(page.Text) && page.GetImages().Any(),
+                    CreatedAt = DateTime.UtcNow,
+                    UpdatedAt = DateTime.UtcNow,
+                    Images = page.ExtractImages(pdfPageNumber)
+                };
                 
-                imageIndex++;
+                pagesToSave.Add(imageOnlyPage);
+                continue;
             }
-
-            // Sort and build single content string
-            var orderedContent = allContent
-                .OrderByDescending(coords => coords.Y)
-                .ThenBy(coords => coords.X)
-                .Select(coords => coords.Content.ToString())
-                .ToList();
-
+            
+            
+            (IEnumerator<string?> orderedContent, List<ImageModel> images) = page.ExtractContentFromPage(pdfPageNumber);
+           
             var mappedPage = new Page
             {
                 DocumentGroupId = groupId,
@@ -106,6 +88,7 @@ public sealed class DocumentWriterService : IDocumentWriterService
                 Content = string.Join(" ", orderedContent),
                 PageNumber = pdfPageNumber, // Pages are 1-indexed
                 DocumentType = "Pdf",
+                IsImageOnly = string.IsNullOrWhiteSpace(page.Text) && page.GetImages().Any(),
                 CreatedAt = DateTime.UtcNow,
                 UpdatedAt = DateTime.UtcNow,
                 Images = _mapper.Map(images)

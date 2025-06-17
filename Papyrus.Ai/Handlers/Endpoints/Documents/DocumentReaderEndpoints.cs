@@ -15,13 +15,13 @@ internal static class DocumentReaderEndpoints
     {
         var documentGroup = app.MapGroup("document");
 
-        documentGroup.MapGet("{documentGroupId}", GetPage)
+        documentGroup.MapGet("{documentGroupId}/{pageNumber}", GetPage)
             .WithTags(DocumentApiTags.DocumentReader);
     }
 
     private static async Task<Results<Ok<DocumentPageResponse>, NotFound, BadRequest<string>>> GetPage(
         [FromRoute] Guid documentGroupId,
-        [FromQuery] int? pageNumber,
+        [FromRoute] int pageNumber,
         [FromServices] IDocumentReaderService documentReaderService,
         [FromServices] IMapper mapper,
         [FromServices] ILoggerFactory loggerFactory,

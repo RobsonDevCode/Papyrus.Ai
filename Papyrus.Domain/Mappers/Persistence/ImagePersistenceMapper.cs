@@ -6,8 +6,6 @@ public partial class Mapper
 {
     public Image Map(ImageModel image)
     {
-        
-
         return new Image
         {
             Id = Guid.NewGuid(),
