@@ -9,7 +9,7 @@ public record PageModel
     public required int PageNumber { get; init; }
     public required string DocumentType { get; init; }
     
-    public List<ImageModel>? Images { get; init; }
+    public required string Images { get; init; }
     public DateTime CreatedAt { get; init; }
     public DateTime UpdatedAt { get; init; }
 }

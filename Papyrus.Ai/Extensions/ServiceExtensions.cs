@@ -78,5 +78,6 @@ public static class ServiceExtensions
         serviceCollection.AddScoped<IValidator<FormFile>, FormFileValidator>();
         serviceCollection.AddScoped<IValidator<WriteNoteRequest>, WriteNotesValidator>();
         serviceCollection.AddScoped<IValidator<WriteImageNoteRequest>, WriteImageNoteValidator>();
+        serviceCollection.AddScoped<IValidator<AddToNoteRequest>, AddToNoteRequestValidator>();
     }
 }

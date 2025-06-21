@@ -19,8 +19,8 @@ public sealed class PapyrusAiClient : IPapyrusAiClient
         _logger = logger;
     }
 
-    public async Task<OllamaResponse> CreateNoteAsync(string book, string prompt,
-       List<ImageModel>? images, CancellationToken cancellationToken)
+    public async Task<LlmResponse> CreateNoteAsync(string prompt,
+       string images, CancellationToken cancellationToken)
     {
         var requestBody = new AiRequestModel
         {
@@ -34,18 +34,14 @@ public sealed class PapyrusAiClient : IPapyrusAiClient
             }
         };
         
-        if (images != null)
-        {
-            requestBody.ImageBytes = images.Select(x => x.Bytes).ToArray();
-        }
-        
+      
         var json = JsonSerializer.Serialize(requestBody);
         var content = new StringContent(json, Encoding.UTF8, "application/json");
 
         using var response = await _httpClient.PostAsync("api/generate", content, cancellationToken);
         response.EnsureSuccessStatusCode();
 
-        var result = await response.Content.ReadFromJsonAsync<OllamaResponse>(cancellationToken);
+        var result = await response.Content.ReadFromJsonAsync<LlmResponse>(cancellationToken);
 
         if (result == null)
         {

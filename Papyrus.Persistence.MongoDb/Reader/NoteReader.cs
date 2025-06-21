@@ -11,7 +11,7 @@ public sealed class NoteReader : INoteReader
 
     public NoteReader(IMongoBookDbConnector connector)
     {
-        _noteCollection = connector.GetCollection<Note>(nameof(Note));
+        _noteCollection = connector.GetCollection<Note>("note");
     }
 
     public async Task<Note?> GetNoteAsync(Guid id, CancellationToken cancellationToken)
@@ -19,15 +19,15 @@ public sealed class NoteReader : INoteReader
         return await _noteCollection.Find(n => n.Id == id).SingleOrDefaultAsync(cancellationToken);
     }
 
-    public async Task<PagedResponse<Note>> GetPagedNotesAsync(Guid documentId, PaginationOptions options,
+    public async Task<PagedResponse<Note>> GetPagedNotesAsync(Guid id, PaginationOptions options,
         CancellationToken cancellationToken)
     {
-        var notes = await _noteCollection.Find(n => n.DocumentGroupId == documentId)
+        var notes = await _noteCollection.Find(n => n.Id == id)
             .Skip((options.Page - 1) * options.Size)
             .Limit(options.Size)
             .ToListAsync(cancellationToken);
 
-        var totalCount = await _noteCollection.CountDocumentsAsync(x => x.DocumentGroupId == documentId,
+        var totalCount = await _noteCollection.CountDocumentsAsync(x => x.DocumentGroupId == id,
             cancellationToken: cancellationToken);
 
         return new PagedResponse<Note>

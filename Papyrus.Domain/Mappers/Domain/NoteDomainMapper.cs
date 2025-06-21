@@ -1,4 +1,5 @@
 ﻿using Papyrus.Api.Contracts.Contracts.Requests;
+using Papyrus.Domain.Clients;
 using Papyrus.Domain.Models;
 using Papyrus.Domain.Models.Filters;
 using Papyrus.Domain.Models.Pagination;
@@ -13,7 +14,43 @@ public partial class Mapper
         {
             DocumentTypeId = request.DocumentGroupId,
             Page = request.Page,
-            Text = request.Text
+            Text = request.Text,
+            ImageReference = request.ImageReference
+        };
+    }
+
+    public EditNoteRequestModel MapToDomain(EditNoteRequest request)
+    {
+        return new EditNoteRequestModel
+        {
+            Id = request.Id,
+            DocumentGroupId = request.DocumentGroupId,
+            EditedNote = request.EditedNote,
+            Page = request.Page,
+        };
+    }
+
+    public NoteModel MapToDomain(Guid id, Guid groupId ,LlmResponse llmResponse, int pageNumber)
+    {
+        return new NoteModel
+        {
+            Id = id,
+            DocumentGroupId = groupId,
+            Note = llmResponse.Repsonse,
+            CreatedAt = llmResponse.CreatedAt,
+            UpdatedAt = llmResponse.CreatedAt,
+            PageReference = pageNumber
+        };
+    }
+
+    public UpdateNoteRequestModel MapToDomain(AddToNoteRequest request)
+    {
+        return new UpdateNoteRequestModel
+        {
+            NoteId = request.NoteId,
+            DocumentId = request.DocumentId,
+            Prompt = request.Prompt,
+            Page = request.Page,
         };
     }
 

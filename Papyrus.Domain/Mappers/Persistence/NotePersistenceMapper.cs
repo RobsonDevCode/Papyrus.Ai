@@ -6,7 +6,7 @@ namespace Papyrus.Domain.Mappers;
 
 public partial class Mapper
 {
-    public Note MapToPersistance(OllamaResponse response, PageModel pageModel)
+    public Note MapToPersistance(LlmResponse response, PageModel pageModel)
     {
         return new Note
         {

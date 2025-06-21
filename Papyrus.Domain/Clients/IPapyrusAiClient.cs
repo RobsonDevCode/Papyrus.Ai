@@ -5,6 +5,7 @@ namespace Papyrus.Domain.Clients;
 
 public interface IPapyrusAiClient
 {
-    Task<OllamaResponse> CreateNoteAsync(string book, string prompt,
-        List<ImageModel>? images, CancellationToken cancellationToken);
+    Task<LlmResponse> CreateNoteAsync(string prompt,
+        string images, CancellationToken cancellationToken);
+    
 }

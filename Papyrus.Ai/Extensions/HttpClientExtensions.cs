@@ -24,7 +24,7 @@ public static class HttpClientExtensions
         })
         .AddResilienceHandler("Ai", pipeline =>
         {
-            pipeline.AddTimeout(TimeSpan.FromMinutes(2)); //we have a long timeout because local LLMS are slow asf
+            pipeline.AddTimeout(TimeSpan.FromMinutes(4)); //we have a long timeout because local LLMS are slow asf
 
             pipeline.AddRetry(new HttpRetryStrategyOptions
             {

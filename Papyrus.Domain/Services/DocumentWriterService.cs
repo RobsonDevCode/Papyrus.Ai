@@ -8,6 +8,7 @@ using Papyrus.Perstistance.Interfaces.Contracts;
 using Papyrus.Perstistance.Interfaces.Reader;
 using Papyrus.Perstistance.Interfaces.Writer;
 using UglyToad.PdfPig;
+using PdfExtensions = Papyrus.Domain.Extensions.PdfExtensions;
 
 namespace Papyrus.Domain.Services;
 
@@ -46,7 +47,6 @@ public sealed class DocumentWriterService : IDocumentWriterService
         var groupId = Guid.NewGuid();
         document.Name = document.Name.Replace(".pdf", "");
         
-        var pagesToSave = new List<Page>(totalPages);
 
         for (var i = 0; i < totalPages; i++)
         {
@@ -58,7 +58,7 @@ public sealed class DocumentWriterService : IDocumentWriterService
                 _logger.LogWarning("Cannot extract page {pageNum} as its null skipping it.", pdfPageNumber);
                 continue;
             }
-
+            
             if (string.IsNullOrWhiteSpace(page.Text) && page.GetImages().Any())
             {
                 var imageOnlyPage = new Page
@@ -67,47 +67,31 @@ public sealed class DocumentWriterService : IDocumentWriterService
                     DocumentName = document.Name,
                     Content = null,
                     PageNumber = pdfPageNumber, // Pages are 1-indexed
-                    DocumentType = "Pdf",
-                    IsImageOnly = string.IsNullOrWhiteSpace(page.Text) && page.GetImages().Any(),
+                    Type = "pdf",
+                    IsImageOnly = true,
                     CreatedAt = DateTime.UtcNow,
                     UpdatedAt = DateTime.UtcNow,
-                    Images = page.ExtractImages(pdfPageNumber)
+                    PageImage = PdfExtensions.ConvertPdfPageToImage(pdfPageNumber, document.PdfStream),
                 };
                 
-                pagesToSave.Add(imageOnlyPage);
+                await _documentWriter.WriteDocumentAsync(imageOnlyPage, cancellationToken);
                 continue;
             }
             
-            
-            (IEnumerator<string?> orderedContent, List<ImageModel> images) = page.ExtractContentFromPage(pdfPageNumber);
-           
             var mappedPage = new Page
             {
                 DocumentGroupId = groupId,
                 DocumentName = document.Name,
-                Content = string.Join(" ", orderedContent),
+                Content = string.Join(" ", page.GetWords()),
                 PageNumber = pdfPageNumber, // Pages are 1-indexed
-                DocumentType = "Pdf",
                 IsImageOnly = string.IsNullOrWhiteSpace(page.Text) && page.GetImages().Any(),
                 CreatedAt = DateTime.UtcNow,
                 UpdatedAt = DateTime.UtcNow,
-                Images = _mapper.Map(images)
+                PageImage = PdfExtensions.ConvertPdfPageToImage(pdfPageNumber, document.PdfStream),
+                Type = "pdf"
             };
 
-            pagesToSave.Add(mappedPage);
-
-            // Force cleanup of Letter objects after 5 pages
-            if (i % 20 == 0)
-            {
-                GC.Collect();
-                GC.WaitForPendingFinalizers();
-            }
+            await _documentWriter.WriteDocumentAsync(mappedPage, cancellationToken);
         }
-        
-        await Parallel.ForAsync(0, pagesToSave.Count, new ParallelOptions
-        {
-            MaxDegreeOfParallelism = Environment.ProcessorCount,
-            CancellationToken = cancellationToken
-        }, async (i, ctx) => { await _documentWriter.WriteDocumentAsync(pagesToSave[i], ctx); });
     }
 }

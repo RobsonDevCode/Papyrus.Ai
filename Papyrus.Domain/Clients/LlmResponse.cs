@@ -2,7 +2,7 @@
 
 namespace Papyrus.Domain.Clients;
 
-public record OllamaResponse
+public record LlmResponse
 {
     [JsonPropertyName("response")]
     public string Repsonse  { get; set; }

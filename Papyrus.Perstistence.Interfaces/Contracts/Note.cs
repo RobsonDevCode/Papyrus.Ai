@@ -5,6 +5,7 @@ namespace Papyrus.Perstistance.Interfaces.Contracts;
 
 public record Note
 {
+    
     [BsonRepresentation(BsonType.String)]    
     public Guid DocumentId { get; init; } = Guid.NewGuid();
 

@@ -4,6 +4,7 @@ namespace Papyrus.Perstistance.Interfaces.Reader;
 
 public interface IDocumentReader
 {
-    Task<Page?> GetPageById(Guid documentGroupId, int page, CancellationToken cancellationToken);
+    Task<Page?> GetByIdAsync(Guid id, CancellationToken cancellationToken);
+    Task<Page?> GetByGroupIdAsync(Guid documentGroupId, int page, CancellationToken cancellationToken);
     Task<bool> ExistsAsync(string documentName, CancellationToken cancellationToken);
 }

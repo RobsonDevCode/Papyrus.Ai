@@ -16,11 +16,6 @@ public sealed class DocumentWriter : IDocumentWriter
 
     public async Task WriteDocumentAsync(Page page, CancellationToken cancellationToken)
     {
-        if (string.IsNullOrEmpty(page.Content))
-        {
-            throw new ArgumentNullException($"{nameof(Page)} content cannot be null or empty.");
-        }
-
         await _pagesCollection.InsertOneAsync(page, null, cancellationToken);
     }
 }

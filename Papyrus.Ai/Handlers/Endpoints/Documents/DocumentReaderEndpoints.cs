@@ -35,7 +35,7 @@ internal static class DocumentReaderEndpoints
             [Filter] = documentGroupId.ToString()
         });
 
-        var response = await documentReaderService.GetPageByIdAsync(documentGroupId, pageNumber, cancellationToken);
+        var response = await documentReaderService.GetByGroupIdAsync(documentGroupId, pageNumber, cancellationToken);
 
         if (response is null)
         {

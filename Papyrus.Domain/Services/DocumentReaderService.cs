@@ -20,21 +20,33 @@ public sealed class DocumentReaderService : IDocumentReaderService
         _mapper = mapper;
     }
 
-    public async Task<PageModel?> GetPageByIdAsync(Guid documentGroupId, int? page,
+    public async Task<PageModel?> GetByIdAsync(Guid pageId, CancellationToken cancellationToken)
+    {
+        return await _memoryCache.GetOrCreateAsync(pageId, async entry =>
+        {
+            entry.SetSlidingExpiration(TimeSpan.FromMinutes(1));
+            entry.SetAbsoluteExpiration(TimeSpan.FromMinutes(3));
+
+            var page = await _documentReader.GetByIdAsync(pageId, cancellationToken);
+            return page is null ? null : _mapper.MapToDomain(page);
+        });
+    } 
+    
+    public async Task<PageModel?> GetByGroupIdAsync(Guid documentGroupId, int? pageNumber,
         CancellationToken cancellationToken)
     {
-        if (page is null or 0)
+        if (pageNumber is null or 0)
         {
-            page = 1;
+            pageNumber = 1;
         }
 
-        return await _memoryCache.GetOrCreateAsync($"{documentGroupId}-{page}", async entry =>
+        return await _memoryCache.GetOrCreateAsync($"{documentGroupId}-{pageNumber}", async entry =>
         {
             entry.Size = 100;
             entry.SetAbsoluteExpiration(TimeSpan.FromMinutes(2));
 
-            var response = await _documentReader.GetPageById(documentGroupId, (int)page, cancellationToken);
-            return response is null ? null : _mapper.MapToDomain(response);
+            var page = await _documentReader.GetByGroupIdAsync(documentGroupId, (int)pageNumber, cancellationToken);
+            return page is null ? null : _mapper.MapToDomain(page);
         });
     }
 }

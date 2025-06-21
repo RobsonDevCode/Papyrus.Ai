@@ -17,7 +17,12 @@ public sealed class DocumentReader : IDocumentReader
         _logger = logger;
     }
 
-    public async Task<Page?> GetPageById(Guid documentGroupId, int page, CancellationToken cancellationToken)
+    public async Task<Page?> GetByIdAsync(Guid id, CancellationToken cancellationToken)
+    {
+        return await _pageCollection.Find(p => p.DocumentId == id).SingleOrDefaultAsync(cancellationToken);
+    }
+
+    public async Task<Page?> GetByGroupIdAsync(Guid documentGroupId, int page, CancellationToken cancellationToken)
     {
         if (page == 0)
         {
