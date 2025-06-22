@@ -6,5 +6,5 @@ namespace Papyrus.Domain.Mappers;
 
 public interface INotePersistenceMapper
 {
-   Note MapToPersistance(LlmResponse response, PageModel pageModel);
+   Note MapToPersistence(LlmResponse response, PageModel pageModel);
 }
