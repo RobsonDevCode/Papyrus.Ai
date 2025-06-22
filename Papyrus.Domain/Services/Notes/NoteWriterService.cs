@@ -8,7 +8,6 @@ using Papyrus.Domain.Models;
 using Papyrus.Domain.Models.Filters;
 using Papyrus.Domain.Services.Interfaces;
 using Papyrus.Domain.Services.Interfaces.Notes;
-using Papyrus.Perstistance.Interfaces.Contracts;
 using Papyrus.Perstistance.Interfaces.Reader;
 using Papyrus.Perstistance.Interfaces.Writer;
 
@@ -50,20 +49,20 @@ public sealed class NoteWriterService : INoteWriterService
 
         if (request.ImageReference is not null)
         {
-            //return await WriteImageFocusedNoteAsync((int)request.ImageReference, page, cancellationToken);
+            _logger.LogInformation("Writing an image focused note");
+            return await WriteImageFocusedNoteAsync((int)request.ImageReference, page, cancellationToken);
         }
 
         if (!string.IsNullOrWhiteSpace(request.Text))
         {
-           // return await WriteTextSelectedNoteAsync(request.Text, page, cancellationToken);
+            _logger.LogInformation("Writing note on selected text");
+           return await WriteTextSelectedNoteAsync(request.Text, page,cancellationToken);
         }
 
-        //write note on entire page
-        var prompt = page.Images is { Length: > 0 }
-            ? PromptGenerator.PromptTextWithImage(page.DocumentName, page.Content)
-            : PromptGenerator.BasicNotePrompt(page.DocumentName, page.Content);
+        _logger.LogInformation("Writing note on selected page");
+        var prompt = PromptGenerator.PagePrompt(page.DocumentName);
 
-        var llmResponse = await _papyrusAiClient.CreateNoteAsync(prompt, page.Images, cancellationToken);
+        var llmResponse = await _papyrusAiClient.CreateNoteAsync(prompt, page.Image, cancellationToken);
 
         var note = _mapper.MapToPersistance(llmResponse, page);
 
@@ -102,23 +101,25 @@ public sealed class NoteWriterService : INoteWriterService
         }
 
         var prompt = PromptGenerator.ImproveNotePrompt(note.Text, request.Prompt, page.DocumentName, page.Content);
-        var llmResponse = await _papyrusAiClient.CreateNoteAsync(prompt, page.Images, cancellationToken);
+        var llmResponse = await _papyrusAiClient.CreateNoteAsync(prompt, page.Image, cancellationToken);
 
         return _mapper.MapToDomain(note.Id, page.DocumentGroupId, llmResponse, page.PageNumber);
     }
 
-    /*private async Task<NoteModel> WriteImageFocusedNoteAsync(int imageReference, PageModel page,
+    private async Task<NoteModel> WriteImageFocusedNoteAsync(int imageReference, PageModel page,
         CancellationToken cancellationToken)
     {
-        if (page.Images is not { Length: > 0 })
+        if (string.IsNullOrWhiteSpace(page.Image))
         {
-            throw new Exception($"No images found on {page.PageNumber} in {page.DocumentName}");
+            throw new Exception($"No image found on {page.PageNumber} in {page.DocumentName}");
         }
 
-        var image = page.Images[imageReference];
-
-        var llmResponse = await _papyrusAiClient.CreateNoteAsync(
-            PromptGenerator.ImageFocusedNote(page.DocumentName, page.Content), image, cancellationToken);
+        if (imageReference > page.ImageCount)
+        {
+            throw new Exception($"Image reference {imageReference} is out of range");
+        }
+        
+        var llmResponse = await _papyrusAiClient.CreateNoteAsync(PromptGenerator.ImageFocusedNote(page.DocumentName, imageReference), page.Image, cancellationToken);
 
         var note = _mapper.MapToPersistance(llmResponse, page);
         await _noteWriter.SaveNoteAsync(note, cancellationToken);
@@ -129,26 +130,14 @@ public sealed class NoteWriterService : INoteWriterService
     private async Task<NoteModel> WriteTextSelectedNoteAsync(string text, PageModel page,
         CancellationToken cancellationToken)
     {
-        var images = new List<ImageModel>();
-        if (PdfExtensions.TryExtractImageReferences(text, out var imagesReferences)
-            && page.Images != null)
-        {
-           // images.AddRange(imagesReferences.Select(imageReference => page.Images[imageReference]));
-        }
-        else
-        {
-            _logger.LogInformation("No images found on {pageNumber} in {documentName}", page.PageNumber,
-                page.DocumentName);
-        }
+        var prompt = string.IsNullOrWhiteSpace(page.Image)
+            ? PromptGenerator.BasicNotePrompt(page.DocumentName, text)
+            : PromptGenerator.PromptTextWithImage(page.DocumentName, text);
 
-        var prompt = images.Count > 0
-            ? PromptGenerator.PromptTextWithImage(page.DocumentName, text)
-            : PromptGenerator.BasicNotePrompt(page.DocumentName, text);
-
-        var llmResponse = await _papyrusAiClient.CreateNoteAsync(prompt, images.ToArray(), cancellationToken);
+        var llmResponse = await _papyrusAiClient.CreateNoteAsync(prompt, page.Image, cancellationToken);
         var note = _mapper.MapToPersistance(llmResponse, page);
         await _noteWriter.SaveNoteAsync(note, cancellationToken);
 
         return _mapper.MapToDomain(note);
-    }*/
+    }
 }

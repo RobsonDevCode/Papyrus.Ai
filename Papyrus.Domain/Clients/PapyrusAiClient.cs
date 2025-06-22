@@ -2,7 +2,7 @@
 using System.Text;
 using System.Text.Json;
 using Microsoft.Extensions.Logging;
-using Papyrus.Domain.Models;
+using Papyrus.Domain.Clients.Constants;
 using Papyrus.Domain.Models.Client;
 
 namespace Papyrus.Domain.Clients;
@@ -10,36 +10,32 @@ namespace Papyrus.Domain.Clients;
 public sealed class PapyrusAiClient : IPapyrusAiClient
 {
     private readonly HttpClient _httpClient;
-    private const string _model = "gemma2:2b";
-    private readonly ILogger<PapyrusAiClient> _logger;
 
-    public PapyrusAiClient(HttpClient httpClient, ILogger<PapyrusAiClient> logger)
+    public PapyrusAiClient(HttpClient httpClient)
     {
         _httpClient = httpClient;
-        _logger = logger;
     }
 
     public async Task<LlmResponse> CreateNoteAsync(string prompt,
-       string images, CancellationToken cancellationToken)
+        string? image, CancellationToken cancellationToken)
     {
-        var requestBody = new AiRequestModel
-        {
-            Model = _model,
-            Prompt = prompt,
-            Stream = false,
-            Options = new AiRequestOptionsModel
-            {
-                Tempurature = 0.1,
-                TopP = 0.9
-            }
-        };
-        
-      
+        var requestBody = BuildRequestBody(prompt, image);
+
         var json = JsonSerializer.Serialize(requestBody);
         var content = new StringContent(json, Encoding.UTF8, "application/json");
 
-        using var response = await _httpClient.PostAsync("api/generate", content, cancellationToken);
-        response.EnsureSuccessStatusCode();
+        using var response = await _httpClient.PostAsync("", content, cancellationToken);
+        if (!response.IsSuccessStatusCode)
+        {
+            var error = await response.Content.ReadFromJsonAsync<Error>(cancellationToken: cancellationToken);
+            if (error == null)
+            {
+                throw new HttpRequestException($"Failed to create note: {json}");
+            }
+
+            throw new HttpRequestException(
+                $"Received response {response.StatusCode}  with error message: {error.Message}");
+        }
 
         var result = await response.Content.ReadFromJsonAsync<LlmResponse>(cancellationToken);
 
@@ -49,5 +45,50 @@ public sealed class PapyrusAiClient : IPapyrusAiClient
         }
 
         return result;
+    }
+
+    private AiRequestModel BuildRequestBody(string prompt, string? image = null)
+    {
+        var requestBody = new AiRequestModel
+        {
+            Contents =
+            [
+                new Content
+                {
+                    Parts =
+                    [
+                        new Part
+                        {
+                            Text = prompt
+                        }
+                    ]
+                }
+            ],
+            GenerationConfig = new GenerationConfig
+            {
+                Temperature = LlmSettings.Temperature,
+                TopK = LlmSettings.TopK,
+                TopP = LlmSettings.TopP,
+                ThinkingConfig = new ThinkingConfig
+                {
+                    IncludeThoughts = false,
+                    ThinkingBudget = LlmSettings.ThinkingBudget
+                }
+            }
+        };
+        
+        if (!string.IsNullOrWhiteSpace(image))
+        {
+            requestBody.Contents[0].Parts.Add(new Part
+            {
+                InlineData = new InlineData
+                {
+                    Data = image,
+                    MimeType = "image/png"
+                }
+            });
+        }
+        
+        return requestBody;
     }
 }

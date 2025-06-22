@@ -1,6 +1,7 @@
 ﻿namespace Papyrus.Ai.Configuration;
 
-public class PapyrusAiClientSettings
+public record PapyrusAiClientSettings
 {
-    public required Uri BaseUrl { get; set; }
+    public required Uri BaseUrl { get; init; }
+    public required string ApiKey { get; init; }
 }

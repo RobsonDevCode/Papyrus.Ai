@@ -14,7 +14,8 @@ public partial class Mapper
             Content = page.Content,
             PageNumber = page.PageNumber,
             DocumentType = page.Type,
-            Images = page.PageImage,
+            ImageCount = page.ImageCount,
+            Image = page.PageImage,
             CreatedAt = page.CreatedAt,
             UpdatedAt = page.UpdatedAt,
             Author = page.Author

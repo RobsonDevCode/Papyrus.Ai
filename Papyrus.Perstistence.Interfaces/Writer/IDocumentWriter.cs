@@ -4,5 +4,7 @@ namespace Papyrus.Perstistance.Interfaces.Writer;
 
 public interface IDocumentWriter
 {
-    Task WriteDocumentAsync(Page document, CancellationToken cancellationToken);
+    Task InsertAsync(Page document, CancellationToken cancellationToken);
+
+    Task InsertManyAsync(IEnumerable<Page> pages, CancellationToken cancellationToken);
 }

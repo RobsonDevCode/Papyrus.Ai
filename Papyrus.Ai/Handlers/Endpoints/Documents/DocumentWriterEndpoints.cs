@@ -10,7 +10,7 @@ namespace Papyrus.Ai.Handlers.Endpoints.Documents;
 
 internal static class DocumentWriterEndpoints
 {
-    internal static WebApplication MapDocumentWriterEndpoints(this WebApplication app)
+    internal static void MapDocumentWriterEndpoints(this WebApplication app)
     {
         var documentGroup = app.MapGroup("document");
 
@@ -19,7 +19,6 @@ internal static class DocumentWriterEndpoints
             .Accepts<IFormFile>("multipart/form-data")
             .WithTags(DocumentApiTags.DocumentWriter);
 
-        return app;
     }
 
     private static async Task<Results<Ok, BadRequest<string>>> SaveDocumentAsync(

@@ -14,8 +14,13 @@ public sealed class DocumentWriter : IDocumentWriter
         _pagesCollection = connector.ConnectToPages();
     }
 
-    public async Task WriteDocumentAsync(Page page, CancellationToken cancellationToken)
+    public async Task InsertAsync(Page page, CancellationToken cancellationToken)
     {
         await _pagesCollection.InsertOneAsync(page, null, cancellationToken);
+    }
+
+    public async Task InsertManyAsync(IEnumerable<Page> pages, CancellationToken cancellationToken)
+    {
+        await _pagesCollection.InsertManyAsync(pages, null, cancellationToken);
     }
 }

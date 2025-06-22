@@ -20,7 +20,8 @@ public static class HttpClientExtensions
         services.AddHttpClient<IPapyrusAiClient, PapyrusAiClient>(client =>
         {
             client.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
-            client.BaseAddress = options.BaseUrl;
+            var baseUrl = options.BaseUrl + options.ApiKey;
+            client.BaseAddress = new Uri(baseUrl);
         })
         .AddResilienceHandler("Ai", pipeline =>
         {

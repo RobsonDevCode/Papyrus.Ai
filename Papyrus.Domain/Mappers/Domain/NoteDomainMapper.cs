@@ -36,9 +36,9 @@ public partial class Mapper
         {
             Id = id,
             DocumentGroupId = groupId,
-            Note = llmResponse.Repsonse,
+            Note = llmResponse.Candidates.FirstOrDefault()?.Content.Parts.FirstOrDefault()?.Text,
             CreatedAt = llmResponse.CreatedAt,
-            UpdatedAt = llmResponse.CreatedAt,
+            UpdatedAt = llmResponse.UpdatedAt,
             PageReference = pageNumber
         };
     }

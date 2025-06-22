@@ -11,7 +11,7 @@ public partial class Mapper
         return new Note
         {
             DocumentGroupId = pageModel.DocumentGroupId,
-            Text = response.Repsonse,
+            Text = response.Candidates.FirstOrDefault()?.Content.Parts.FirstOrDefault()?.Text,
             Title = pageModel.DocumentName,
             RelatedPage = pageModel.PageNumber,
             CreatedAt = response.CreatedAt,
