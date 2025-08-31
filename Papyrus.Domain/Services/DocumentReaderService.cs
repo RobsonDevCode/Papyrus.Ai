@@ -50,7 +50,7 @@ public sealed class DocumentReaderService : IDocumentReaderService
         });
     }
 
-    public async Task<IEnumerable<PageModel>> GetPages(Guid documentGroupId, int[] pageNumbers, CancellationToken cancellationToken)
+    public async Task<(IEnumerable<PageModel> Pages, int TotalPages)> GetPages(Guid documentGroupId, int[] pageNumbers, CancellationToken cancellationToken)
     {
         for (var i = 0; i < pageNumbers.Length; i++)
         {
@@ -61,12 +61,12 @@ public sealed class DocumentReaderService : IDocumentReaderService
         }
         
         var response = await _documentReader.GetPages(documentGroupId, pageNumbers, cancellationToken);
-        if (!response.Any())
+        if (!response.Pages.Any())
         {
-            return [];
+            return ([], 0);
         }
         
-        var result = _mapper.MapToDomain(response);
-        return result;
+        var result = _mapper.MapToDomain(response.Pages);
+        return (result, response.TotalPages);
     }
 }

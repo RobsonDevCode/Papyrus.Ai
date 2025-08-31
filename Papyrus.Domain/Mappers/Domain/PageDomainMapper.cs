@@ -15,14 +15,14 @@ public partial class Mapper
             PageNumber = page.PageNumber,
             DocumentType = page.Type,
             ImageCount = page.ImageCount,
-            Image = page.ImageUrl,
+            ImageUrl = page.ImageUrl,
             CreatedAt = page.CreatedAt,
             UpdatedAt = page.UpdatedAt,
             Author = page.Author
         };
     }
 
-    public IEnumerable<PageModel> MapToDomain(IEnumerable<Page> pages)
+    public IEnumerable<PageModel> MapToDomain(IEnumerable<Page?> pages)
     {
         return pages.Select(MapToDomain);
     }

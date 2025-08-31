@@ -10,7 +10,6 @@ public record Pagination
     }
     
     public int Page { get; init; }
-
     public int Size { get; init; }
     public long Total { get; init; } 
 }

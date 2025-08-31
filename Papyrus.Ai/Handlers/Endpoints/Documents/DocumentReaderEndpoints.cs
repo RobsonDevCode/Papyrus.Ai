@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.AspNetCore.Mvc;
 using Papyrus.Ai.Constants;
+using Papyrus.Api.Contracts.Contracts.Api;
 using Papyrus.Api.Contracts.Contracts.Responses;
 using Papyrus.Domain.Mappers;
 using Papyrus.Domain.Services.Interfaces;
@@ -49,7 +50,7 @@ internal static class DocumentReaderEndpoints
         return TypedResults.Ok(mapper.MapToResponse(response));
     }
 
-    private static async Task<Ok<IEnumerable<DocumentPageResponse>>> GetPages(
+    private static async Task<Ok<DocumentPagesResponse>> GetPages(
         [FromRoute] Guid documentGroupId,
         [FromQuery] int[] pageNumbers,
         [FromServices] IDocumentReaderService documentReaderService,
@@ -68,6 +69,6 @@ internal static class DocumentReaderEndpoints
         
         var response = await documentReaderService.GetPages(documentGroupId, pageNumbers, cancellationToken);
         
-        return TypedResults.Ok(mapper.MapToResponse(response));
+        return TypedResults.Ok(mapper.MapToResponse(response.Pages, response.TotalPages));
     }
 }

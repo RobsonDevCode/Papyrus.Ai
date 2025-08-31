@@ -16,7 +16,7 @@ public record PageModel
     
     public required int ImageCount { get; init; }
     
-    public required string? Image { get; init; }
+    public required string? ImageUrl { get; init; }
     
     public DateTime CreatedAt { get; init; }
     

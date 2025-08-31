@@ -2,9 +2,9 @@
 
 public record DocumentPageResponse
 {
-    public Guid DocumentGroupId { get; init; }
+    public required Guid DocumentGroupId { get; init; }
     public required string DocumentName { get; init; }
-    public string Author { get; init; }
+    public string? Author { get; init; }
 
     public required string Content { get; init; }
 
@@ -14,9 +14,10 @@ public record DocumentPageResponse
     
     public required int ImageCount { get; init; }
         
-    public required string? Image { get; init; }
+    public required string? ImageUrl { get; init; }
+    
 
-    public DateTime CreatedAt { get; init; }
+    public required DateTime CreatedAt { get; init; }
 
-    public DateTime UpdatedAt { get; init; }
+    public required DateTime UpdatedAt { get; init; }
 }

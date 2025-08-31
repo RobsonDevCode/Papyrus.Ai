@@ -19,12 +19,22 @@ public partial class Mapper
             Author = pageModel.Author,
             DocumentType = pageModel.DocumentType,
             ImageCount = pageModel.ImageCount,
-            Image = pageModel.Image
+            ImageUrl = pageModel.ImageUrl
         };
     }
 
     public IEnumerable<DocumentPageResponse> MapToResponse(IEnumerable<PageModel> pages)
     {
         return pages.Select(MapToResponse);
+    }
+
+    public DocumentPagesResponse MapToResponse(IEnumerable<PageModel> pages, int totalPages)
+    {
+        var mappedPages = pages.Select(MapToResponse);
+        return new DocumentPagesResponse
+        {
+            Pages = mappedPages,
+            TotalPages = totalPages
+        };
     }
 }

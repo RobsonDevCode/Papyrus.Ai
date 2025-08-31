@@ -43,10 +43,14 @@ public sealed class DocumentReader : IDocumentReader
         return result;
     }
 
-    public async Task<IEnumerable<Page?>> GetPages(Guid documentGroupId, int[] pageNumbers, CancellationToken cancellationToken)
+    public async Task<(IEnumerable<Page?> Pages, int TotalPages)> GetPages(Guid documentGroupId, int[] pageNumbers, CancellationToken cancellationToken)
     {
-        return await _pageCollection.Find(x => x.DocumentGroupId == documentGroupId
+        var pages = await _pageCollection.Find(x => x.DocumentGroupId == documentGroupId
                                                && pageNumbers.Contains(x.PageNumber))
                                                .ToListAsync(cancellationToken);
+        
+        var totalPages = await _pageCollection.Find(x => x.DocumentGroupId == documentGroupId).CountDocumentsAsync(cancellationToken);
+        
+        return (pages, (int)totalPages);
     }
 }

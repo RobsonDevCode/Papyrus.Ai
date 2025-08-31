@@ -7,5 +7,5 @@ public interface IDocumentReader
     Task<Page?> GetByIdAsync(Guid id, CancellationToken cancellationToken);
     Task<Page?> GetByGroupIdAsync(Guid documentGroupId, int page, CancellationToken cancellationToken);
     Task<bool> ExistsAsync(string documentName, CancellationToken cancellationToken);
-    Task<IEnumerable<Page?>> GetPages(Guid documentGroupId, int[] pageNumbers, CancellationToken cancellationToken);
+    Task<(IEnumerable<Page?> Pages, int TotalPages)> GetPages(Guid documentGroupId, int[] pageNumbers, CancellationToken cancellationToken);
 }
