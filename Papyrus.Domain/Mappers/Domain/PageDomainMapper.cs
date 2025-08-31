@@ -1,7 +1,7 @@
 ﻿using Papyrus.Domain.Models;
-using Papyrus.Perstistance.Interfaces.Contracts;
+using Papyrus.Persistance.Interfaces.Contracts;
 
-namespace Papyrus.Domain.Mappers;
+namespace Papyrus.Mappers;
 
 public partial class Mapper
 {
@@ -15,12 +15,15 @@ public partial class Mapper
             PageNumber = page.PageNumber,
             DocumentType = page.Type,
             ImageCount = page.ImageCount,
-            Image = page.PageImage,
+            Image = page.ImageUrl,
             CreatedAt = page.CreatedAt,
             UpdatedAt = page.UpdatedAt,
             Author = page.Author
         };
     }
-    
-    
+
+    public IEnumerable<PageModel> MapToDomain(IEnumerable<Page> pages)
+    {
+        return pages.Select(MapToDomain);
+    }
 }

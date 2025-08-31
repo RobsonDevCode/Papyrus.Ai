@@ -2,7 +2,7 @@
 using Papyrus.Domain.Mappers;
 using Papyrus.Domain.Models;
 using Papyrus.Domain.Services.Interfaces;
-using Papyrus.Perstistance.Interfaces.Reader;
+using Papyrus.Persistance.Interfaces.Reader;
 
 namespace Papyrus.Domain.Services;
 
@@ -48,5 +48,25 @@ public sealed class DocumentReaderService : IDocumentReaderService
             var page = await _documentReader.GetByGroupIdAsync(documentGroupId, (int)pageNumber, cancellationToken);
             return page is null ? null : _mapper.MapToDomain(page);
         });
+    }
+
+    public async Task<IEnumerable<PageModel>> GetPages(Guid documentGroupId, int[] pageNumbers, CancellationToken cancellationToken)
+    {
+        for (var i = 0; i < pageNumbers.Length; i++)
+        {
+            if (pageNumbers[i] == 0)
+            {
+                pageNumbers[i] = 1;
+            } 
+        }
+        
+        var response = await _documentReader.GetPages(documentGroupId, pageNumbers, cancellationToken);
+        if (!response.Any())
+        {
+            return [];
+        }
+        
+        var result = _mapper.MapToDomain(response);
+        return result;
     }
 }

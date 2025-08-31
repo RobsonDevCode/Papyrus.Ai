@@ -3,7 +3,7 @@
 public record PageModel
 {
     public Guid DocumentGroupId { get; init; }
-    
+    public Guid ChatId { get; init; }
     public required string DocumentName { get; init; }
     
     public string Author { get; init; }

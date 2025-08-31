@@ -1,10 +1,10 @@
 ﻿using Papyrus.Domain.Clients;
 using Papyrus.Domain.Models;
-using Papyrus.Perstistance.Interfaces.Contracts;
+using Papyrus.Persistance.Interfaces.Contracts;
 
 namespace Papyrus.Domain.Mappers;
 
 public interface INotePersistenceMapper
 {
-   Note MapToPersistence(LlmResponse response, PageModel pageModel);
+   Note MapToPersistence(LlmResponseModel responseModel, PageModel pageModel);
 }

@@ -9,4 +9,6 @@ public static class LoggingCategories
     public static string NoteId = nameof(NoteId);
     public static string Operation = nameof(Operation);
     public static string PdfPage = nameof(PdfPage);
+    public static string PageNumbers = nameof(PageNumbers);
+    
 }

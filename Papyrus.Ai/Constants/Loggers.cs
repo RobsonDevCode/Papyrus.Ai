@@ -7,4 +7,5 @@ public static class Loggers
 
     public const string NoteWriter = nameof(NoteWriter);
     public const string NoteReader = nameof(NoteReader);
+    public const string ImageReader = nameof(ImageReader);
 }

@@ -1,23 +1,17 @@
-﻿using Papyrus.Domain.Models;
-using Papyrus.Perstistance.Interfaces.Contracts;
+﻿using Papyrus.Persistance.Interfaces.Contracts;
 
-namespace Papyrus.Domain.Mappers;
+namespace Papyrus.Mappers;
 public partial class Mapper 
 {
-    public Image Map(ImageModel image)
+    public Image MapToPersistence(byte[] imageBytes, Guid documentId, string documentName, int pageNumber)
     {
         return new Image
         {
             Id = Guid.NewGuid(),
-            Bytes = image.Bytes,
-            Width = image.Width,
-            Height = image.Height,
-            PageNumber = image.PageReference,
+            DocumentGroupId = documentId,
+            DocumentName = documentName,
+            Bytes = Convert.ToBase64String(imageBytes),
+            PageNumber = pageNumber,
         };
-    }
-
-    public List<Image> Map(List<ImageModel> images)
-    {
-        return images.Select(Map).ToList();
     }
 }

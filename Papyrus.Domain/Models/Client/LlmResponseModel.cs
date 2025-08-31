@@ -3,10 +3,10 @@ using Papyrus.Domain.Models.Client;
 
 namespace Papyrus.Domain.Clients;
 
-public record LlmResponse
+public record LlmResponseModel
 {
    [JsonPropertyName("candidates")]
-   public Candidates[] Candidates { get; init; }
+   public required Candidates[] Candidates { get; init; }
    
    [JsonPropertyName("responseId")]
    public string ResponseId { get; init; }

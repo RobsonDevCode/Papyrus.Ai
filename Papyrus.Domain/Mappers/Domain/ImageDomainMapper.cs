@@ -1,18 +1,23 @@
 ﻿using Papyrus.Domain.Models;
-using Papyrus.Perstistance.Interfaces.Contracts;
+using Papyrus.Persistance.Interfaces.Contracts;
 
-namespace Papyrus.Domain.Mappers;
+namespace Papyrus.Mappers;
 
 public partial class Mapper
 {
-    public ImageModel MapToDomain(Image image)
+    public ImageModel? MapToDomain(Image? image)
     {
+        if (image == null)
+        {
+            return null;
+        }
+
         return new ImageModel
         {
-            Bytes = image.Bytes,
-            Width = image.Width,
-            Height = image.Height,
-            PageReference = image.PageNumber
+            Id = image.Id,
+            DocumentId = image.DocumentGroupId,
+            Bytes = Convert.FromBase64String(image.Bytes),
+            DocumentName = image.DocumentName
         };
     }
 }

@@ -2,7 +2,7 @@
 using MongoDB.Bson;
 using MongoDB.Bson.Serialization.Attributes;
 
-namespace Papyrus.Perstistance.Interfaces.Contracts;
+namespace Papyrus.Persistance.Interfaces.Contracts;
 
 public record Page
 {
@@ -23,7 +23,7 @@ public record Page
     
     public int ImageCount { get; init; }
     
-    public string? PageImage { get; set; }
+    public string? ImageUrl { get; set; }
     
     public required bool IsImageOnly { get; init; }
     

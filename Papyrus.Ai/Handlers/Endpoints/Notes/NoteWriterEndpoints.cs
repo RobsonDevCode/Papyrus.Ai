@@ -18,7 +18,6 @@ internal static class NoteWriterEndpoints
         var noteGroup = app.MapGroup("notes");
         
         noteGroup.MapPost("", WriteNote);
-        noteGroup.MapPost("redo", AddToNoteWithPrompt);
         noteGroup.MapPost("update", UpdateNote);
     }
 
@@ -56,41 +55,6 @@ internal static class NoteWriterEndpoints
         return TypedResults.Ok(mappedToResponse);
     }
 
-    private static async Task<Results<Ok<NoteResponse>, BadRequest<string>>> AddToNoteWithPrompt(
-        [FromBody] AddToNoteRequest request,
-        [FromServices] IValidator<AddToNoteRequest> validator,
-        [FromServices] INoteWriterService writerService,
-        [FromServices] IMapper mapper,
-        [FromServices] ILoggerFactory loggerFactory,
-        CancellationToken cancellationToken)
-    {
-        var logger = loggerFactory.CreateLogger(Loggers.NoteWriter);
-        using var _ = logger.BeginScope(new Dictionary<string, object>
-        {
-            [Operation] = "Update Note with prompt",
-            [Filter] = request
-        });
-        
-        using var cts = new CancellationTokenSource(TimeSpan.FromMinutes(3));
-        using var combinedCts = CancellationTokenSource.CreateLinkedTokenSource(
-            cancellationToken,      
-            cts.Token      
-        );
-        
-        logger.LogInformation("Starting update note with prompt request");
-        var validationResult = await validator.ValidateAsync(request, cancellationToken);
-        if (!validationResult.IsValid)
-        {
-            var errors = string.Join(" | ", validationResult.Errors.Select(x => x.ErrorMessage));
-            return TypedResults.BadRequest(errors);
-        }
-
-        var mappedRequest = mapper.MapToDomain(request);
-        var updatedNote = await writerService.UpdateNoteWithPromptAsync(mappedRequest, cancellationToken);
-        
-        return TypedResults.Ok(mapper.MapToResponse(updatedNote));
-    }
-
     private static async Task<Results<Ok<NoteResponse>, BadRequest<string>>> UpdateNote(
     [FromBody] EditNoteRequest request,
     [FromServices] IValidator<EditNoteRequest> noteValidator, 
@@ -103,8 +67,7 @@ internal static class NoteWriterEndpoints
         using var _ = logger.BeginScope(new Dictionary<string, object>
         {
             [Operation] = "Edit Note",
-            [DocumentGroupId] = request.DocumentGroupId,
-            [PdfPage] = request.Page
+            [NoteId] = request.Id
         });
         
         logger.LogInformation("Starting edit note request");

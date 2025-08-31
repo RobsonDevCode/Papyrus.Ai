@@ -1,6 +1,6 @@
-﻿using Papyrus.Perstistance.Interfaces.Contracts;
+﻿using Papyrus.Persistance.Interfaces.Contracts;
 
-namespace Papyrus.Perstistance.Interfaces.Writer;
+namespace Papyrus.Persistance.Interfaces.Writer;
 
 public interface IDocumentWriter
 {

@@ -6,13 +6,13 @@ namespace Papyrus.Domain.Extensions;
 
 public static class PdfExtensions
 {
-    public static string ConvertPdfPageToImage(int pageNumber, Stream stream)
+    public static byte[] ConvertPdfPageToImage(int pageNumber, Stream stream)
     {
         using var bitMap = Conversion.ToImage(stream,  pageNumber - 1, true);
         using var ms = new MemoryStream();
         
         bitMap.Encode(ms, SKEncodedImageFormat.Png, 100);
-        return Convert.ToBase64String(ms.ToArray());
+        return ms.ToArray();
     }
     
     public static IEnumerable<string?> ExtractContentFromPage(this Page page) // possibly the most annoying method ive made

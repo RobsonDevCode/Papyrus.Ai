@@ -8,4 +8,6 @@ public interface IDocumentReaderService
     
     Task<PageModel?> GetByGroupIdAsync(Guid documentGroupId, int? pageNumber,
         CancellationToken cancellationToken);
+
+    Task<IEnumerable<PageModel>> GetPages(Guid documentGroupId, int[] pageNumbers, CancellationToken cancellationToken);
 }

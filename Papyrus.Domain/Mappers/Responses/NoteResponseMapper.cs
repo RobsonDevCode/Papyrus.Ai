@@ -1,7 +1,7 @@
 ﻿using Papyrus.Api.Contracts.Contracts.Responses;
 using Papyrus.Domain.Models;
 
-namespace Papyrus.Domain.Mappers;
+namespace Papyrus.Mappers;
 
 public partial class Mapper
 {

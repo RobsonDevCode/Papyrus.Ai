@@ -1,21 +1,23 @@
 ﻿using Papyrus.Domain.Clients;
+using Papyrus.Domain.Extensions;
 using Papyrus.Domain.Models;
-using Papyrus.Perstistance.Interfaces.Contracts;
+using Papyrus.Persistance.Interfaces.Contracts;
 
-namespace Papyrus.Domain.Mappers;
+namespace Papyrus.Mappers;
 
 public partial class Mapper
 {
-    public Note MapToPersistence(LlmResponse response, PageModel pageModel)
+    public Note MapToPersistence(LlmResponseModel responseModel, PageModel pageModel)
     {
         return new Note
         {
             DocumentGroupId = pageModel.DocumentGroupId,
-            Text = response.Candidates.FirstOrDefault()?.Content.Parts.FirstOrDefault()?.Text, //TODO clean this shit up this a null reference waiting to happen 
+            Text = responseModel.ExtractResponse(),  
             Title = pageModel.DocumentName,
             RelatedPage = pageModel.PageNumber,
-            CreatedAt = response.CreatedAt,
-            UpdatedAt = pageModel.UpdatedAt
+            CreatedAt = responseModel.CreatedAt,
+            UpdatedAt = responseModel.UpdatedAt,
+            ChatId = pageModel.ChatId
         };
     }
 }

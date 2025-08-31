@@ -1,15 +1,14 @@
 ﻿using Microsoft.Extensions.Options;
 using MongoDB.Driver;
 using Papyrus.Ai.Configuration;
-using Papyrus.Perstistance.Interfaces.Contracts;
-using Papyrus.Perstistance.Interfaces.Mongo;
+using Papyrus.Persistance.Interfaces.Contracts;
+using Papyrus.Persistance.Interfaces.Mongo;
 
 namespace Papyrus.Persistence.MongoDb;
 
 public class MongoBookDbConnector : IMongoBookDbConnector
 {
     private readonly IMongoDatabase _database;
-    private const string PagesCollectionName = "pages";
 
     public MongoBookDbConnector(IOptions<MongoDbSettings> options)
     {
@@ -23,8 +22,5 @@ public class MongoBookDbConnector : IMongoBookDbConnector
         return _database.GetCollection<T>(collectionName);
     }
 
-    public IMongoCollection<Page> ConnectToPages()
-    {
-        return _database.GetCollection<Page>(PagesCollectionName);
-    }
+
 }

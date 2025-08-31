@@ -2,7 +2,7 @@
 using Papyrus.Api.Contracts.Contracts.Responses;
 using Papyrus.Domain.Models;
 
-namespace Papyrus.Domain.Mappers;
+namespace Papyrus.Mappers;
 
 public partial class Mapper
 {
@@ -17,7 +17,14 @@ public partial class Mapper
             CreatedAt = pageModel.CreatedAt,
             UpdatedAt = pageModel.UpdatedAt,
             Author = pageModel.Author,
-            DocumentType = pageModel.DocumentType
+            DocumentType = pageModel.DocumentType,
+            ImageCount = pageModel.ImageCount,
+            Image = pageModel.Image
         };
+    }
+
+    public IEnumerable<DocumentPageResponse> MapToResponse(IEnumerable<PageModel> pages)
+    {
+        return pages.Select(MapToResponse);
     }
 }

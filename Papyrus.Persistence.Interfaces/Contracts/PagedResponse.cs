@@ -1,4 +1,4 @@
-﻿namespace Papyrus.Perstistance.Interfaces.Contracts;
+﻿namespace Papyrus.Persistance.Interfaces.Contracts;
 
 public record PagedResponse<T>
 {

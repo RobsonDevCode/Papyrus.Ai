@@ -14,7 +14,7 @@ internal static class DocumentWriterEndpoints
     {
         var documentGroup = app.MapGroup("document");
 
-        documentGroup.MapPost("", SaveDocumentAsync)
+        documentGroup.MapPost("save", SaveDocumentAsync)
             .DisableAntiforgery()
             .Accepts<IFormFile>("multipart/form-data")
             .WithTags(DocumentApiTags.DocumentWriter);

@@ -1,0 +1,21 @@
+﻿using MongoDB.Driver;
+using Papyrus.Ai.Configuration;
+using Papyrus.Persistance.Interfaces.Contracts;
+using Papyrus.Persistance.Interfaces.Mongo;
+using Papyrus.Perstistance.Interfaces.Writer;
+
+namespace Papyrus.Persistence.MongoDb.Writer;
+
+public sealed class ImageWriterService : IImageWriterService
+{
+    private readonly IMongoCollection<Image> _imageCollection;
+
+    public ImageWriterService(IMongoBookDbConnector connector)
+    {
+        _imageCollection = connector.GetCollection<Image>(DatabaseConstants.ImagesCollectionName);
+    }
+    public async Task InsertAsync(Image image, CancellationToken cancellationToken)
+    {
+        await _imageCollection.InsertOneAsync(image, null ,cancellationToken);
+    }
+}

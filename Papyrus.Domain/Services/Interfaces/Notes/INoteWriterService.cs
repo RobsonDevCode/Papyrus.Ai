@@ -8,5 +8,4 @@ public interface INoteWriterService
     Task<NoteModel> WriteNoteAsync(NoteRequestModel request, CancellationToken cancellationToken);
     
     Task<NoteModel> UpdateNoteAsync(EditNoteRequestModel request, CancellationToken cancellationToken);
-    Task<NoteModel> UpdateNoteWithPromptAsync(UpdateNoteRequestModel request, CancellationToken cancellationToken);
 }

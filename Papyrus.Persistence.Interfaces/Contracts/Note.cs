@@ -1,7 +1,7 @@
 ﻿using MongoDB.Bson;
 using MongoDB.Bson.Serialization.Attributes;
 
-namespace Papyrus.Perstistance.Interfaces.Contracts;
+namespace Papyrus.Persistance.Interfaces.Contracts;
 
 public record Note
 {
@@ -16,6 +16,8 @@ public record Note
     [BsonRepresentation(BsonType.String)]
     public required Guid DocumentGroupId { get; init; }
     
+    [BsonRepresentation(BsonType.String)]
+    public required Guid ChatId { get; set; } 
     public required string Text { get; init; }
     
     public required string Title { get; init; }

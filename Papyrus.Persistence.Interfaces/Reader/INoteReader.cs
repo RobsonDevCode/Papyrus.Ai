@@ -1,6 +1,6 @@
-﻿using Papyrus.Perstistance.Interfaces.Contracts;
+﻿using Papyrus.Persistance.Interfaces.Contracts;
 
-namespace Papyrus.Perstistance.Interfaces.Reader;
+namespace Papyrus.Persistance.Interfaces.Reader;
 
 public interface INoteReader
 {

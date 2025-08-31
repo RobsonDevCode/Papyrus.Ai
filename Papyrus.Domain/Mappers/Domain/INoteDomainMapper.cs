@@ -3,16 +3,16 @@ using Papyrus.Domain.Clients;
 using Papyrus.Domain.Models;
 using Papyrus.Domain.Models.Filters;
 using Papyrus.Domain.Models.Pagination;
-using Papyrus.Perstistance.Interfaces.Contracts;
+using Papyrus.Persistance.Interfaces.Contracts;
 
 namespace Papyrus.Domain.Mappers.Domain;
 
 public interface INoteDomainMapper
 {
     NoteRequestModel MapToDomain(WriteNoteRequest request);
-    NoteModel MapToDomain(Guid id, Guid groupId, LlmResponse llmResponse, int pageNumber);
+    NoteModel MapToDomain(Guid id, Guid groupId, LlmResponseModel llmResponseModel, int pageNumber);
+    NoteModel MapToDomain(LlmResponseModel llmResponseModel, PageModel page);
     EditNoteRequestModel MapToDomain(EditNoteRequest request);
-    UpdateNoteRequestModel MapToDomain(AddToNoteRequest request);
     WriteImageNoteRequestModel MapToDomain(WriteImageNoteRequest request);
     NoteModel MapToDomain(Note note);
     List<NoteModel> Map(List<Note> notes);

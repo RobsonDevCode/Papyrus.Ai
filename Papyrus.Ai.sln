@@ -6,7 +6,7 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Papyrus.Api.Contracts", "Pa
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Papyrus.Domain", "Papyrus.Domain\Papyrus.Domain.csproj", "{306524AD-7B12-417A-B736-100B82747EC4}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Papyrus.Perstistence.Interfaces", "Papyrus.Perstistence.Interfaces\Papyrus.Perstistence.Interfaces.csproj", "{3AA7B616-39B8-488D-BE25-27F8E5BA7B4A}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Papyrus.Persistence.Interfaces", "Papyrus.Persistence.Interfaces\Papyrus.Persistence.Interfaces.csproj", "{3AA7B616-39B8-488D-BE25-27F8E5BA7B4A}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Papyrus.Persistence.MongoDb", "Papyrus.Persistence.MongoDb\Papyrus.Persistence.MongoDb.csproj", "{059E4D01-3672-4629-ACC8-99408C268599}"
 EndProject

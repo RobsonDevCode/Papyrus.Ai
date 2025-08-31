@@ -1,7 +1,8 @@
 ﻿using MongoDB.Driver;
-using Papyrus.Perstistance.Interfaces.Contracts;
-using Papyrus.Perstistance.Interfaces.Mongo;
-using Papyrus.Perstistance.Interfaces.Writer;
+using Papyrus.Ai.Configuration;
+using Papyrus.Persistance.Interfaces.Contracts;
+using Papyrus.Persistance.Interfaces.Mongo;
+using Papyrus.Persistance.Interfaces.Writer;
 
 namespace Papyrus.Persistence.MongoDb.Writer;
 
@@ -11,7 +12,7 @@ public sealed class DocumentWriter : IDocumentWriter
 
     public DocumentWriter(IMongoBookDbConnector connector)
     {
-        _pagesCollection = connector.ConnectToPages();
+        _pagesCollection = connector.GetCollection<Page>(DatabaseConstants.PagesCollectionName);
     }
 
     public async Task InsertAsync(Page page, CancellationToken cancellationToken)

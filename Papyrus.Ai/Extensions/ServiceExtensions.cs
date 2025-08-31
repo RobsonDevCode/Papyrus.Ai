@@ -6,14 +6,18 @@ using Papyrus.Api.Contracts.Contracts.Requests;
 using Papyrus.Domain.Clients;
 using Papyrus.Domain.Mappers;
 using Papyrus.Domain.Services;
+using Papyrus.Domain.Services.Images;
 using Papyrus.Domain.Services.Interfaces;
+using Papyrus.Domain.Services.Interfaces.Images;
 using Papyrus.Domain.Services.Interfaces.Notes;
 using Papyrus.Domain.Services.Notes;
+using Papyrus.Mappers;
 using Papyrus.Persistence.MongoDb;
 using Papyrus.Persistence.MongoDb.Reader;
 using Papyrus.Persistence.MongoDb.Writer;
-using Papyrus.Perstistance.Interfaces.Mongo;
-using Papyrus.Perstistance.Interfaces.Reader;
+using Papyrus.Persistance.Interfaces.Mongo;
+using Papyrus.Persistance.Interfaces.Reader;
+using Papyrus.Persistance.Interfaces.Writer;
 using Papyrus.Perstistance.Interfaces.Writer;
 
 namespace Papyrus.Ai.Extensions;
@@ -26,6 +30,11 @@ public static class ServiceExtensions
         serviceCollection.AddScoped<IDocumentReader, DocumentReader>();
         serviceCollection.AddScoped<INoteReader, NoteReader>();
         serviceCollection.AddScoped<INoteWriter, NoteWriter>();
+        serviceCollection.AddScoped<IPromptHistoryReader, PromptHistoryReader>();
+        serviceCollection.AddScoped<IPromptHistoryWriter, PromptHistoryWriter>();
+        serviceCollection.AddScoped<IImageReader, ImageReader>();
+        
+        serviceCollection.AddSingleton<IMongoPromptDbConnector, MongoPromptDbConnector>();
         serviceCollection.AddSingleton<IMongoBookDbConnector, MongoBookDbConnector>();
     }
 
@@ -35,6 +44,9 @@ public static class ServiceExtensions
         serviceCollection.AddScoped<IDocumentReaderService, DocumentReaderService>();
         serviceCollection.AddScoped<INoteWriterService, NoteWriterService>();
         serviceCollection.AddScoped<INoteReaderService, NoteReaderService>();
+        serviceCollection.AddScoped<IImageWriterService, ImageWriterService>();
+        serviceCollection.AddScoped<IImageReaderService, ImageReaderService>();
+        
         serviceCollection.AddSingleton<IPapyrusAiClient, PapyrusAiClient>();
         serviceCollection.AddSingleton<IMapper, Mapper>();
         serviceCollection.AddMemoryCache();
@@ -78,6 +90,6 @@ public static class ServiceExtensions
         serviceCollection.AddScoped<IValidator<FormFile>, FormFileValidator>();
         serviceCollection.AddScoped<IValidator<WriteNoteRequest>, WriteNotesValidator>();
         serviceCollection.AddScoped<IValidator<WriteImageNoteRequest>, WriteImageNoteValidator>();
-        serviceCollection.AddScoped<IValidator<AddToNoteRequest>, AddToNoteRequestValidator>();
+        serviceCollection.AddScoped<IValidator<EditNoteRequest>, EditNoteRequestValidator>();
     }
 }

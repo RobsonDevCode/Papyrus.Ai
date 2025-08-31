@@ -1,7 +1,8 @@
 ﻿using MongoDB.Driver;
-using Papyrus.Perstistance.Interfaces.Contracts;
-using Papyrus.Perstistance.Interfaces.Mongo;
-using Papyrus.Perstistance.Interfaces.Writer;
+using Papyrus.Ai.Configuration;
+using Papyrus.Persistance.Interfaces.Contracts;
+using Papyrus.Persistance.Interfaces.Mongo;
+using Papyrus.Persistance.Interfaces.Writer;
 
 namespace Papyrus.Persistence.MongoDb.Writer;
 
@@ -11,7 +12,7 @@ public sealed class NoteWriter : INoteWriter
 
     public NoteWriter(IMongoBookDbConnector connector)
     {
-        _notesCollection = connector.GetCollection<Note>("note");
+        _notesCollection = connector.GetCollection<Note>(DatabaseConstants.NotesCollectionName);
     }
 
     public async Task SaveNoteAsync(Note note, CancellationToken cancellationToken)
@@ -19,7 +20,7 @@ public sealed class NoteWriter : INoteWriter
         await _notesCollection.InsertOneAsync(note, null, cancellationToken);
     }
 
-    public async Task<Note> UpdateNoteAsync(Guid noteId, string editedNote,
+    public async Task<Note?> UpdateNoteAsync(Guid noteId, string editedNote,
         CancellationToken cancellationToken)
     {
         var filter = Builders<Note>.Filter.Eq(n => n.Id, noteId);
@@ -33,10 +34,6 @@ public sealed class NoteWriter : INoteWriter
         };
             
         var updatedNote = await _notesCollection.FindOneAndUpdateAsync(filter, update, options, cancellationToken);
-        if (updatedNote == null)
-        {
-            throw new MongoException($"Error updating note {noteId}");
-        }
         
         return updatedNote;
     }

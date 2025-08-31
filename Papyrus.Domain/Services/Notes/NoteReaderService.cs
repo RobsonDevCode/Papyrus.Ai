@@ -4,8 +4,8 @@ using Papyrus.Domain.Models;
 using Papyrus.Domain.Models.Filters;
 using Papyrus.Domain.Models.Pagination;
 using Papyrus.Domain.Services.Interfaces.Notes;
-using Papyrus.Perstistance.Interfaces.Contracts;
-using Papyrus.Perstistance.Interfaces.Reader;
+using Papyrus.Persistance.Interfaces.Contracts;
+using Papyrus.Persistance.Interfaces.Reader;
 
 namespace Papyrus.Domain.Services.Notes;
 

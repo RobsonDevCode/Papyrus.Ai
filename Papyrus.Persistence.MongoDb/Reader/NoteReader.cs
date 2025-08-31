@@ -1,7 +1,8 @@
 ﻿using MongoDB.Driver;
-using Papyrus.Perstistance.Interfaces.Contracts;
-using Papyrus.Perstistance.Interfaces.Mongo;
-using Papyrus.Perstistance.Interfaces.Reader;
+using Papyrus.Ai.Configuration;
+using Papyrus.Persistance.Interfaces.Contracts;
+using Papyrus.Persistance.Interfaces.Mongo;
+using Papyrus.Persistance.Interfaces.Reader;
 
 namespace Papyrus.Persistence.MongoDb.Reader;
 
@@ -11,7 +12,7 @@ public sealed class NoteReader : INoteReader
 
     public NoteReader(IMongoBookDbConnector connector)
     {
-        _noteCollection = connector.GetCollection<Note>("note");
+        _noteCollection = connector.GetCollection<Note>(DatabaseConstants.NotesCollectionName);
     }
 
     public async Task<Note?> GetNoteAsync(Guid id, CancellationToken cancellationToken)

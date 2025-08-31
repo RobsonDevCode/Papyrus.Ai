@@ -5,8 +5,11 @@ namespace Papyrus.Domain.Models.Client;
 
 public record AiRequestModel
 {
+    [JsonPropertyName("system_instruction")]
+    public required SystemInturctions SystemInstruction { get; init; }
+    
     [JsonPropertyName("contents")]
-    public required List<Content> Contents { get; init; }
+    public List<Content> Contents { get; set; }
 
     [JsonPropertyName("generationConfig")]
     public GenerationConfig? GenerationConfig { get; set; }

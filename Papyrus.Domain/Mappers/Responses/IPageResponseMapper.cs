@@ -6,4 +6,6 @@ namespace Papyrus.Domain.Mappers;
 public interface IPageResponseMapper
 {
     DocumentPageResponse MapToResponse(PageModel pageModel);
+
+    IEnumerable<DocumentPageResponse> MapToResponse(IEnumerable<PageModel> pages);
 }

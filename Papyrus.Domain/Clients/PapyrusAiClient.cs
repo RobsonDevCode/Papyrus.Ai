@@ -1,8 +1,8 @@
 ﻿using System.Net.Http.Json;
 using System.Text;
 using System.Text.Json;
-using Microsoft.Extensions.Logging;
 using Papyrus.Domain.Clients.Constants;
+using Papyrus.Domain.Models;
 using Papyrus.Domain.Models.Client;
 
 namespace Papyrus.Domain.Clients;
@@ -16,10 +16,10 @@ public sealed class PapyrusAiClient : IPapyrusAiClient
         _httpClient = httpClient;
     }
 
-    public async Task<LlmResponse> CreateNoteAsync(string prompt,
+    public async Task<LlmResponseModel> CreateNoteAsync(string prompt, List<PromptModel>? previousPrompts,
         string? image, CancellationToken cancellationToken)
     {
-        var requestBody = BuildRequestBody(prompt, image);
+        var requestBody = BuildRequestBody(prompt, image: image);
 
         var json = JsonSerializer.Serialize(requestBody);
         var content = new StringContent(json, Encoding.UTF8, "application/json");
@@ -37,7 +37,7 @@ public sealed class PapyrusAiClient : IPapyrusAiClient
                 $"Received response {response.StatusCode}  with error message: {error.Message}");
         }
 
-        var result = await response.Content.ReadFromJsonAsync<LlmResponse>(cancellationToken);
+        var result = await response.Content.ReadFromJsonAsync<LlmResponseModel>(cancellationToken);
 
         if (result == null)
         {
@@ -47,23 +47,23 @@ public sealed class PapyrusAiClient : IPapyrusAiClient
         return result;
     }
 
-    private AiRequestModel BuildRequestBody(string prompt, string? image = null)
+    // TODO this method is ugly because of the format Gemini takes json in, might break it up but for now im leaving it 
+    private AiRequestModel BuildRequestBody(string prompt, List<PromptModel>? previousPrompts = null,
+        string? image = null)
     {
         var requestBody = new AiRequestModel
         {
-            Contents =
-            [
-                new Content
-                {
-                    Parts =
-                    [
-                        new Part
-                        {
-                            Text = prompt
-                        }
-                    ]
-                }
-            ],
+            SystemInstruction = new SystemInturctions
+            {
+                Parts =
+                [
+                    new Part
+                    {
+                        Text = LlmSettings.Personality
+                    }
+                ]
+            },
+
             GenerationConfig = new GenerationConfig
             {
                 Temperature = LlmSettings.Temperature,
@@ -76,7 +76,68 @@ public sealed class PapyrusAiClient : IPapyrusAiClient
                 }
             }
         };
-        
+
+        if (previousPrompts != null)
+        {
+            var content = new List<Content>();
+
+            foreach (var previousPrompt in previousPrompts)
+            {
+                content.Add(new Content
+                {
+                    Role = RoleConstants.User, 
+                    Parts =
+                    [
+                        new Part
+                        {
+                            Text = previousPrompt.Prompt
+                        }
+                    ]
+                });
+                
+                content.Add(new Content
+                {
+                    Role = RoleConstants.Model,
+                    Parts = 
+                        [
+                            new Part
+                            {
+                                Text = previousPrompt.Response
+                            }
+                        ]
+                });
+            }
+
+            content.Add(new Content
+            {
+                Parts =
+                [
+                    new Part
+                    {
+                        Text = prompt
+                    }
+                ]
+            });
+            
+            requestBody.Contents = content;
+        }
+        else
+        {
+            requestBody.Contents =
+            [
+                new Content
+                {
+                    Parts =
+                    [
+                        new Part
+                        {
+                            Text = prompt
+                        }
+                    ]
+                }
+            ];
+        }
+
         if (!string.IsNullOrWhiteSpace(image))
         {
             requestBody.Contents[0].Parts.Add(new Part
@@ -88,7 +149,7 @@ public sealed class PapyrusAiClient : IPapyrusAiClient
                 }
             });
         }
-        
+
         return requestBody;
     }
 }

@@ -17,6 +17,9 @@ internal static class DocumentReaderEndpoints
 
         documentGroup.MapGet("{documentGroupId}/{pageNumber}", GetPage)
             .WithTags(DocumentApiTags.DocumentReader);
+        
+        documentGroup.MapGet("{documentGroupId}", GetPages)
+            .WithTags(DocumentApiTags.DocumentReader);
     }
 
     private static async Task<Results<Ok<DocumentPageResponse>, NotFound, BadRequest<string>>> GetPage(
@@ -43,6 +46,28 @@ internal static class DocumentReaderEndpoints
             return TypedResults.NotFound();
         }
 
+        return TypedResults.Ok(mapper.MapToResponse(response));
+    }
+
+    private static async Task<Ok<IEnumerable<DocumentPageResponse>>> GetPages(
+        [FromRoute] Guid documentGroupId,
+        [FromQuery] int[] pageNumbers,
+        [FromServices] IDocumentReaderService documentReaderService,
+        [FromServices] IMapper mapper,
+        [FromServices] ILoggerFactory loggerFactory,
+        CancellationToken cancellationToken)
+    {
+        var logger = loggerFactory.CreateLogger(Loggers.DocumentReader);
+
+        using var _ = logger.BeginScope(new Dictionary<string, object>
+        {
+            [Operation] = "Get Document Pages",
+            [Filter] = documentGroupId.ToString(),
+            [PageNumbers] = pageNumbers
+        });
+        
+        var response = await documentReaderService.GetPages(documentGroupId, pageNumbers, cancellationToken);
+        
         return TypedResults.Ok(mapper.MapToResponse(response));
     }
 }

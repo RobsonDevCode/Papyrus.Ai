@@ -2,10 +2,9 @@
 
 public record ImageModel
 {
-    public required string Bytes { get; init; }
-    public float Width { get; init; }
-    public float Height { get; init; }
-    public int PageReference { get; init; }
-    public double X { get; init; }
-    public double Y { get; init; }
+    public required Guid Id { get; init; }
+    
+    public required Guid DocumentId { get; init; }
+    public required string DocumentName{ get; init; }
+    public required byte[] Bytes { get; init; }
 }

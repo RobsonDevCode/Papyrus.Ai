@@ -1,22 +1,33 @@
 ﻿using Papyrus.Api.Contracts.Contracts.Requests;
 using Papyrus.Domain.Clients;
+using Papyrus.Domain.Extensions;
 using Papyrus.Domain.Models;
 using Papyrus.Domain.Models.Filters;
 using Papyrus.Domain.Models.Pagination;
-using Papyrus.Perstistance.Interfaces.Contracts;
+using Papyrus.Persistance.Interfaces.Contracts;
 
-namespace Papyrus.Domain.Mappers;
+namespace Papyrus.Mappers;
 public partial class Mapper
 {
     public NoteRequestModel MapToDomain(WriteNoteRequest request)
     {
-        return new NoteRequestModel
+        var result = new NoteRequestModel
         {
-            DocumentTypeId = request.DocumentGroupId,
-            Page = request.Page,
+            PageId = request.PageId,
             Text = request.Text,
-            ImageReference = request.ImageReference
+            ImageReference = request.ImageReference,
         };
+
+        if (request.Prompt is not null)
+        {
+            result.Prompt = new PromptRequestModel
+            {
+                Text = request.Prompt.Text,
+                NoteId = request.Prompt.NoteId
+            };
+        }
+        
+        return result;
     }
 
     public EditNoteRequestModel MapToDomain(EditNoteRequest request)
@@ -24,33 +35,20 @@ public partial class Mapper
         return new EditNoteRequestModel
         {
             Id = request.Id,
-            DocumentGroupId = request.DocumentGroupId,
             EditedNote = request.EditedNote,
-            Page = request.Page,
         };
     }
 
-    public NoteModel MapToDomain(Guid id, Guid groupId ,LlmResponse llmResponse, int pageNumber)
+    public NoteModel MapToDomain(Guid id, Guid groupId ,LlmResponseModel llmResponseModel, int pageNumber)
     {
         return new NoteModel
         {
             Id = id,
             DocumentGroupId = groupId,
-            Note = llmResponse.Candidates.FirstOrDefault()?.Content.Parts.FirstOrDefault()?.Text,
-            CreatedAt = llmResponse.CreatedAt,
-            UpdatedAt = llmResponse.UpdatedAt,
+            Note = llmResponseModel.Candidates.FirstOrDefault()?.Content.Parts.FirstOrDefault()?.Text,
+            CreatedAt = llmResponseModel.CreatedAt,
+            UpdatedAt = llmResponseModel.UpdatedAt,
             PageReference = pageNumber
-        };
-    }
-
-    public UpdateNoteRequestModel MapToDomain(AddToNoteRequest request)
-    {
-        return new UpdateNoteRequestModel
-        {
-            NoteId = request.NoteId,
-            DocumentId = request.DocumentId,
-            Prompt = request.Prompt,
-            Page = request.Page,
         };
     }
 
@@ -93,6 +91,18 @@ public partial class Mapper
                 Size = size,
                 TotalPages = response.TotalPages,
             }
+        };
+    }
+
+    public NoteModel MapToDomain(LlmResponseModel llmResponseModel, PageModel page)
+    {
+        return new NoteModel
+        {
+            DocumentGroupId = page.DocumentGroupId,
+            Note = llmResponseModel.ExtractResponse(), 
+            PageReference = page.PageNumber,
+            CreatedAt = llmResponseModel.CreatedAt,
+            UpdatedAt = DateTime.UtcNow
         };
     }
 }

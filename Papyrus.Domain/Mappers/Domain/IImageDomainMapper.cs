@@ -1,9 +1,9 @@
 ﻿using Papyrus.Domain.Models;
-using Papyrus.Perstistance.Interfaces.Contracts;
+using Papyrus.Persistance.Interfaces.Contracts;
 
-namespace Papyrus.Domain.Mappers;
+namespace Papyrus.Domain.Mappers.Domain;
 
 public interface IImageDomainMapper
 {
-    ImageModel MapToDomain(Image image);
+    ImageModel? MapToDomain(Image? image);
 }

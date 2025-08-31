@@ -1,8 +1,9 @@
 ﻿using Microsoft.Extensions.Logging;
 using MongoDB.Driver;
-using Papyrus.Perstistance.Interfaces.Contracts;
-using Papyrus.Perstistance.Interfaces.Mongo;
-using Papyrus.Perstistance.Interfaces.Reader;
+using Papyrus.Ai.Configuration;
+using Papyrus.Persistance.Interfaces.Contracts;
+using Papyrus.Persistance.Interfaces.Mongo;
+using Papyrus.Persistance.Interfaces.Reader;
 
 namespace Papyrus.Persistence.MongoDb.Reader;
 
@@ -13,7 +14,7 @@ public sealed class DocumentReader : IDocumentReader
 
     public DocumentReader(IMongoBookDbConnector connector, ILogger<DocumentReader> logger)
     {
-        _pageCollection = connector.GetCollection<Page>("pages");
+        _pageCollection = connector.GetCollection<Page>(DatabaseConstants.PagesCollectionName);
         _logger = logger;
     }
 
@@ -41,5 +42,11 @@ public sealed class DocumentReader : IDocumentReader
         var result = await _pageCollection.Find(p => p.DocumentName == documentName).AnyAsync(cancellationToken);
         return result;
     }
-    
+
+    public async Task<IEnumerable<Page?>> GetPages(Guid documentGroupId, int[] pageNumbers, CancellationToken cancellationToken)
+    {
+        return await _pageCollection.Find(x => x.DocumentGroupId == documentGroupId
+                                               && pageNumbers.Contains(x.PageNumber))
+                                               .ToListAsync(cancellationToken);
+    }
 }

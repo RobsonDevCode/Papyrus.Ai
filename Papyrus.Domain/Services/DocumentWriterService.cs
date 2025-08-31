@@ -1,11 +1,13 @@
 ﻿using Microsoft.AspNetCore.Http;
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
 using Papyrus.Domain.Extensions;
 using Papyrus.Domain.Mappers;
 using Papyrus.Domain.Models;
 using Papyrus.Domain.Services.Interfaces;
-using Papyrus.Perstistance.Interfaces.Contracts;
-using Papyrus.Perstistance.Interfaces.Reader;
+using Papyrus.Persistance.Interfaces.Contracts;
+using Papyrus.Persistance.Interfaces.Reader;
+using Papyrus.Persistance.Interfaces.Writer;
 using Papyrus.Perstistance.Interfaces.Writer;
 using UglyToad.PdfPig;
 using PdfExtensions = Papyrus.Domain.Extensions.PdfExtensions;
@@ -16,17 +18,24 @@ public sealed class DocumentWriterService : IDocumentWriterService
 {
     private readonly IDocumentWriter _documentWriter;
     private readonly IDocumentReader _documentReader;
+    private readonly IImageWriterService _imageWriterService;
     private readonly IMapper _mapper;
     private readonly ILogger<DocumentWriterService> _logger;
-
+    private readonly string _papyrusApiUrl;
+    
     public DocumentWriterService(IDocumentWriter documentWriter,
         IDocumentReader documentReader,
+        IImageWriterService imageWriterService,
         IMapper mapper,
+        IConfiguration configuration,
         ILogger<DocumentWriterService> logger)
     {
         _documentWriter = documentWriter;
         _documentReader = documentReader;
+        _imageWriterService = imageWriterService;
         _mapper = mapper;
+        _papyrusApiUrl = configuration.GetValue<string>("PapyrusApiUrl")
+                         ?? throw new NullReferenceException("PapyrusApiUrl cannot be null when saving document");
         _logger = logger;
     }
 
@@ -46,12 +55,6 @@ public sealed class DocumentWriterService : IDocumentWriterService
 
         var groupId = Guid.NewGuid();
         document.Name = document.Name.Replace(".pdf", "");
-
-        if (totalPages <= 15)
-        {
-            //small enough we can afford to load it all in memory 
-            await StoreSmallPdf(pdfDoc, document, groupId, totalPages, cancellationToken);
-        }
 
         var textOnlyPagesToSave = new List<Page>();
         const int batchSize = 25;
@@ -85,8 +88,16 @@ public sealed class DocumentWriterService : IDocumentWriterService
             //If pdf page contains image we want to dispose as quick as possible because base64 encoding strings are expensive to store in memory.
             if (imageCount > 0)
             {
-                mappedPage.PageImage = PdfExtensions.ConvertPdfPageToImage(pdfPageNumber, document.PdfStream);
-                await _documentWriter.InsertAsync(mappedPage, cancellationToken);
+                var imageBytes = PdfExtensions.ConvertPdfPageToImage(pdfPageNumber, document.PdfStream);
+                var image = _mapper.MapToPersistence(imageBytes, groupId, document.Name, mappedPage.PageNumber);
+                mappedPage.ImageUrl = _papyrusApiUrl + "/image/" + image.Id;
+                var tasks = new[]
+                {
+                    _imageWriterService.InsertAsync(image, cancellationToken),
+                    _documentWriter.InsertAsync(mappedPage, cancellationToken)
+                };
+                
+                await Task.WhenAll(tasks);
                 continue;
             }
 
@@ -97,50 +108,5 @@ public sealed class DocumentWriterService : IDocumentWriterService
                 textOnlyPagesToSave.Clear();
             }
         }
-    }
-
-
-    private async Task StoreSmallPdf(PdfDocument pdfDoc, DocumentModel document, Guid groupId, int totalPages, CancellationToken cancellationToken)
-    {
-        var pagesToStore = new List<Page>();
-        for (var i = 0; i < totalPages; i++)
-        {
-            var pdfPageNumber = i + 1;
-            var page = pdfDoc.GetPage(pdfPageNumber);
-            
-            if (string.IsNullOrWhiteSpace(page.Text) && !page.GetImages().Any())
-            {
-                _logger.LogWarning("Cannot extract page {pageNum} as its null skipping it.", pdfPageNumber);
-                continue;
-            }
-            
-            var mappedPage = new Page
-            {
-                DocumentGroupId = groupId,
-                DocumentName = document.Name,
-                Content = string.Join(" ", page.GetWords()),
-                PageNumber = pdfPageNumber, // Pages are 1-indexed
-                IsImageOnly = string.IsNullOrWhiteSpace(page.Text) && page.GetImages().Any(),
-                CreatedAt = DateTime.UtcNow,
-                UpdatedAt = DateTime.UtcNow,
-                Type = "pdf"
-            };
-            
-            if (page.GetImages().Any())
-            {
-                mappedPage.PageImage = PdfExtensions.ConvertPdfPageToImage(pdfPageNumber, document.PdfStream);
-            }
-            pagesToStore.Add(mappedPage);
-        }
-
-        await Parallel.ForAsync(0, pagesToStore.Count, new ParallelOptions
-            {
-                MaxDegreeOfParallelism = Environment.ProcessorCount,
-                CancellationToken = cancellationToken
-            },
-            async (i, ctx) =>
-            {
-                await _documentWriter.InsertAsync(pagesToStore[i], ctx);
-            });
     }
 }
