@@ -15,6 +15,8 @@ public record Page
     
     public required string DocumentName { get; init; }
     
+    public required string S3Key { get; init; }
+    
     public string? Content { get; init; }
     
     public required int PageNumber { get; init; }

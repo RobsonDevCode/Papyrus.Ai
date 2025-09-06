@@ -10,15 +10,11 @@ namespace Papyrus.Ai.Handlers.Endpoints.Documents;
 
 internal static class DocumentWriterEndpoints
 {
-    internal static void MapDocumentWriterEndpoints(this WebApplication app)
+    internal static void MapDocumentWriterEndpoints(this RouteGroupBuilder app)
     {
-        var documentGroup = app.MapGroup("document");
-
-        documentGroup.MapPost("save", SaveDocumentAsync)
+        app.MapPost("save", SaveDocumentAsync)
             .DisableAntiforgery()
-            .Accepts<IFormFile>("multipart/form-data")
-            .WithTags(DocumentApiTags.DocumentWriter);
-
+            .Accepts<IFormFile>("multipart/form-data");
     }
 
     private static async Task<Results<Ok, BadRequest<string>>> SaveDocumentAsync(

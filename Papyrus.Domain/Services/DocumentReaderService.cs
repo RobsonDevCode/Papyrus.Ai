@@ -20,7 +20,7 @@ public sealed class DocumentReaderService : IDocumentReaderService
         _mapper = mapper;
     }
 
-    public async Task<PageModel?> GetByIdAsync(Guid pageId, CancellationToken cancellationToken)
+    public async Task<PageModel?> GetPageByIdAsync(Guid pageId, CancellationToken cancellationToken)
     {
         return await _memoryCache.GetOrCreateAsync(pageId, async entry =>
         {

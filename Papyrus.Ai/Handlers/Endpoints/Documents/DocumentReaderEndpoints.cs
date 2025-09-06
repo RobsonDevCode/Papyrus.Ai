@@ -12,15 +12,13 @@ namespace Papyrus.Ai.Handlers.Endpoints.Documents;
 
 internal static class DocumentReaderEndpoints
 {
-    internal static void MapDocumentReaderEndpoints(this WebApplication app)
+    internal static void MapDocumentReaderEndpoints(this RouteGroupBuilder app)
     {
-        var documentGroup = app.MapGroup("document");
+        app.MapGet("page/{documentGroupId}/{pageNumber}", GetPage);
 
-        documentGroup.MapGet("{documentGroupId}/{pageNumber}", GetPage)
-            .WithTags(DocumentApiTags.DocumentReader);
+        app.MapGet("pages/{documentGroupId}", GetPages);
         
-        documentGroup.MapGet("{documentGroupId}", GetPages)
-            .WithTags(DocumentApiTags.DocumentReader);
+        app.MapGet("{documentGroupId}", GetDocument);
     }
 
     private static async Task<Results<Ok<DocumentPageResponse>, NotFound, BadRequest<string>>> GetPage(
@@ -71,4 +69,28 @@ internal static class DocumentReaderEndpoints
         
         return TypedResults.Ok(mapper.MapToResponse(response.Pages, response.TotalPages));
     }
+
+    private static async Task<Results<FileContentHttpResult, NotFound>> GetDocument(
+        [FromRoute] Guid documentGroupId,
+        [FromServices] IPdfReaderService pdfReaderService,
+        [FromServices] ILoggerFactory loggerFactory,
+        CancellationToken cancellationToken)
+    {
+        var logger = loggerFactory.CreateLogger(Loggers.DocumentReader);
+
+        using var _ = logger.BeginScope(new Dictionary<string, object>
+        {
+            [Operation] = "Get Document",
+            [Filter] = documentGroupId.ToString()
+        });
+
+        var response = await pdfReaderService.GetPdfBytesAsync(documentGroupId, cancellationToken);
+        if (response.Length == 0)
+        {
+            return TypedResults.NotFound();
+        }
+        
+        return TypedResults.File(response, "application/pdf", $"{documentGroupId}.pdf");
+    }
+    
 }

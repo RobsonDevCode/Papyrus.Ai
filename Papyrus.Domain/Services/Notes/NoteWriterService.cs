@@ -43,7 +43,7 @@ public sealed class NoteWriterService : INoteWriterService
 
     public async Task<NoteModel> WriteNoteAsync(NoteRequestModel request, CancellationToken cancellationToken)
     {
-        var page = await _documentReaderService.GetByIdAsync(request.PageId, cancellationToken);
+        var page = await _documentReaderService.GetPageByIdAsync(request.PageId, cancellationToken);
 
         if (page is null)
         {

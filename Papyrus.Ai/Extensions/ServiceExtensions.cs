@@ -6,11 +6,14 @@ using Papyrus.Api.Contracts.Contracts.Requests;
 using Papyrus.Domain.Clients;
 using Papyrus.Domain.Mappers;
 using Papyrus.Domain.Services;
+using Papyrus.Domain.Services.Bookmark;
 using Papyrus.Domain.Services.Images;
 using Papyrus.Domain.Services.Interfaces;
+using Papyrus.Domain.Services.Interfaces.Bookmark;
 using Papyrus.Domain.Services.Interfaces.Images;
 using Papyrus.Domain.Services.Interfaces.Notes;
 using Papyrus.Domain.Services.Notes;
+using Papyrus.Domain.Services.Pdf;
 using Papyrus.Mappers;
 using Papyrus.Persistence.MongoDb;
 using Papyrus.Persistence.MongoDb.Reader;
@@ -33,6 +36,8 @@ public static class ServiceExtensions
         serviceCollection.AddScoped<IPromptHistoryReader, PromptHistoryReader>();
         serviceCollection.AddScoped<IPromptHistoryWriter, PromptHistoryWriter>();
         serviceCollection.AddScoped<IImageReader, ImageReader>();
+        serviceCollection.AddScoped<IBookmarkWriter, BookmarkWriter>();
+        serviceCollection.AddScoped<IBookmarkReader, BookmarkReader>();
         
         serviceCollection.AddSingleton<IMongoPromptDbConnector, MongoPromptDbConnector>();
         serviceCollection.AddSingleton<IMongoBookDbConnector, MongoBookDbConnector>();
@@ -46,6 +51,10 @@ public static class ServiceExtensions
         serviceCollection.AddScoped<INoteReaderService, NoteReaderService>();
         serviceCollection.AddScoped<IImageWriterService, ImageWriterService>();
         serviceCollection.AddScoped<IImageReaderService, ImageReaderService>();
+        serviceCollection.AddScoped<IPdfWriterService, PdfWriterService>();
+        serviceCollection.AddScoped<IPdfReaderService, PdfReaderService>();
+        serviceCollection.AddScoped<IBookmarkWriterService, BookmarkWriterService>();
+        serviceCollection.AddScoped<IBookmarkReaderService, BookmarkReaderService>();
         
         serviceCollection.AddSingleton<IPapyrusAiClient, PapyrusAiClient>();
         serviceCollection.AddSingleton<IMapper, Mapper>();
@@ -91,5 +100,6 @@ public static class ServiceExtensions
         serviceCollection.AddScoped<IValidator<WriteNoteRequest>, WriteNotesValidator>();
         serviceCollection.AddScoped<IValidator<WriteImageNoteRequest>, WriteImageNoteValidator>();
         serviceCollection.AddScoped<IValidator<EditNoteRequest>, EditNoteRequestValidator>();
+        serviceCollection.AddScoped<IValidator<CreateBookmarkRequest>, CreateBookmarkRequestValidator>();
     }
 }

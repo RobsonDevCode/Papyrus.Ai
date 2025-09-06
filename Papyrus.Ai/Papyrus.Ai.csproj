@@ -7,6 +7,8 @@
     </PropertyGroup>
 
     <ItemGroup>
+      <PackageReference Include="AWSSDK.Extensions.NETCore.Setup" Version="4.0.2.2" />
+      <PackageReference Include="AWSSDK.S3" Version="4.0.6.12" />
       <PackageReference Include="FluentValidation" Version="8.0.0" />
       <PackageReference Include="Microsoft.AspNetCore.Authentication.JwtBearer" Version="8.0.16" />
       <PackageReference Include="Microsoft.Extensions.Http.Resilience" Version="9.5.0" />
@@ -19,6 +21,10 @@
       <ProjectReference Include="..\Papyrus.Api.Contracts\Papyrus.Api.Contracts.csproj" />
       <ProjectReference Include="..\Papyrus.Domain\Papyrus.Domain.csproj" />
       <ProjectReference Include="..\Papyrus.Persistence.MongoDb\Papyrus.Persistence.MongoDb.csproj" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <Folder Include="Handlers\Endpoints\Pages\" />
     </ItemGroup>
 
 </Project>

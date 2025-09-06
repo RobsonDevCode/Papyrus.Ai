@@ -12,7 +12,6 @@ public partial class Mapper
         {
             DocumentGroupId = pageModel.DocumentGroupId,
             DocumentName = pageModel.DocumentName,
-            Content = pageModel.Content,
             PageNumber = pageModel.PageNumber,
             CreatedAt = pageModel.CreatedAt,
             UpdatedAt = pageModel.UpdatedAt,

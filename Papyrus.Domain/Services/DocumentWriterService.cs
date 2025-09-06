@@ -18,13 +18,15 @@ public sealed class DocumentWriterService : IDocumentWriterService
 {
     private readonly IDocumentWriter _documentWriter;
     private readonly IDocumentReader _documentReader;
+    private readonly IPdfWriterService _pdfWriterService;
     private readonly IImageWriterService _imageWriterService;
     private readonly IMapper _mapper;
     private readonly ILogger<DocumentWriterService> _logger;
     private readonly string _papyrusApiUrl;
-    
+
     public DocumentWriterService(IDocumentWriter documentWriter,
         IDocumentReader documentReader,
+        IPdfWriterService pdfWriterService,
         IImageWriterService imageWriterService,
         IMapper mapper,
         IConfiguration configuration,
@@ -32,6 +34,7 @@ public sealed class DocumentWriterService : IDocumentWriterService
     {
         _documentWriter = documentWriter;
         _documentReader = documentReader;
+        _pdfWriterService = pdfWriterService;
         _imageWriterService = imageWriterService;
         _mapper = mapper;
         _papyrusApiUrl = configuration.GetValue<string>("PapyrusApiUrl")
@@ -45,7 +48,17 @@ public sealed class DocumentWriterService : IDocumentWriterService
         {
             throw new BadHttpRequestException($"Document with name {document.Name} already exists.");
         }
-        
+
+        var groupId = Guid.NewGuid();
+        var s3Key = $"pdfs/{DateTime.UtcNow:yyyy/MM/dd}/{groupId}_{document.Name}";
+
+        var savePdfStream = new MemoryStream();
+        await document.PdfStream.CopyToAsync(savePdfStream, cancellationToken);
+        savePdfStream.Position = 0;
+
+        await _pdfWriterService.SaveAsync(s3Key, savePdfStream, cancellationToken);
+        document.PdfStream.Position = 0;
+
         using var pdfDoc = PdfDocument.Open(document.PdfStream);
         var totalPages = pdfDoc.NumberOfPages;
         if (totalPages == 0)
@@ -53,7 +66,6 @@ public sealed class DocumentWriterService : IDocumentWriterService
             throw new InvalidOperationException("Cannot store empty document.");
         }
 
-        var groupId = Guid.NewGuid();
         document.Name = document.Name.Replace(".pdf", "");
 
         var textOnlyPagesToSave = new List<Page>();
@@ -62,20 +74,21 @@ public sealed class DocumentWriterService : IDocumentWriterService
         {
             var pdfPageNumber = i + 1;
             var page = pdfDoc.GetPage(pdfPageNumber);
-            
+
             if (string.IsNullOrWhiteSpace(page.Text) && !page.GetImages().Any())
             {
                 _logger.LogWarning("Cannot extract page {pageNum} as its null skipping it.", pdfPageNumber);
                 continue;
             }
-            
+
             var imageCount = page.GetImages().Count();
             var orderedContent = page.ExtractContentFromPage();
-            
+
             var mappedPage = new Page
             {
                 DocumentGroupId = groupId,
                 DocumentName = document.Name,
+                S3Key = s3Key,
                 Content = string.Join(" ", orderedContent),
                 PageNumber = pdfPageNumber,
                 ImageCount = imageCount,
@@ -84,7 +97,7 @@ public sealed class DocumentWriterService : IDocumentWriterService
                 UpdatedAt = DateTime.UtcNow,
                 Type = "pdf"
             };
-            
+
             //If pdf page contains image we want to dispose as quick as possible because base64 encoding strings are expensive to store in memory.
             if (imageCount > 0)
             {
@@ -96,7 +109,7 @@ public sealed class DocumentWriterService : IDocumentWriterService
                     _imageWriterService.InsertAsync(image, cancellationToken),
                     _documentWriter.InsertAsync(mappedPage, cancellationToken)
                 };
-                
+
                 await Task.WhenAll(tasks);
                 continue;
             }

@@ -6,4 +6,5 @@ public static class DatabaseConstants
     public const string NotesCollectionName = "notes";
     public const string PromptCollectionName = "prompts";
     public const string ImagesCollectionName = "images";
+    public const string BookmarksCollectionName = "bookmarks";
 }

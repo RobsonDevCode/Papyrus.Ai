@@ -23,6 +23,20 @@ public sealed class DocumentReader : IDocumentReader
         return await _pageCollection.Find(p => p.DocumentId == id).SingleOrDefaultAsync(cancellationToken);
     }
 
+    public async IAsyncEnumerable<Page?> GetByGroupIdAsync(Guid documentId, CancellationToken cancellationToken)
+    {
+        var filter = Builders<Page>.Filter.Eq(x => x.DocumentGroupId, documentId);
+        using var cursor = await _pageCollection.Find(filter).ToCursorAsync(cancellationToken);
+
+        while (await cursor.MoveNextAsync(cancellationToken))
+        {
+            foreach (var page in cursor.Current)
+            {
+                yield return page;
+            }
+        }
+    }
+
     public async Task<Page?> GetByGroupIdAsync(Guid documentGroupId, int page, CancellationToken cancellationToken)
     {
         if (page == 0)
