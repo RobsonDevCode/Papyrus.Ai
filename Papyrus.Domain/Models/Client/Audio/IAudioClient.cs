@@ -2,5 +2,5 @@
 
 public interface IAudioClient
 {
-    Task<AudioResponse> CreateAudioAsync(AudioRequest request, CancellationToken cancellationToken);
+    Task<Stream> CreateAudioAsync(string voiceId, string text, CancellationToken? cancellationToken);
 }

@@ -8,5 +8,5 @@ public record AudioRequest
     public string Text { get; init; }
     
     [JsonPropertyName("model_id")]
-    public string ModelId { get; init; }
+    public string? ModelId { get; init; }
 }
