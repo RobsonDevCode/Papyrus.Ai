@@ -4,7 +4,7 @@ internal static class BookmarkEndpointMapper
 {
     internal static void MapBookmarkEndpoints(this WebApplication app)
     {
-        var bookmarkGroup = app.MapGroup("bookmark")
+        var bookmarkGroup = app.MapGroup("Bookmark")
             .WithTags("bookmark");
         bookmarkGroup.MapBookmarkWriterEndpoints();
         bookmarkGroup.MapBookmarkReaderEndpoints();

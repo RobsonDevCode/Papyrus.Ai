@@ -27,7 +27,7 @@ public sealed class BookmarkReaderService : IBookmarkReaderService
     {
         return await _cache.GetOrCreateAsync(key: $"{documentGroupId}", async entry =>
         {
-            entry.SetAbsoluteExpiration(TimeSpan.FromMinutes(10));
+            entry.SetAbsoluteExpiration(TimeSpan.FromMinutes(1));
             var bookmark = await _bookmarkReader.GetByGroupIdAsync(documentGroupId, cancellationToken);
             if (bookmark == null)
             {

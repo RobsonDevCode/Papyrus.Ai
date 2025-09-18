@@ -47,7 +47,7 @@ public sealed class NoteWriterService : INoteWriterService
 
         if (page is null)
         {
-            throw new DocumentNotFoundExeception("No document found");
+            throw new DocumentNotFoundException("No document found");
         }
 
         if (request.Prompt is not null)

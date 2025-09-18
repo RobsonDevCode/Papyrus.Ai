@@ -6,9 +6,11 @@ using Papyrus.Api.Contracts.Contracts.Requests;
 using Papyrus.Domain.Clients;
 using Papyrus.Domain.Mappers;
 using Papyrus.Domain.Services;
+using Papyrus.Domain.Services.AudioBook;
 using Papyrus.Domain.Services.Bookmark;
 using Papyrus.Domain.Services.Images;
 using Papyrus.Domain.Services.Interfaces;
+using Papyrus.Domain.Services.Interfaces.AudioBook;
 using Papyrus.Domain.Services.Interfaces.Bookmark;
 using Papyrus.Domain.Services.Interfaces.Images;
 using Papyrus.Domain.Services.Interfaces.Notes;
@@ -38,9 +40,11 @@ public static class ServiceExtensions
         serviceCollection.AddScoped<IImageReader, ImageReader>();
         serviceCollection.AddScoped<IBookmarkWriter, BookmarkWriter>();
         serviceCollection.AddScoped<IBookmarkReader, BookmarkReader>();
+        serviceCollection.AddScoped<IAudioSettingsWriter, AudioSettingsWriter>();
         
         serviceCollection.AddSingleton<IMongoPromptDbConnector, MongoPromptDbConnector>();
         serviceCollection.AddSingleton<IMongoBookDbConnector, MongoBookDbConnector>();
+        serviceCollection.AddSingleton<IMongoAudioSettingsDbConnector, MongoAudioSettingDbConnector>();
     }
 
     public static void AddDomain(this IServiceCollection serviceCollection)
@@ -55,8 +59,10 @@ public static class ServiceExtensions
         serviceCollection.AddScoped<IPdfReaderService, PdfReaderService>();
         serviceCollection.AddScoped<IBookmarkWriterService, BookmarkWriterService>();
         serviceCollection.AddScoped<IBookmarkReaderService, BookmarkReaderService>();
+        serviceCollection.AddScoped<IAudioSettingsWriterService, AudioSettingsWriterService>();
         
-        serviceCollection.AddSingleton<IPapyrusAiClient, PapyrusAiClient>();
+        serviceCollection.AddSingleton<IPapyrusAiClient, PapyrusAiClient>(); 
+        serviceCollection.AddSingleton<IAudioClient, AudioClient>();
         serviceCollection.AddSingleton<IMapper, Mapper>();
         serviceCollection.AddMemoryCache();
     }
@@ -101,5 +107,7 @@ public static class ServiceExtensions
         serviceCollection.AddScoped<IValidator<WriteImageNoteRequest>, WriteImageNoteValidator>();
         serviceCollection.AddScoped<IValidator<EditNoteRequest>, EditNoteRequestValidator>();
         serviceCollection.AddScoped<IValidator<CreateBookmarkRequest>, CreateBookmarkRequestValidator>();
+        serviceCollection.AddScoped<IValidator<CreateAudioBookRequest>, CreateAudioBookRequestValidator>();
+        serviceCollection.AddScoped<IValidator<AudioSettingsRequest>, AudioSettingsRequestValidator>();
     }
 }

@@ -33,7 +33,7 @@ builder.Services.AddDomain();
 builder.Services.AddPersistence();
 builder.Services.AddPapyrusSwagger();
 builder.Services.AddValidators();
-builder.Services.AddPapyrusAiClient(builder.Configuration);
+builder.Services.AddExternalHttpClients(builder.Configuration);
 builder.Services.AddCors();
 
 //The pdf logic is written in c++ so we need ensure its running

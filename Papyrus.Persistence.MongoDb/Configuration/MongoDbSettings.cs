@@ -7,4 +7,6 @@ public class MongoDbSettings
     public required string BooksDatabase { get; init; }
     
     public required string PromptsDatabase { get; init; }
+    
+    public required string AudioSettingsDatabase { get; init; }
 }

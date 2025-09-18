@@ -1,4 +1,5 @@
 ﻿using MongoDB.Driver;
+using Papyrus.Ai.Configuration;
 using Papyrus.Persistance.Interfaces.Contracts;
 using Papyrus.Persistance.Interfaces.Mongo;
 using Papyrus.Perstistance.Interfaces.Writer;
@@ -11,7 +12,7 @@ public sealed class BookmarkWriter : IBookmarkWriter
 
     public BookmarkWriter(IMongoBookDbConnector connector)
     {
-        _bookmarkCollection = connector.GetCollection<Bookmark>("bookmarks");    
+        _bookmarkCollection = connector.GetCollection<Bookmark>(DatabaseConstants.BookmarksCollectionName);    
     }
     
     public async Task InsertAsync(Bookmark bookmark, CancellationToken cancellationToken)

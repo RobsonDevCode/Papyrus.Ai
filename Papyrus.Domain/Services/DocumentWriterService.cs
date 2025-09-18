@@ -52,7 +52,7 @@ public sealed class DocumentWriterService : IDocumentWriterService
         var groupId = Guid.NewGuid();
         var s3Key = $"pdfs/{DateTime.UtcNow:yyyy/MM/dd}/{groupId}_{document.Name}";
 
-        var savePdfStream = new MemoryStream();
+        using var savePdfStream = new MemoryStream();
         await document.PdfStream.CopyToAsync(savePdfStream, cancellationToken);
         savePdfStream.Position = 0;
 
@@ -113,7 +113,8 @@ public sealed class DocumentWriterService : IDocumentWriterService
                 await Task.WhenAll(tasks);
                 continue;
             }
-
+            
+            
             textOnlyPagesToSave.Add(mappedPage);
             if (textOnlyPagesToSave.Count >= batchSize || i == totalPages - 1)
             {

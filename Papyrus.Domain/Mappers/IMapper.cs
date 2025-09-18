@@ -8,4 +8,5 @@ namespace Papyrus.Domain.Mappers;
 public interface IMapper : IPageResponseMapper, IPageDomainMapper,
     INoteDomainMapper, INoteResponseMapper, INotePersistenceMapper,
     IImagePersistenceMapper, IPromptDomainMapper, IImageDomainMapper,
-    IBookmarkDomainMapper, IBookmarkPersistenceMapper, IBookmarkResponseMapper;
+    IBookmarkDomainMapper, IBookmarkPersistenceMapper, IBookmarkResponseMapper, 
+    IAudioSettingsDomainMapper, IAudioSettingPersistenceMapper;
