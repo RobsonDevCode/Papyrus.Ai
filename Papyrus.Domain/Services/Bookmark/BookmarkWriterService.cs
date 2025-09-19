@@ -9,16 +9,16 @@ namespace Papyrus.Domain.Services.Bookmark;
 
 public sealed class BookmarkWriterService : IBookmarkWriterService
 {
-    private readonly IDocumentReaderService _documentReaderService;
+    private readonly IPageReaderService _pageReaderService;
     private readonly IBookmarkWriter _bookmarkWriter;
     private readonly IMapper _mapper;
     private readonly ILogger<BookmarkWriterService> _logger;
 
-    public BookmarkWriterService(IDocumentReaderService documentReaderService, IBookmarkWriter bookmarkWriter,
+    public BookmarkWriterService(IPageReaderService pageReaderService, IBookmarkWriter bookmarkWriter,
         IMapper mapper,
         ILogger<BookmarkWriterService> logger)
     {
-        _documentReaderService = documentReaderService;
+        _pageReaderService = pageReaderService;
         _bookmarkWriter = bookmarkWriter;
         _mapper = mapper;
         _logger = logger;
@@ -26,7 +26,7 @@ public sealed class BookmarkWriterService : IBookmarkWriterService
     
     public async Task Create(BookmarkModel bookmark, CancellationToken cancellationToken)
     {
-        if (await _documentReaderService.GetByGroupIdAsync(bookmark.DocumentGroupId, bookmark.Page, cancellationToken)
+        if (await _pageReaderService.GetByGroupIdAsync(bookmark.DocumentGroupId, bookmark.Page, cancellationToken)
             is null)
         {
             _logger.LogError("Document group {id} page {page} not found", bookmark.DocumentGroupId, bookmark.Page);

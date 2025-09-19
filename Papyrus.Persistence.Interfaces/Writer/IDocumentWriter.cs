@@ -1,10 +1,8 @@
 ﻿using Papyrus.Persistance.Interfaces.Contracts;
 
-namespace Papyrus.Persistance.Interfaces.Writer;
+namespace Papyrus.Perstistance.Interfaces.Writer;
 
 public interface IDocumentWriter
 {
-    Task InsertAsync(Page document, CancellationToken cancellationToken);
-
-    Task InsertManyAsync(IEnumerable<Page> pages, CancellationToken cancellationToken);
+    Task InsertAsync(DocumentPreview documentPreview, CancellationToken cancellationToken);
 }

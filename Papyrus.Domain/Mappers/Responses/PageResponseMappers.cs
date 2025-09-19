@@ -1,6 +1,7 @@
 ﻿
 using Papyrus.Api.Contracts.Contracts.Responses;
 using Papyrus.Domain.Models;
+using Papyrus.Domain.Models.Documents;
 
 namespace Papyrus.Mappers;
 

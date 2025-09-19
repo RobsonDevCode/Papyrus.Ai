@@ -31,16 +31,17 @@ public static class ServiceExtensions
 {
     public static void AddPersistence(this IServiceCollection serviceCollection)
     {
-        serviceCollection.AddScoped<IDocumentWriter, DocumentWriter>();
-        serviceCollection.AddScoped<IDocumentReader, DocumentReader>();
+        serviceCollection.AddScoped<IPageWriter, PageWriter>();
+        serviceCollection.AddScoped<IPageReader, PageReader>();
         serviceCollection.AddScoped<INoteReader, NoteReader>();
         serviceCollection.AddScoped<INoteWriter, NoteWriter>();
         serviceCollection.AddScoped<IPromptHistoryReader, PromptHistoryReader>();
         serviceCollection.AddScoped<IPromptHistoryWriter, PromptHistoryWriter>();
-        serviceCollection.AddScoped<IImageReader, ImageReader>();
+        serviceCollection.AddScoped<IImageReader, ImageInfoReader>();
         serviceCollection.AddScoped<IBookmarkWriter, BookmarkWriter>();
         serviceCollection.AddScoped<IBookmarkReader, BookmarkReader>();
         serviceCollection.AddScoped<IAudioSettingsWriter, AudioSettingsWriter>();
+        serviceCollection.AddScoped<IDocumentWriter, DocumentWriter>();
         
         serviceCollection.AddSingleton<IMongoPromptDbConnector, MongoPromptDbConnector>();
         serviceCollection.AddSingleton<IMongoBookDbConnector, MongoBookDbConnector>();
@@ -50,16 +51,17 @@ public static class ServiceExtensions
     public static void AddDomain(this IServiceCollection serviceCollection)
     {
         serviceCollection.AddScoped<IDocumentWriterService, DocumentWriterService>();
-        serviceCollection.AddScoped<IDocumentReaderService, DocumentReaderService>();
+        serviceCollection.AddScoped<IPageReaderService, PageReaderService>();
         serviceCollection.AddScoped<INoteWriterService, NoteWriterService>();
         serviceCollection.AddScoped<INoteReaderService, NoteReaderService>();
-        serviceCollection.AddScoped<IImageWriterService, ImageWriterService>();
+        serviceCollection.AddScoped<IImageInfoWriterService, ImageInfoWriter>();
         serviceCollection.AddScoped<IImageReaderService, ImageReaderService>();
         serviceCollection.AddScoped<IPdfWriterService, PdfWriterService>();
         serviceCollection.AddScoped<IPdfReaderService, PdfReaderService>();
         serviceCollection.AddScoped<IBookmarkWriterService, BookmarkWriterService>();
         serviceCollection.AddScoped<IBookmarkReaderService, BookmarkReaderService>();
         serviceCollection.AddScoped<IAudioSettingsWriterService, AudioSettingsWriterService>();
+        serviceCollection.AddScoped<IDocumentWriterService, DocumentWriterService>();
         
         serviceCollection.AddSingleton<IPapyrusAiClient, PapyrusAiClient>(); 
         serviceCollection.AddSingleton<IAudioClient, AudioClient>();

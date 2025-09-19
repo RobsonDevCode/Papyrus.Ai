@@ -1,4 +1,4 @@
-﻿namespace Papyrus.Domain.Models;
+﻿namespace Papyrus.Domain.Models.Documents;
 
 public record PageModel
 {

@@ -6,11 +6,11 @@ using Papyrus.Perstistance.Interfaces.Writer;
 
 namespace Papyrus.Persistence.MongoDb.Writer;
 
-public sealed class ImageWriterService : IImageWriterService
+public sealed class ImageInfoWriter : IImageInfoWriterService
 {
     private readonly IMongoCollection<Image> _imageCollection;
 
-    public ImageWriterService(IMongoBookDbConnector connector)
+    public ImageInfoWriter(IMongoBookDbConnector connector)
     {
         _imageCollection = connector.GetCollection<Image>(DatabaseConstants.ImagesCollectionName);
     }

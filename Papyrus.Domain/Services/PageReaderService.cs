@@ -1,21 +1,23 @@
 ﻿using Microsoft.Extensions.Caching.Memory;
 using Papyrus.Domain.Mappers;
 using Papyrus.Domain.Models;
+using Papyrus.Domain.Models.Documents;
+using Papyrus.Domain.Models.Filters;
 using Papyrus.Domain.Services.Interfaces;
 using Papyrus.Persistance.Interfaces.Reader;
 
 namespace Papyrus.Domain.Services;
 
-public sealed class DocumentReaderService : IDocumentReaderService
+public sealed class PageReaderService : IPageReaderService
 {
-    private readonly IDocumentReader _documentReader;
+    private readonly IPageReader _pageReader;
     private readonly IMemoryCache _memoryCache;
     private readonly IMapper _mapper;
 
-    public DocumentReaderService(IDocumentReader documentReader, IMemoryCache memoryCache, IMapper mapper
+    public PageReaderService(IPageReader pageReader, IMemoryCache memoryCache, IMapper mapper
     )
     {
-        _documentReader = documentReader;
+        _pageReader = pageReader;
         _memoryCache = memoryCache;
         _mapper = mapper;
     }
@@ -27,7 +29,7 @@ public sealed class DocumentReaderService : IDocumentReaderService
             entry.SetSlidingExpiration(TimeSpan.FromMinutes(1));
             entry.SetAbsoluteExpiration(TimeSpan.FromMinutes(3));
 
-            var page = await _documentReader.GetByIdAsync(pageId, cancellationToken);
+            var page = await _pageReader.GetByIdAsync(pageId, cancellationToken);
             return page is null ? null : _mapper.MapToDomain(page);
         });
     } 
@@ -45,7 +47,7 @@ public sealed class DocumentReaderService : IDocumentReaderService
             entry.Size = 100;
             entry.SetAbsoluteExpiration(TimeSpan.FromMinutes(2));
 
-            var page = await _documentReader.GetByGroupIdAsync(documentGroupId, (int)pageNumber, cancellationToken);
+            var page = await _pageReader.GetByGroupIdAsync(documentGroupId, (int)pageNumber, cancellationToken);
             return page is null ? null : _mapper.MapToDomain(page);
         });
     }
@@ -60,7 +62,7 @@ public sealed class DocumentReaderService : IDocumentReaderService
             } 
         }
         
-        var response = await _documentReader.GetPages(documentGroupId, pageNumbers, cancellationToken);
+        var response = await _pageReader.GetPages(documentGroupId, pageNumbers, cancellationToken);
         if (!response.Pages.Any())
         {
             return ([], 0);
@@ -68,5 +70,11 @@ public sealed class DocumentReaderService : IDocumentReaderService
         
         var result = _mapper.MapToDomain(response.Pages);
         return (result, response.TotalPages);
+    }
+
+    public Task<(IEnumerable<DocumentPreviewModel> Documents, int TotalCount)> GetDocuments(PaginationRequestModel pagination, CancellationToken cancellationToken)
+    {
+        
+        throw new NotImplementedException();
     }
 }

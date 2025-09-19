@@ -1,8 +1,9 @@
-﻿using Papyrus.Domain.Models;
+﻿using Papyrus.Domain.Models.Documents;
+using Papyrus.Domain.Models.Filters;
 
 namespace Papyrus.Domain.Services.Interfaces;
 
-public interface IDocumentReaderService
+public interface IPageReaderService
 {
     Task<PageModel?> GetPageByIdAsync(Guid pageId, CancellationToken cancellationToken);
     
@@ -12,5 +13,5 @@ public interface IDocumentReaderService
     Task<(IEnumerable<PageModel> Pages, int TotalPages)> GetPages(Guid documentGroupId, int[] pageNumbers,
         CancellationToken cancellationToken);
     
-    
+    Task<(IEnumerable<DocumentPreviewModel> Documents, int TotalCount)> GetDocuments(PaginationRequestModel pagination, CancellationToken cancellationToken);
 }

@@ -74,22 +74,11 @@ internal static class NoteReaderEndpoints
             Size = pagination.Size
         }, cancellationToken);
         
-        if (response is null)
-        {
-            return TypedResults.Ok(new PagedResponse<NoteResponse>
-            {
-                Items = [],
-                Pagination = new Pagination(pagination.Page, pagination.Size, 0)
-            });
-        }
+      
+        var notes = mapper.MapToResponse(response.Items.ToList());
         
-        var result = mapper.MapToResponse(response.Items);
-        
-        return TypedResults.Ok(new PagedResponse<NoteResponse>
-        {
-           Items = result,
-           Pagination = new Pagination(pagination.Page, pagination.Size, response.Pagination.TotalPages)
-        });
+        return TypedResults.Ok(mapper.MapToResponse(notes, pagination.Page, pagination.Size,
+            (int)response.Pagination.TotalPages));
     }
 
     private static async Task<Ok<List<NoteResponse>>> GetNotesForPage([FromRoute] Guid documentGroupId,

@@ -35,7 +35,7 @@ public sealed class NoteReaderService : INoteReaderService
         });
     }
 
-    public async Task<PagedResponseModel<NoteModel>?> GetNotesAsync(Guid id, PaginationRequestModel options,
+    public async Task<PagedResponseModel<NoteModel>> GetNotesAsync(Guid id, PaginationRequestModel options,
         CancellationToken cancellationToken)
     {
         var response = await _noteReader.GetPagedNotesAsync(id, new PaginationOptions

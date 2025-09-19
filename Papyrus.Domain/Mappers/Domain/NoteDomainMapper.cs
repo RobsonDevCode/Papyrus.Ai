@@ -2,6 +2,7 @@
 using Papyrus.Domain.Clients;
 using Papyrus.Domain.Extensions;
 using Papyrus.Domain.Models;
+using Papyrus.Domain.Models.Documents;
 using Papyrus.Domain.Models.Filters;
 using Papyrus.Domain.Models.Pagination;
 using Papyrus.Persistance.Interfaces.Contracts;
@@ -80,7 +81,7 @@ public partial class Mapper
         return notes.Select(MapToDomain).ToList();
     } 
 
-    public PagedResponseModel<NoteModel>? Map(PagedResponse<Note> response, int page, int size)
+    public PagedResponseModel<NoteModel> Map(PagedResponse<Note> response, int page, int size)
     {
         return new PagedResponseModel<NoteModel>
         {

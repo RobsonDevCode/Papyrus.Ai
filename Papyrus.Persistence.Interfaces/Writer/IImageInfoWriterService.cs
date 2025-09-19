@@ -2,7 +2,7 @@
 
 namespace Papyrus.Perstistance.Interfaces.Writer;
 
-public interface IImageWriterService
+public interface IImageInfoWriterService
 {
     Task InsertAsync(Image image, CancellationToken cancellationToken);
 }

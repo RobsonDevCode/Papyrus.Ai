@@ -1,6 +1,7 @@
 ﻿using Papyrus.Domain.Clients;
 using Papyrus.Domain.Extensions;
 using Papyrus.Domain.Models;
+using Papyrus.Domain.Models.Documents;
 using Papyrus.Persistance.Interfaces.Contracts;
 
 namespace Papyrus.Mappers;

@@ -6,11 +6,11 @@ using Papyrus.Persistance.Interfaces.Reader;
 
 namespace Papyrus.Persistence.MongoDb.Reader;
 
-public sealed class ImageReader : IImageReader
+public sealed class ImageInfoReader : IImageReader
 {
     private readonly IMongoCollection<Image> _imageCollection;
 
-    public ImageReader(IMongoBookDbConnector connector)
+    public ImageInfoReader(IMongoBookDbConnector connector)
     {
         _imageCollection = connector.GetCollection<Image>(DatabaseConstants.ImagesCollectionName);    
     }

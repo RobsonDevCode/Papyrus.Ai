@@ -2,8 +2,10 @@
 using Microsoft.AspNetCore.Mvc;
 using Papyrus.Ai.Constants;
 using Papyrus.Api.Contracts.Contracts.Api;
+using Papyrus.Api.Contracts.Contracts.Requests;
 using Papyrus.Api.Contracts.Contracts.Responses;
 using Papyrus.Domain.Mappers;
+using Papyrus.Domain.Models.Filters;
 using Papyrus.Domain.Services.Interfaces;
 using static Papyrus.Ai.Constants.LoggingCategories;
 
@@ -24,7 +26,7 @@ internal static class DocumentReaderEndpoints
     private static async Task<Results<Ok<DocumentPageResponse>, NotFound, BadRequest<string>>> GetPage(
         [FromRoute] Guid documentGroupId,
         [FromRoute] int pageNumber,
-        [FromServices] IDocumentReaderService documentReaderService,
+        [FromServices] IPageReaderService pageReaderService,
         [FromServices] IMapper mapper,
         [FromServices] ILoggerFactory loggerFactory,
         CancellationToken cancellationToken)
@@ -37,7 +39,7 @@ internal static class DocumentReaderEndpoints
             [Filter] = documentGroupId.ToString()
         });
 
-        var response = await documentReaderService.GetByGroupIdAsync(documentGroupId, pageNumber, cancellationToken);
+        var response = await pageReaderService.GetByGroupIdAsync(documentGroupId, pageNumber, cancellationToken);
 
         if (response is null)
         {
@@ -51,7 +53,7 @@ internal static class DocumentReaderEndpoints
     private static async Task<Ok<DocumentPagesResponse>> GetPages(
         [FromRoute] Guid documentGroupId,
         [FromQuery] int[] pageNumbers,
-        [FromServices] IDocumentReaderService documentReaderService,
+        [FromServices] IPageReaderService pageReaderService,
         [FromServices] IMapper mapper,
         [FromServices] ILoggerFactory loggerFactory,
         CancellationToken cancellationToken)
@@ -65,7 +67,7 @@ internal static class DocumentReaderEndpoints
             [PageNumbers] = pageNumbers
         });
         
-        var response = await documentReaderService.GetPages(documentGroupId, pageNumbers, cancellationToken);
+        var response = await pageReaderService.GetPages(documentGroupId, pageNumbers, cancellationToken);
         
         return TypedResults.Ok(mapper.MapToResponse(response.Pages, response.TotalPages));
     }
@@ -92,5 +94,32 @@ internal static class DocumentReaderEndpoints
         
         return TypedResults.File(response, "application/pdf", $"{documentGroupId}.pdf");
     }
-    
+
+    private static async Task<Ok<PagedResponse<DocumentResponse>>> GetDocuments(
+        [AsParameters] PaginationOptions paginationOptions,
+        [FromServices] IPageReaderService pageReaderService,
+        [FromServices] IMapper mapper,
+        [FromServices] ILoggerFactory loggerFactory,
+        CancellationToken cancellationToken)
+    {
+        var logger = loggerFactory.CreateLogger(Loggers.DocumentReader);
+        using var _ = logger.BeginScope(new Dictionary<string, object>
+        {
+            [Operation] = "Get Documents",
+            [Filter] = paginationOptions
+        });
+
+        logger.LogInformation("Getting Documents page {page}, page size {pageSize}", paginationOptions.Page, paginationOptions.Size);
+        
+        var response = await pageReaderService.GetDocuments(new PaginationRequestModel
+        {
+            Page = paginationOptions.Page,
+            Size = paginationOptions.Size
+        }, cancellationToken);
+
+        var documents = mapper.MapToResponse(response.Documents.ToList());
+        var result = mapper.MapToResponse(documents, paginationOptions.Page, paginationOptions.Size, response.TotalCount);
+        
+        return TypedResults.Ok(result);
+    }
 }

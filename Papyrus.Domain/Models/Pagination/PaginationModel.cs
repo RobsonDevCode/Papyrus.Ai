@@ -6,5 +6,5 @@ public record PaginationModel
     
     public required int Size { get; init; }
 
-    public long TotalPages { get; init; } = 0;
+    public long TotalPages { get; init; }
 }

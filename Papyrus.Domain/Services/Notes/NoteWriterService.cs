@@ -5,6 +5,7 @@ using Papyrus.Domain.Exceptions;
 using Papyrus.Domain.Extensions;
 using Papyrus.Domain.Mappers;
 using Papyrus.Domain.Models;
+using Papyrus.Domain.Models.Documents;
 using Papyrus.Domain.Models.Filters;
 using Papyrus.Domain.Services.Interfaces;
 using Papyrus.Domain.Services.Interfaces.Notes;
@@ -16,7 +17,7 @@ namespace Papyrus.Domain.Services.Notes;
 
 public sealed class NoteWriterService : INoteWriterService
 {
-    private readonly IDocumentReaderService _documentReaderService;
+    private readonly IPageReaderService _pageReaderService;
     private readonly IPromptHistoryReader _promptHistoryReader;
     private readonly IPromptHistoryWriter _promptHistoryWriter;
     private readonly IPapyrusAiClient _papyrusAiClient;
@@ -24,7 +25,7 @@ public sealed class NoteWriterService : INoteWriterService
     private readonly ILogger<NoteWriterService> _logger;
     private readonly IMapper _mapper;
 
-    public NoteWriterService(IDocumentReaderService documentReaderService,
+    public NoteWriterService(IPageReaderService pageReaderService,
         IPromptHistoryReader promptHistoryReader,
         IPromptHistoryWriter promptHistoryWriter,
         IPapyrusAiClient papyrusAiClient,
@@ -32,7 +33,7 @@ public sealed class NoteWriterService : INoteWriterService
         ILogger<NoteWriterService> logger,
         IMapper mapper)
     {
-        _documentReaderService = documentReaderService;
+        _pageReaderService = pageReaderService;
         _promptHistoryReader = promptHistoryReader;
         _promptHistoryWriter = promptHistoryWriter;
         _papyrusAiClient = papyrusAiClient;
@@ -43,7 +44,7 @@ public sealed class NoteWriterService : INoteWriterService
 
     public async Task<NoteModel> WriteNoteAsync(NoteRequestModel request, CancellationToken cancellationToken)
     {
-        var page = await _documentReaderService.GetPageByIdAsync(request.PageId, cancellationToken);
+        var page = await _pageReaderService.GetPageByIdAsync(request.PageId, cancellationToken);
 
         if (page is null)
         {

@@ -7,12 +7,12 @@ using Papyrus.Persistance.Interfaces.Reader;
 
 namespace Papyrus.Persistence.MongoDb.Reader;
 
-public sealed class DocumentReader : IDocumentReader
+public sealed class PageReader : IPageReader
 {
     private readonly IMongoCollection<Page> _pageCollection;
-    private readonly ILogger<DocumentReader> _logger;
+    private readonly ILogger<PageReader> _logger;
 
-    public DocumentReader(IMongoBookDbConnector connector, ILogger<DocumentReader> logger)
+    public PageReader(IMongoBookDbConnector connector, ILogger<PageReader> logger)
     {
         _pageCollection = connector.GetCollection<Page>(DatabaseConstants.PagesCollectionName);
         _logger = logger;

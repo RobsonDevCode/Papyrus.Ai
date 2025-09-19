@@ -2,7 +2,7 @@
 
 namespace Papyrus.Persistance.Interfaces.Reader;
 
-public interface IDocumentReader
+public interface IPageReader
 {
     Task<Page?> GetByIdAsync(Guid id, CancellationToken cancellationToken);
     IAsyncEnumerable<Page?> GetByGroupIdAsync(Guid documentId, CancellationToken cancellationToken); 

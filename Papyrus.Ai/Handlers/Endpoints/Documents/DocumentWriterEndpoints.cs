@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.AspNetCore.Mvc;
 using Papyrus.Ai.Constants;
 using Papyrus.Domain.Models;
+using Papyrus.Domain.Models.Documents;
 using Papyrus.Domain.Services.Interfaces;
 using static Papyrus.Ai.Constants.LoggingCategories;
 

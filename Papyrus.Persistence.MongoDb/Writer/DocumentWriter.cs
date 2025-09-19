@@ -2,26 +2,21 @@
 using Papyrus.Ai.Configuration;
 using Papyrus.Persistance.Interfaces.Contracts;
 using Papyrus.Persistance.Interfaces.Mongo;
-using Papyrus.Persistance.Interfaces.Writer;
+using Papyrus.Perstistance.Interfaces.Writer;
 
 namespace Papyrus.Persistence.MongoDb.Writer;
 
 public sealed class DocumentWriter : IDocumentWriter
 {
-    private readonly IMongoCollection<Page> _pagesCollection;
+    private readonly IMongoCollection<DocumentPreview> _collection;
 
     public DocumentWriter(IMongoBookDbConnector connector)
     {
-        _pagesCollection = connector.GetCollection<Page>(DatabaseConstants.PagesCollectionName);
+        _collection = connector.GetCollection<DocumentPreview>(DatabaseConstants.DocumentsCollectionName);
     }
-
-    public async Task InsertAsync(Page page, CancellationToken cancellationToken)
+    
+    public Task InsertAsync(DocumentPreview documentPreview, CancellationToken cancellationToken)
     {
-        await _pagesCollection.InsertOneAsync(page, null, cancellationToken);
-    }
-
-    public async Task InsertManyAsync(IEnumerable<Page> pages, CancellationToken cancellationToken)
-    {
-        await _pagesCollection.InsertManyAsync(pages, null, cancellationToken);
+        return _collection.InsertOneAsync(documentPreview, cancellationToken: cancellationToken);
     }
 }
