@@ -1,8 +1,6 @@
-﻿using Papyrus.Persistance.Interfaces.Contracts;
-
-namespace Papyrus.Persistance.Interfaces.Reader;
+﻿namespace Papyrus.Persistance.Interfaces.Reader;
 
 public interface IImageReader
 {
-    Task<Image> GetByIdAsync(Guid id, CancellationToken cancellationToken);
+    Task<Stream> GetImageAsStreamAsync(string s3key, CancellationToken cancellationToken); 
 }

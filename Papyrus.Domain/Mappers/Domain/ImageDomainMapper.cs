@@ -16,8 +16,8 @@ public partial class Mapper
         {
             Id = image.Id,
             DocumentId = image.DocumentGroupId,
-            Bytes = Convert.FromBase64String(image.Bytes),
-            DocumentName = image.DocumentName
+            DocumentName = image.DocumentName,
+            S3Key = image.S3Key,
         };
     }
 }

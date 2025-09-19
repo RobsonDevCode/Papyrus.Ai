@@ -71,10 +71,4 @@ public sealed class PageReaderService : IPageReaderService
         var result = _mapper.MapToDomain(response.Pages);
         return (result, response.TotalPages);
     }
-
-    public Task<(IEnumerable<DocumentPreviewModel> Documents, int TotalCount)> GetDocuments(PaginationRequestModel pagination, CancellationToken cancellationToken)
-    {
-        
-        throw new NotImplementedException();
-    }
 }

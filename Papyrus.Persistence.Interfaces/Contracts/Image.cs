@@ -12,6 +12,7 @@ public record Image
     [BsonRepresentation(BsonType.String)]
     public required Guid DocumentGroupId { get; init; }
     public required string DocumentName { get; init; }
-    public required string Bytes { get; init; }
+    
+    public required string S3Key { get; init; }
     public int PageNumber { get; init; }
 }

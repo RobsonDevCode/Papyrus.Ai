@@ -23,6 +23,8 @@ using Papyrus.Persistence.MongoDb.Writer;
 using Papyrus.Persistance.Interfaces.Mongo;
 using Papyrus.Persistance.Interfaces.Reader;
 using Papyrus.Persistance.Interfaces.Writer;
+using Papyrus.Persistence.S3Bucket;
+using Papyrus.Persistence.S3Bucket.Writer;
 using Papyrus.Perstistance.Interfaces.Writer;
 
 namespace Papyrus.Ai.Extensions;
@@ -37,11 +39,13 @@ public static class ServiceExtensions
         serviceCollection.AddScoped<INoteWriter, NoteWriter>();
         serviceCollection.AddScoped<IPromptHistoryReader, PromptHistoryReader>();
         serviceCollection.AddScoped<IPromptHistoryWriter, PromptHistoryWriter>();
-        serviceCollection.AddScoped<IImageReader, ImageInfoReader>();
+        serviceCollection.AddScoped<IImageInfoReader, ImageInfoInfoReader>();
         serviceCollection.AddScoped<IBookmarkWriter, BookmarkWriter>();
         serviceCollection.AddScoped<IBookmarkReader, BookmarkReader>();
         serviceCollection.AddScoped<IAudioSettingsWriter, AudioSettingsWriter>();
         serviceCollection.AddScoped<IDocumentWriter, DocumentWriter>();
+        serviceCollection.AddScoped<IImageWriter, ImageWriter>();
+        serviceCollection.AddScoped<IImageReader, ImageReader>();
         
         serviceCollection.AddSingleton<IMongoPromptDbConnector, MongoPromptDbConnector>();
         serviceCollection.AddSingleton<IMongoBookDbConnector, MongoBookDbConnector>();
@@ -62,6 +66,7 @@ public static class ServiceExtensions
         serviceCollection.AddScoped<IBookmarkReaderService, BookmarkReaderService>();
         serviceCollection.AddScoped<IAudioSettingsWriterService, AudioSettingsWriterService>();
         serviceCollection.AddScoped<IDocumentWriterService, DocumentWriterService>();
+        
         
         serviceCollection.AddSingleton<IPapyrusAiClient, PapyrusAiClient>(); 
         serviceCollection.AddSingleton<IAudioClient, AudioClient>();

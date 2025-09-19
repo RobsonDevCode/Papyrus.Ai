@@ -12,7 +12,7 @@ public class PdfWriterService : IPdfWriterService
     
     public PdfWriterService(IConfiguration configuration, IAmazonS3 amazonS3)
     {
-        _bucketName = configuration.GetValue<string>("AWS:BucketName")
+        _bucketName = configuration.GetValue<string>("AWS:PdfBucketName")
             ?? throw new ArgumentNullException("Bucket name cannot be null");
         _amazonS3 = amazonS3;
     }

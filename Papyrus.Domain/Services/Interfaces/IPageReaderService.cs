@@ -13,5 +13,4 @@ public interface IPageReaderService
     Task<(IEnumerable<PageModel> Pages, int TotalPages)> GetPages(Guid documentGroupId, int[] pageNumbers,
         CancellationToken cancellationToken);
     
-    Task<(IEnumerable<DocumentPreviewModel> Documents, int TotalCount)> GetDocuments(PaginationRequestModel pagination, CancellationToken cancellationToken);
 }

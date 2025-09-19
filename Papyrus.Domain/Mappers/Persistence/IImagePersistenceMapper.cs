@@ -4,5 +4,5 @@ namespace Papyrus.Domain.Mappers;
 
 public interface IImagePersistenceMapper
 {
-    Image MapToPersistence(byte[] imageBytes, Guid documentId, string documentName, int pageNumber);
+    Image MapToPersistence(Guid documentId, string documentName, int pageNumber, string s3Key);
 }

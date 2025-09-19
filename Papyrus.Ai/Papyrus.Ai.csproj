@@ -22,6 +22,7 @@
       <ProjectReference Include="..\Papyrus.Api.Contracts\Papyrus.Api.Contracts.csproj" />
       <ProjectReference Include="..\Papyrus.Domain\Papyrus.Domain.csproj" />
       <ProjectReference Include="..\Papyrus.Persistence.MongoDb\Papyrus.Persistence.MongoDb.csproj" />
+      <ProjectReference Include="..\Papyrus.Persistence.S3Bucket\Papyrus.Persistence.S3Bucket.csproj" />
     </ItemGroup>
 
     <ItemGroup>

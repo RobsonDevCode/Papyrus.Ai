@@ -18,7 +18,7 @@ public sealed class PdfReaderService : IPdfReaderService
         IPageReaderService pageReaderService,
         IMemoryCache memoryCache)
     {
-        _bucketName = configuration.GetValue<string>("AWS:BucketName")
+        _bucketName = configuration.GetValue<string>("AWS:PdfBucketName")
             ?? throw new ArgumentNullException("Bucket name cannot be null");
         _amazonS3 = amazonS3;
         _pageReaderService = pageReaderService;

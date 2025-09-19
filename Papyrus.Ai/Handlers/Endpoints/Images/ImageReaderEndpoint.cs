@@ -29,13 +29,13 @@ internal static class ImageReaderEndpoint
             [Filter] = id.ToString()
         });
         
-        var imageBytes = await imageReaderService.GetById(id, cancellationToken);
+        await using var imageBytes = await imageReaderService.GetById(id, cancellationToken);
         if (imageBytes == null)
         {
             return TypedResults.NotFound();
         }
         
-        return TypedResults.File(imageBytes.Bytes, "image/png", 
-            $"{imageBytes.DocumentName}-{imageBytes.Id}");
+        return TypedResults.File(imageBytes.ToArray(), "image/png", 
+            "downloaded-image.png");
     }
 }

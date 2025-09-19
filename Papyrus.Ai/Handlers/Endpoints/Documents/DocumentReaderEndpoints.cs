@@ -97,7 +97,7 @@ internal static class DocumentReaderEndpoints
 
     private static async Task<Ok<PagedResponse<DocumentResponse>>> GetDocuments(
         [AsParameters] PaginationOptions paginationOptions,
-        [FromServices] IPageReaderService pageReaderService,
+        [FromServices] IDocumentReaderService pageReaderService,
         [FromServices] IMapper mapper,
         [FromServices] ILoggerFactory loggerFactory,
         CancellationToken cancellationToken)

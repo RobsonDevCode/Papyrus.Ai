@@ -36,7 +36,6 @@ builder.Services.AddValidators();
 builder.Services.AddExternalHttpClients(builder.Configuration);
 builder.Services.AddCors();
 
-//The pdf logic is written in c++ so we need ensure its running
 var app = builder.Build();
 
 app.UseExceptionHandler();
