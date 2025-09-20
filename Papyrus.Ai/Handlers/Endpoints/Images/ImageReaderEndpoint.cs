@@ -29,6 +29,7 @@ internal static class ImageReaderEndpoint
             [Filter] = id.ToString()
         });
         
+        logger.LogInformation("Getting image {imageId}...", id);
         await using var imageBytes = await imageReaderService.GetById(id, cancellationToken);
         if (imageBytes == null)
         {

@@ -34,7 +34,7 @@ public sealed class NoteReader : INoteReader
         return new PagedResponse<Note>
         {
             Data = notes,
-            TotalPages = totalCount
+            TotalPages = (int)totalCount
         };
     }
 

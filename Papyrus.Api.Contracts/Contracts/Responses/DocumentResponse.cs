@@ -6,7 +6,7 @@ public record DocumentResponse
 
     public required string Name { get; init; }
 
-    public required string FrontCoverImageUrl { get; init; }
+    public string? FrontCoverImageUrl { get; init; }
     
     public string? Author { get; init; }
 

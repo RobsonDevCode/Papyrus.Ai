@@ -4,7 +4,7 @@ public record DocumentPreviewModel
 {
     public required Guid DocumentGroupId { get; init; }
     
-    public required string FrontCoverImageUrl { get; set; }
+    public string? FrontCoverImageUrl { get; set; }
     
     public required string Name { get; init; }
     

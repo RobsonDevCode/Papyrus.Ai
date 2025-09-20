@@ -21,6 +21,8 @@ internal static class DocumentReaderEndpoints
         app.MapGet("pages/{documentGroupId}", GetPages);
         
         app.MapGet("{documentGroupId}", GetDocument);
+        
+        app.MapGet("", GetDocuments);
     }
 
     private static async Task<Results<Ok<DocumentPageResponse>, NotFound, BadRequest<string>>> GetPage(
@@ -97,7 +99,8 @@ internal static class DocumentReaderEndpoints
 
     private static async Task<Ok<PagedResponse<DocumentResponse>>> GetDocuments(
         [AsParameters] PaginationOptions paginationOptions,
-        [FromServices] IDocumentReaderService pageReaderService,
+        [FromQuery] string? searchTerm,
+        [FromServices] IDocumentReaderService documentReaderService,
         [FromServices] IMapper mapper,
         [FromServices] ILoggerFactory loggerFactory,
         CancellationToken cancellationToken)
@@ -110,15 +113,19 @@ internal static class DocumentReaderEndpoints
         });
 
         logger.LogInformation("Getting Documents page {page}, page size {pageSize}", paginationOptions.Page, paginationOptions.Size);
-        
-        var response = await pageReaderService.GetDocuments(new PaginationRequestModel
+
+        if (!string.IsNullOrWhiteSpace(searchTerm))
+        {
+            logger.LogInformation("search term: {searchTerm}", searchTerm);
+        }
+        var response = await documentReaderService.GetDocuments(searchTerm, new PaginationRequestModel
         {
             Page = paginationOptions.Page,
             Size = paginationOptions.Size
         }, cancellationToken);
 
-        var documents = mapper.MapToResponse(response.Documents.ToList());
-        var result = mapper.MapToResponse(documents, paginationOptions.Page, paginationOptions.Size, response.TotalCount);
+        var documents = mapper.MapToResponse(response.Items.ToList());
+        var result = mapper.MapToResponse(documents, paginationOptions.Page, paginationOptions.Size, response.Pagination.TotalPages);
         
         return TypedResults.Ok(result);
     }

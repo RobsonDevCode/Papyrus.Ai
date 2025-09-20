@@ -44,6 +44,7 @@ public static class ServiceExtensions
         serviceCollection.AddScoped<IBookmarkReader, BookmarkReader>();
         serviceCollection.AddScoped<IAudioSettingsWriter, AudioSettingsWriter>();
         serviceCollection.AddScoped<IDocumentWriter, DocumentWriter>();
+        serviceCollection.AddScoped<IDocumentReader, DocumentReader>();
         serviceCollection.AddScoped<IImageWriter, ImageWriter>();
         serviceCollection.AddScoped<IImageReader, ImageReader>();
         
@@ -55,6 +56,7 @@ public static class ServiceExtensions
     public static void AddDomain(this IServiceCollection serviceCollection)
     {
         serviceCollection.AddScoped<IDocumentWriterService, DocumentWriterService>();
+        serviceCollection.AddScoped<IDocumentReaderService, DocumentReaderService>();
         serviceCollection.AddScoped<IPageReaderService, PageReaderService>();
         serviceCollection.AddScoped<INoteWriterService, NoteWriterService>();
         serviceCollection.AddScoped<INoteReaderService, NoteReaderService>();
@@ -65,7 +67,6 @@ public static class ServiceExtensions
         serviceCollection.AddScoped<IBookmarkWriterService, BookmarkWriterService>();
         serviceCollection.AddScoped<IBookmarkReaderService, BookmarkReaderService>();
         serviceCollection.AddScoped<IAudioSettingsWriterService, AudioSettingsWriterService>();
-        serviceCollection.AddScoped<IDocumentWriterService, DocumentWriterService>();
         
         
         serviceCollection.AddSingleton<IPapyrusAiClient, PapyrusAiClient>(); 

@@ -10,5 +10,5 @@ public interface IMapper : IPageResponseMapper, IPageDomainMapper,
     IImagePersistenceMapper, IPromptDomainMapper, IImageDomainMapper,
     IBookmarkDomainMapper, IBookmarkPersistenceMapper, IBookmarkResponseMapper, 
     IAudioSettingsDomainMapper, IAudioSettingPersistenceMapper,
-    IDocumentResponseMapper, IDocumentPersistenceMapper,
+    IDocumentResponseMapper, IDocumentPersistenceMapper, IDocumentDomainMapper,
     IPaginationResponseMapper;
