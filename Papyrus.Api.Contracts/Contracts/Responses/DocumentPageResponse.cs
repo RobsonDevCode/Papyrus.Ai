@@ -11,7 +11,7 @@ public record DocumentPageResponse
     
     public required int ImageCount { get; init; }
         
-    public required string ImageUrl { get; init; }
+    public required string? ImageUrl { get; init; }
     
     public required DateTime CreatedAt { get; init; }
 
