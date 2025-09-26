@@ -7,5 +7,5 @@ public interface IDocumentResponseMapper
 {
     DocumentResponse MapToResponse(DocumentPreviewModel document);
 
-    List<DocumentResponse> MapToResponse(List<DocumentPreviewModel> documents);
+    DocumentResponse[] MapToResponse(DocumentPreviewModel[] documents);
 }

@@ -14,30 +14,19 @@ public sealed class ImageReaderService : IImageReaderService
     public ImageReaderService(IImageInfoReader imageInfoReader,
         IImageReader imageReader,
         IMemoryCache memoryCache)
-    { 
+    {
         _imageInfoReader = imageInfoReader;
         _imageReader = imageReader;
         _memoryCache = memoryCache;
     }
-    
+
     public async ValueTask<MemoryStream?> GetById(Guid id, CancellationToken cancellationToken)
     {
-        var stream = await _memoryCache.GetOrCreateAsync(id ,async entry =>
-        {
-            entry.SetAbsoluteExpiration(TimeSpan.FromMinutes(5));
-            var imageInfo = await _imageInfoReader.GetByIdAsync(id, cancellationToken);
-            var imageStream = await _imageReader.GetImageAsStreamAsync(imageInfo.S3Key, cancellationToken);
-            
-            return imageStream;
-        });
-
-        if (stream == null)
-        {
-            return null;
-        }
+        var imageInfo = await _imageInfoReader.GetByIdAsync(id, cancellationToken);
+        var imageStream = await _imageReader.GetImageAsStreamAsync(imageInfo.S3Key, cancellationToken);
         
         var memoryStream = new MemoryStream();
-        await stream.CopyToAsync(memoryStream, cancellationToken);
+        await imageStream.CopyToAsync(memoryStream, cancellationToken);
         return memoryStream;
     }
 }

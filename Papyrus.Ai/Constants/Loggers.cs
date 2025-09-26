@@ -10,4 +10,5 @@ public static class Loggers
     public const string ImageReader = nameof(ImageReader);
     public const string BookmarkWriter = nameof(BookmarkWriter);
     public const string TextToSpeech = nameof(TextToSpeech);
+    public const string VoiceReader = nameof(VoiceReader);
 }

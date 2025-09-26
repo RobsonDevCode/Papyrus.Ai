@@ -7,9 +7,10 @@ public record PageModel
     public required string DocumentName { get; init; }
     
     public required string S3Key { get; init; }
-    public string Author { get; init; }
     
-    public required string Content { get; init; }
+    public string? Author { get; init; }
+    
+    public string? Content { get; init; }
     
     public required int PageNumber { get; init; }
     
@@ -17,7 +18,7 @@ public record PageModel
     
     public required int ImageCount { get; init; }
     
-    public required string ImageUrl { get; init; }
+    public string? ImageUrl { get; init; }
     
     public DateTime CreatedAt { get; init; }
     

@@ -1,13 +1,16 @@
-﻿using Papyrus.Domain.Models;
-using Papyrus.Domain.Models.Documents;
+﻿using Papyrus.Domain.Models.Documents;
 using Papyrus.Persistance.Interfaces.Contracts;
 
 namespace Papyrus.Mappers;
 
 public partial class Mapper
 {
-    public PageModel MapToDomain(Page page)
+    public PageModel? MapToDomain(Page? page)
     {
+        if (page == null)
+        {
+            return null;
+        }
         return new PageModel
         {
             DocumentGroupId = page.DocumentGroupId,
@@ -24,7 +27,7 @@ public partial class Mapper
         };
     }
 
-    public IEnumerable<PageModel> MapToDomain(IEnumerable<Page?> pages)
+    public IEnumerable<PageModel?> MapToDomain(IEnumerable<Page?> pages)
     {
         return pages.Select(MapToDomain);
     }

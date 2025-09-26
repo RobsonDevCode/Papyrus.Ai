@@ -4,7 +4,7 @@ namespace Papyrus.Mappers;
 
 public partial class Mapper
 {
-    public PagedResponse<T> MapToResponse<T>(List<T> items, int page, int pageSize, int totalCount)
+    public PagedResponse<T> MapToResponse<T>(T[] items, int page, int pageSize, int totalCount)
     {
         return new PagedResponse<T>
         {

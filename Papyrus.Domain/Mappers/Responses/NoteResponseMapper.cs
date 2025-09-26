@@ -17,14 +17,13 @@ public partial class Mapper
         };
     }
 
-    public List<NoteResponse> MapToResponse(NoteModel[]? notes)
-    {
-        return notes == null ? [] : notes.Select(MapToResponse).ToList();
-    }
-    
     public List<NoteResponse> MapToResponse(List<NoteModel>? notes)
     {
         return notes == null ? [] : notes.Select(MapToResponse).ToList();
     }
-    
+
+    public NoteResponse[] MapToResponse(NoteModel[]? notes)
+    {
+        return notes == null ? [] : notes.Select(MapToResponse).ToArray();
+    }
 }

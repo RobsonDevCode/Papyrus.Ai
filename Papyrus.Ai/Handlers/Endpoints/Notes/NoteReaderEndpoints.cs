@@ -75,10 +75,10 @@ internal static class NoteReaderEndpoints
         }, cancellationToken);
         
       
-        var notes = mapper.MapToResponse(response.Items.ToList());
+        var notes = mapper.MapToResponse(response.Items);
         
         return TypedResults.Ok(mapper.MapToResponse(notes, pagination.Page, pagination.Size,
-            (int)response.Pagination.TotalPages));
+            response.Pagination.TotalPages));
     }
 
     private static async Task<Ok<List<NoteResponse>>> GetNotesForPage([FromRoute] Guid documentGroupId,

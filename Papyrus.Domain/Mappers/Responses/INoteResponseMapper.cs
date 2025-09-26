@@ -7,8 +7,8 @@ public interface INoteResponseMapper
 {
     NoteResponse MapToResponse(NoteModel note);
     
-    List<NoteResponse> MapToResponse(NoteModel[] pagedResponse);
+    List<NoteResponse> MapToResponse(List<NoteModel>? notes);
     
-    List<NoteResponse> MapToResponse(List<NoteModel> pagedResponse);
+    NoteResponse[] MapToResponse(NoteModel[]? pagedResponse);
 
 }

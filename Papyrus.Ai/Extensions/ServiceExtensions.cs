@@ -16,6 +16,7 @@ using Papyrus.Domain.Services.Interfaces.Images;
 using Papyrus.Domain.Services.Interfaces.Notes;
 using Papyrus.Domain.Services.Notes;
 using Papyrus.Domain.Services.Pdf;
+using Papyrus.Domain.Services.Voices;
 using Papyrus.Mappers;
 using Papyrus.Persistence.MongoDb;
 using Papyrus.Persistence.MongoDb.Reader;
@@ -25,6 +26,7 @@ using Papyrus.Persistance.Interfaces.Reader;
 using Papyrus.Persistance.Interfaces.Writer;
 using Papyrus.Persistence.S3Bucket;
 using Papyrus.Persistence.S3Bucket.Writer;
+using Papyrus.Perstistance.Interfaces.Reader;
 using Papyrus.Perstistance.Interfaces.Writer;
 
 namespace Papyrus.Ai.Extensions;
@@ -47,7 +49,10 @@ public static class ServiceExtensions
         serviceCollection.AddScoped<IDocumentReader, DocumentReader>();
         serviceCollection.AddScoped<IImageWriter, ImageWriter>();
         serviceCollection.AddScoped<IImageReader, ImageReader>();
+        serviceCollection.AddScoped<IVoiceWriter, VoiceWriter>();
+        serviceCollection.AddScoped<IVoiceReader, VoiceReader>();
         
+        serviceCollection.AddSingleton<IMongoVoiceDbConnector, MongoVoiceDbConnector>();
         serviceCollection.AddSingleton<IMongoPromptDbConnector, MongoPromptDbConnector>();
         serviceCollection.AddSingleton<IMongoBookDbConnector, MongoBookDbConnector>();
         serviceCollection.AddSingleton<IMongoAudioSettingsDbConnector, MongoAudioSettingDbConnector>();
@@ -67,6 +72,7 @@ public static class ServiceExtensions
         serviceCollection.AddScoped<IBookmarkWriterService, BookmarkWriterService>();
         serviceCollection.AddScoped<IBookmarkReaderService, BookmarkReaderService>();
         serviceCollection.AddScoped<IAudioSettingsWriterService, AudioSettingsWriterService>();
+        serviceCollection.AddScoped<IVoiceReaderService, VoiceReaderService>();
         
         
         serviceCollection.AddSingleton<IPapyrusAiClient, PapyrusAiClient>(); 

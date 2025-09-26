@@ -1,5 +1,6 @@
 ﻿using System.Text.Json.Serialization;
 using Papyrus.Api.Contracts.Contracts;
+using Papyrus.Domain.Services.Interfaces.AudioBook;
 
 namespace Papyrus.Domain.Models.Client.Audio;
 
@@ -20,12 +21,15 @@ public record VoiceResponseModel
     [JsonPropertyName("preview_url")]
     public string? PreviewUrl { get; init; }
     
+    [JsonPropertyName("labels")]
+    public Labels? Labels { get; init; }
+    
     [JsonPropertyName("settings")]
-    public VoiceSettings? Settings { get; init; }
+    public VoiceSettingModel? Settings { get; init; }
     
     [JsonPropertyName("is_mixed")]
     public bool IsMixed { get; init; }
     
     [JsonPropertyName("created_at_unix")]
-    public int CreatedAtUnix { get; init; }
+    public int? CreatedAtUnix { get; init; }
 }

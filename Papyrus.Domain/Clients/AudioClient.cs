@@ -1,7 +1,9 @@
 ﻿using System.Net.Http.Json;
 using Microsoft.Extensions.Caching.Memory;
 using Microsoft.Extensions.Logging;
+using Papyrus.Domain.Extensions;
 using Papyrus.Domain.Models.Client.Audio;
+using Papyrus.Domain.Models.Voices;
 
 namespace Papyrus.Domain.Clients;
 
@@ -42,5 +44,25 @@ public sealed class AudioClient : IAudioClient
         });
 
         return voice;
+    }
+
+    public async Task<VoicesResponseModel> GetVoicesAsync(VoiceSearchModel filters, CancellationToken cancellationToken)
+    {
+        var query = "v2/voices".ToQueryString(filters);
+        var response = await _client.GetAsync(query, cancellationToken);
+        
+        response.EnsureSuccessStatusCode();
+        
+        var result = await response.Content.ReadFromJsonAsync<VoicesResponseModel>(cancellationToken: cancellationToken);
+        if (result is null)
+        {
+            return new VoicesResponseModel
+            {
+                Voices = [],
+                TotalCount = 0
+            };
+        }
+        
+        return result;
     }
 }

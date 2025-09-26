@@ -8,7 +8,7 @@ public record Pagination
         Size = pageSize;
         Total = total;
     }
-    
+
     public int Page { get; init; }
     public int Size { get; init; }
     public int Total { get; init; } 

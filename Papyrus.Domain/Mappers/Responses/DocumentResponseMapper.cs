@@ -18,8 +18,8 @@ public partial class Mapper
         };
     }
 
-    public List<DocumentResponse> MapToResponse(List<DocumentPreviewModel> documents)
+    public DocumentResponse[] MapToResponse(DocumentPreviewModel[] documents)
     {
-        return documents.Count == 0 ? [] : documents.Select(MapToResponse).ToList();
+        return documents.Length == 0 ? [] : documents.Select(MapToResponse).ToArray();
     }
 }

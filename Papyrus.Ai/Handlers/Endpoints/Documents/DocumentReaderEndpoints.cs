@@ -124,7 +124,7 @@ internal static class DocumentReaderEndpoints
             Size = paginationOptions.Size
         }, cancellationToken);
 
-        var documents = mapper.MapToResponse(response.Items.ToList());
+        var documents = mapper.MapToResponse(response.Items.ToArray());
         var result = mapper.MapToResponse(documents, paginationOptions.Page, paginationOptions.Size, response.Pagination.TotalPages);
         
         return TypedResults.Ok(result);
