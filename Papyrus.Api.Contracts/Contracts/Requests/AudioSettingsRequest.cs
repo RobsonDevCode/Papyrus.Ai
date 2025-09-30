@@ -2,7 +2,7 @@
 
 public record AudioSettingsRequest
 {
-    public required Guid Id { get; init; }
-    public string VoiceId { get; init; }
-    public VoiceSettings VoiceSettings { get; init; }
+    public Guid Id { get; init; } = Guid.NewGuid();
+    public required string VoiceId { get; init; }
+    public required VoiceSettings VoiceSettings { get; init; }
 }

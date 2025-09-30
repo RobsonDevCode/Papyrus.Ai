@@ -37,7 +37,7 @@ internal static class VoiceReaderEndpointsMapper
         });
         
 
-        logger.LogInformation("Getting Voices for page {pageNumber} size {size}...", pagination.Page, pagination.Size);
+        logger.LogInformation("Getting Voices for page {pageNumber} size {size} with filters {filter}...", pagination.Page, pagination.Size, getVoiceRequest);
         var filter = new VoiceSearchModel
         {
             Pagination = new PaginationRequestModel

@@ -1,4 +1,5 @@
-﻿using Papyrus.Domain.Models.Audio;
+﻿using Papyrus.Domain.Models;
+using Papyrus.Domain.Models.Audio;
 using Papyrus.Domain.Services.Interfaces.AudioBook;
 using Papyrus.Persistance.Interfaces.Contracts;
 
@@ -6,13 +7,13 @@ namespace Papyrus.Mappers;
 
 public partial class Mapper
 {
-    public AudioSettings MapToPersistence(AudioSettingsModel audioSettingsModel)
+    public AudioSettings MapToPersistence(AudioSettingsRequestModel audioSettingsRequestModel)
     {
         return new AudioSettings
         {
-            Id = audioSettingsModel.Id,
-            VoiceId = audioSettingsModel.VoiceId,
-            VoiceSetting = MapToPersistence(audioSettingsModel.VoiceSettings),
+            Id = audioSettingsRequestModel.Id,
+            VoiceId = audioSettingsRequestModel.VoiceId,
+            VoiceSetting = MapToPersistence(audioSettingsRequestModel.VoiceSettings),
         };
     }
 

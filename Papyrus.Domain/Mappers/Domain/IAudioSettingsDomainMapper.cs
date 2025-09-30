@@ -1,9 +1,12 @@
 ﻿using Papyrus.Api.Contracts.Contracts.Requests;
 using Papyrus.Domain.Models.Audio;
+using Papyrus.Persistance.Interfaces.Contracts;
 
 namespace Papyrus.Domain.Mappers.Domain;
 
 public interface IAudioSettingsDomainMapper
 {
-    AudioSettingsModel MapToDomain(AudioSettingsRequest request);
+    AudioSettingsRequestModel MapToDomain(AudioSettingsRequest request);
+
+    AudioSettingsModel MapToDomain(AudioSettings audioSettings);
 }

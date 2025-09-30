@@ -8,5 +8,6 @@ internal static class TextToSpeechEndpointMapper
             .WithTags("TextToSpeech");
         
         textToSpeechGroup.MapTextToSpeechWriterEndpoints();
+        textToSpeechGroup.MapTextToSpeechReaderEndpoints();
     }
 }

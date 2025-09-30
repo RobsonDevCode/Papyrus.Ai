@@ -1,7 +1,9 @@
 ﻿
+using Papyrus.Domain.Models.Audio;
+
 namespace Papyrus.Domain.Services.Interfaces.AudioBook;
 
 public interface IAudiobookWriterService
 {
-    Task<byte[]> CreateAsync(Guid documentGroupId, string voiceId, int[] p,  CancellationToken cancellationToken);
+    Task<Stream> CreateAsync(CreateAudioRequestModel request, CancellationToken cancellationToken);
 }

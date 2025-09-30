@@ -18,17 +18,18 @@ internal static class TextToSpeechWriterEndpoints
       app.MapPost("setting", AddSettings);
    }
 
-   private static async Task<Results<FileContentHttpResult, BadRequest<string>>> Create(
+   private static async Task<Results<FileStreamHttpResult, BadRequest<string>>> Create(
       [FromBody] CreateAudioBookRequest request,
       [FromServices] IValidator<CreateAudioBookRequest> requestValidator,
       [FromServices] IAudiobookWriterService audioBookWriterService,
+      [FromServices] IMapper mapper,
       [FromServices] ILoggerFactory loggerFactory,
       CancellationToken cancellationToken)
    {
       var logger = loggerFactory.CreateLogger(Loggers.TextToSpeech);
       using var _ = logger.BeginScope(new Dictionary<string, object>
       {
-         [Operation] = "UpsertAsync AudioBook",
+         [Operation] = "Creating Audio Book",
          [DocumentGroupId] = request.DocumentGroupId,
          [Filter] = request
       });
@@ -40,13 +41,12 @@ internal static class TextToSpeechWriterEndpoints
          return TypedResults.BadRequest(errors);
       }
       
-      var audioBytes = await audioBookWriterService.CreateAsync(request.DocumentGroupId, request.VoiceId, request.Pages, cancellationToken);
-      if (audioBytes.Length == 0)
-      {
-         throw new InvalidOperationException("Audio book cannot have an empty audio file.");
-      }
-      
-      return TypedResults.File(audioBytes, "audio/mpeg","audio-to-speech.mp3");
+      logger.LogInformation("Creating Audio for document {id} with voice {voiceId}", request.DocumentGroupId, request.VoiceId);
+
+      var mappedRequest = mapper.MapToDomain(request);
+      var audioStream = await audioBookWriterService.CreateAsync(mappedRequest, cancellationToken);
+
+      return TypedResults.Stream(audioStream, "audio/mpeg","audio-to-speech.mp3");
    }
 
    private static async Task<Results<Created, BadRequest<string>>> AddSettings(

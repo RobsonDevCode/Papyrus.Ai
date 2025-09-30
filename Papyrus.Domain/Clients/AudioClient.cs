@@ -1,7 +1,10 @@
 ﻿using System.Net.Http.Json;
+using System.Text;
+using System.Text.Json;
 using Microsoft.Extensions.Caching.Memory;
 using Microsoft.Extensions.Logging;
 using Papyrus.Domain.Extensions;
+using Papyrus.Domain.Models.Audio;
 using Papyrus.Domain.Models.Client.Audio;
 using Papyrus.Domain.Models.Voices;
 
@@ -22,9 +25,21 @@ public sealed class AudioClient : IAudioClient
         _logger = logger;
     }
     
-    public Task<Stream> CreateAudioAsync(string voiceId, string text, CancellationToken cancellationToken)
+    public async Task<Stream> CreateAudioAsync(CreateAudioRequestModel requestModel, CancellationToken cancellationToken)
     {
-        throw new NotImplementedException();
+        _logger.LogInformation("Creating audio for {id}", requestModel.DocumentGroupId);
+        var payload = JsonSerializer.Serialize(new CreateTextToSpeechModel
+        {
+            Text = requestModel.Text,
+            VoiceSettings = requestModel.VoiceSettings
+        });
+        
+        var content = new StringContent(payload, Encoding.UTF8, "application/json");
+
+        var response = await _client.PostAsync($"v1/text-to-speech/{requestModel.VoiceId}/stream", content, cancellationToken); 
+        response.EnsureSuccessStatusCode();
+        
+        return await response.Content.ReadAsStreamAsync(cancellationToken);
     }
 
     public async ValueTask<VoiceResponseModel?> GetVoiceAsync(string settingsVoiceId, CancellationToken cancellationToken)
@@ -35,7 +50,6 @@ public sealed class AudioClient : IAudioClient
             entry.SetAbsoluteExpiration(TimeSpan.FromMinutes(10));
             
             var response = await _client.GetAsync($"v1/voices/{settingsVoiceId}", cancellationToken);
-            
             response.EnsureSuccessStatusCode();
             
             var result = await response.Content.ReadFromJsonAsync<VoiceResponseModel>(cancellationToken: cancellationToken);

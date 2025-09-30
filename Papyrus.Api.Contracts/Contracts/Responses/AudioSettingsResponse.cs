@@ -1,12 +1,12 @@
-﻿namespace Papyrus.Domain.Models.Audio;
+﻿namespace Papyrus.Api.Contracts.Contracts.Responses;
 
-public record AudioSettingsModel
+public record AudioSettingsResponse
 {
     public required Guid Id { get; init; }
     
     public required string VoiceId { get; init; }
     
-    public required VoiceSettingModel VoiceSettings { get; init; }
+    public required VoiceSettings VoiceSettings { get; init; }
     
     public required DateTime CreatedAt { get; init; }
     

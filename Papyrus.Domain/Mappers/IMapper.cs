@@ -9,8 +9,9 @@ public interface IMapper : IPageResponseMapper, IPageDomainMapper,
     INoteDomainMapper, INoteResponseMapper, INotePersistenceMapper,
     IImagePersistenceMapper, IPromptDomainMapper, IImageDomainMapper,
     IBookmarkDomainMapper, IBookmarkPersistenceMapper, IBookmarkResponseMapper, 
-    IAudioSettingsDomainMapper, IAudioSettingPersistenceMapper,
+    IAudioSettingsDomainMapper, IAudioSettingPersistenceMapper, IAudioSettingsResponseMapper,
     IDocumentResponseMapper, IDocumentPersistenceMapper, IDocumentDomainMapper,
     IPaginationResponseMapper,
     IVoiceResponseMapper, IVoiceDomainMapper, IVoicePersistenceMapper,
-    ILabelResponseMapper, ILabelsDomainMapper;
+    ILabelResponseMapper, ILabelsDomainMapper,
+    IAudioDomainMapper;

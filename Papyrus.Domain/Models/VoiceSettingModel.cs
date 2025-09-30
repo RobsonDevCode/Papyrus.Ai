@@ -1,6 +1,6 @@
 ﻿using System.Text.Json.Serialization;
 
-namespace Papyrus.Domain.Services.Interfaces.AudioBook;
+namespace Papyrus.Domain.Models;
 
 public record VoiceSettingModel
 {

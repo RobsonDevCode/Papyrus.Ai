@@ -5,5 +5,5 @@ namespace Papyrus.Domain.Mappers.Persistence;
 
 public interface IAudioSettingPersistenceMapper
 {
-    AudioSettings MapToPersistence(AudioSettingsModel audioSettingsModel);
+    AudioSettings MapToPersistence(AudioSettingsRequestModel audioSettingsRequestModel);
 }

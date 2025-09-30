@@ -45,12 +45,15 @@ public static class ServiceExtensions
         serviceCollection.AddScoped<IBookmarkWriter, BookmarkWriter>();
         serviceCollection.AddScoped<IBookmarkReader, BookmarkReader>();
         serviceCollection.AddScoped<IAudioSettingsWriter, AudioSettingsWriter>();
+        serviceCollection.AddScoped<IAudioSettingReader, AudioSettingsReader>();
         serviceCollection.AddScoped<IDocumentWriter, DocumentWriter>();
         serviceCollection.AddScoped<IDocumentReader, DocumentReader>();
         serviceCollection.AddScoped<IImageWriter, ImageWriter>();
         serviceCollection.AddScoped<IImageReader, ImageReader>();
         serviceCollection.AddScoped<IVoiceWriter, VoiceWriter>();
         serviceCollection.AddScoped<IVoiceReader, VoiceReader>();
+        serviceCollection.AddScoped<IAudioWriter, AudioWriter>();
+        serviceCollection.AddScoped<IAudioReader, AudioReader>();
         
         serviceCollection.AddSingleton<IMongoVoiceDbConnector, MongoVoiceDbConnector>();
         serviceCollection.AddSingleton<IMongoPromptDbConnector, MongoPromptDbConnector>();
@@ -72,8 +75,9 @@ public static class ServiceExtensions
         serviceCollection.AddScoped<IBookmarkWriterService, BookmarkWriterService>();
         serviceCollection.AddScoped<IBookmarkReaderService, BookmarkReaderService>();
         serviceCollection.AddScoped<IAudioSettingsWriterService, AudioSettingsWriterService>();
+        serviceCollection.AddScoped<IAudioSettingsReaderService, AudioSettingsReaderService>();
         serviceCollection.AddScoped<IVoiceReaderService, VoiceReaderService>();
-        
+        serviceCollection.AddScoped<IAudiobookWriterService, AudiobookWriterService>();
         
         serviceCollection.AddSingleton<IPapyrusAiClient, PapyrusAiClient>(); 
         serviceCollection.AddSingleton<IAudioClient, AudioClient>();

@@ -4,5 +4,5 @@ namespace Papyrus.Domain.Services.Interfaces.AudioBook;
 
 public interface IAudioSettingsWriterService
 {
-    Task Upsert(AudioSettingsModel settings, CancellationToken cancellationToken);
+    Task Upsert(AudioSettingsRequestModel settingsRequest, CancellationToken cancellationToken);
 }

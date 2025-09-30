@@ -21,15 +21,15 @@ public class AudioSettingsWriterService : IAudioSettingsWriterService
         _mapper = mapper;
     }
 
-    public async Task Upsert(AudioSettingsModel settings, CancellationToken cancellationToken)
+    public async Task Upsert(AudioSettingsRequestModel settingsRequest, CancellationToken cancellationToken)
     {
-        var voice = await _audioClient.GetVoiceAsync(settings.VoiceId, cancellationToken);
+        var voice = await _audioClient.GetVoiceAsync(settingsRequest.VoiceId, cancellationToken);
         if (voice is null)
         {
-            throw new VoiceNotFoundException($"voice {settings.VoiceId} not found or doesnt exist");
+            throw new VoiceNotFoundException($"voice {settingsRequest.VoiceId} not found or doesnt exist");
         }
 
-        var settingsToSave = _mapper.MapToPersistence(settings);
+        var settingsToSave = _mapper.MapToPersistence(settingsRequest);
         
         await _audioSettingsWriter.UpsertAsync(settingsToSave, cancellationToken);
     }
