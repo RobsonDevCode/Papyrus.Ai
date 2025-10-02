@@ -35,7 +35,7 @@ public sealed class AudiobookWriterService : IAudiobookWriterService
         if (previouslyMadeAudio != null)
         {
             _logger.LogInformation(
-                "Audio previously created for pages {pages} on documnet {id} with voice id {voiceId}",
+                "Audio previously created for pages {pages} on document {id} with voice id {voiceId}",
                 formattedPages, request.DocumentGroupId, request.VoiceId);
             return previouslyMadeAudio;
         }

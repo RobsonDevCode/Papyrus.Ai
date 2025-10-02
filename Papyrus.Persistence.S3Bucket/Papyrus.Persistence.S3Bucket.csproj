@@ -1,0 +1,23 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+    <PropertyGroup>
+        <TargetFramework>net8.0</TargetFramework>
+        <ImplicitUsings>enable</ImplicitUsings>
+        <Nullable>enable</Nullable>
+    </PropertyGroup>
+
+    <ItemGroup>
+      <Compile Remove="Class1.cs" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <ProjectReference Include="..\Papyrus.Persistence.Interfaces\Papyrus.Persistence.Interfaces.csproj" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <PackageReference Include="AWSSDK.S3" Version="4.0.6.12" />
+      <PackageReference Include="Microsoft.Extensions.Caching.Abstractions" Version="9.0.5" />
+      <PackageReference Include="Microsoft.Extensions.Configuration.Abstractions" Version="9.0.8" />
+    </ItemGroup>
+
+</Project>
