@@ -1,5 +1,4 @@
-﻿using System.Text.Json.Serialization;
-
+﻿
 namespace Papyrus.Domain.Models.Audio;
 
 public record CreateAudioRequestModel
