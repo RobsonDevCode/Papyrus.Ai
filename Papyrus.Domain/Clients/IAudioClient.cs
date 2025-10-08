@@ -7,6 +7,9 @@ namespace Papyrus.Domain.Clients;
 public interface IAudioClient
 {
     Task<Stream> CreateAudioAsync(CreateAudioRequestModel requestModel, CancellationToken cancellationToken);
+
+    Task<AudioWithAlignmentResult> CreateWithAlignmentAsync(CreateAudioRequestModel request,
+        CancellationToken cancellationToken);
     ValueTask<VoiceResponseModel?> GetVoiceAsync(string settingsVoiceId, CancellationToken cancellationToken);
     Task<VoicesResponseModel> GetVoicesAsync(VoiceSearchModel filters, CancellationToken cancellationToken); 
 }

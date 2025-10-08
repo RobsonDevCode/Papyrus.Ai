@@ -1,6 +1,4 @@
-﻿using Microsoft.Extensions.Caching.Memory;
-using Papyrus.Domain.Mappers;
-using Papyrus.Domain.Services.Interfaces.Images;
+﻿using Papyrus.Domain.Services.Interfaces.Images;
 using Papyrus.Persistance.Interfaces.Reader;
 
 namespace Papyrus.Domain.Services.Images;
@@ -9,15 +7,13 @@ public sealed class ImageReaderService : IImageReaderService
 {
     private readonly IImageInfoReader _imageInfoReader;
     private readonly IImageReader _imageReader;
-    private readonly IMemoryCache _memoryCache;
 
     public ImageReaderService(IImageInfoReader imageInfoReader,
-        IImageReader imageReader,
-        IMemoryCache memoryCache)
+        IImageReader imageReader
+      )
     {
         _imageInfoReader = imageInfoReader;
         _imageReader = imageReader;
-        _memoryCache = memoryCache;
     }
 
     public async ValueTask<MemoryStream?> GetById(Guid id, CancellationToken cancellationToken)

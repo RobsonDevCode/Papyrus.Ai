@@ -1,6 +1,8 @@
-﻿using Amazon.S3;
+﻿using System.Text.Json;
+using Amazon.S3;
 using Amazon.S3.Model;
 using Microsoft.Extensions.Configuration;
+using Papyrus.Persistance.Interfaces.Contracts;
 using Papyrus.Persistance.Interfaces.Reader;
 
 namespace Papyrus.Persistence.S3Bucket.Writer;
@@ -34,5 +36,21 @@ public sealed class AudioWriter : IAudioWriter
         await _amazonS3.PutObjectAsync(request, cancellationToken);
     
         audioStream.Position = 0;
+    }
+
+
+    public async Task SaveAlignmentsAsync(string s3Key, IEnumerable<AlignmentData> alignment, CancellationToken cancellationToken)
+    {
+        var jsonContent = JsonSerializer.Serialize(alignment);
+
+        var request = new PutObjectRequest
+        {
+            BucketName = _bucketName,
+            Key = s3Key,
+            ContentBody = jsonContent,
+            ContentType = "application/json"
+        };
+        
+        await _amazonS3.PutObjectAsync(request, cancellationToken);
     }
 }

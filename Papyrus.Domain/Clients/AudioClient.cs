@@ -42,6 +42,71 @@ public sealed class AudioClient : IAudioClient
         return await response.Content.ReadAsStreamAsync(cancellationToken);
     }
 
+    public async Task<AudioWithAlignmentResult> CreateWithAlignmentAsync(CreateAudioRequestModel request, CancellationToken cancellationToken)
+    {
+        var payload = JsonSerializer.Serialize(new CreateTextToSpeechModel
+        {
+            Text = request.Text,
+            VoiceSettings = request.VoiceSettings
+        });
+        
+        var content = new StringContent(payload, Encoding.UTF8, "application/json");
+        var response = await _client.PostAsync($"v1/text-to-speech/{request.VoiceId}/stream/with-timestamps",
+            content,
+            cancellationToken);
+        
+        response.EnsureSuccessStatusCode();
+        
+        var responseStream = await response.Content.ReadAsStreamAsync(cancellationToken); 
+        using var reader = new StreamReader(responseStream);
+
+        var audioChunks = new List<byte[]>();
+        var alignments = new List<AlignmentDataModel>();
+
+        while (await reader.ReadLineAsync(cancellationToken) is { } line)
+        {
+            if(string.IsNullOrWhiteSpace(line))
+                continue;
+
+            try
+            {
+                using var jsonDoc = JsonDocument.Parse(line);
+                var root = jsonDoc.RootElement;
+
+                if (root.TryGetProperty("audio_base64", out var audioBase64))
+                {
+                    var base64AudioString = audioBase64.GetString();
+                    if (string.IsNullOrWhiteSpace(base64AudioString))
+                    {
+                        continue;
+                    }
+                    var audioBytes = Convert.FromBase64String(base64AudioString);
+                    audioChunks.Add(audioBytes);
+                }
+
+                if (root.TryGetProperty("normalized_alignment", out var alignment) &&
+                    alignment.ValueKind != JsonValueKind.Null)
+                {
+                    alignments.Add(alignment.ParseAlignment());
+                }
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Failed to parse audio");
+            }
+        }
+        
+        var combinedAudio = audioChunks.CombineAudioChunks();
+        var audioStream = new MemoryStream(combinedAudio);
+        audioStream.Position = 0;
+        
+        return new AudioWithAlignmentResult
+        {
+            AudioStream = audioStream,
+            NormalizedAlignment = alignments
+        };
+    }
+
     public async ValueTask<VoiceResponseModel?> GetVoiceAsync(string settingsVoiceId, CancellationToken cancellationToken)
     {
         _logger.LogInformation("Getting voice {id}", settingsVoiceId);

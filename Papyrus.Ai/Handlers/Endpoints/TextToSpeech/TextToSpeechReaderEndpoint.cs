@@ -13,11 +13,42 @@ internal static class TextToSpeechReaderEndpoint
 {
     internal static void MapTextToSpeechReaderEndpoints(this RouteGroupBuilder app)
     {
-        app.MapGet("setting", Get);
+        app.MapGet("setting", GetSettings);
+        app.MapGet("{documentGroupId:guid}/{voiceId}", Get);
     }
 
 
-    private static async Task<Results<Ok<AudioSettingsResponse>, NotFound>> Get(
+    private static async Task<Results<FileStreamHttpResult, NotFound>> Get(
+        [FromRoute] Guid documentGroupId,
+        [FromRoute] string voiceId,
+        [FromQuery] int[] pageNumbers,
+        [FromServices] IAudioReaderService audioReaderService,
+        [FromServices] IMapper mapper,
+        [FromServices] ILoggerFactory loggerFactory,
+        CancellationToken cancellationToken)
+    {
+        var logger = loggerFactory.CreateLogger(Loggers.TextToSpeech);
+        using var _ = logger.BeginScope(new Dictionary<string, object>
+        {
+            [Operation] = $"Get Audio {documentGroupId}",
+            [DocumentGroupId] = documentGroupId
+        });
+        
+        logger.LogInformation("starting to get audio");
+        
+        var audioStream = await audioReaderService.GetAsync(documentGroupId, voiceId, pageNumbers, cancellationToken);
+        if (audioStream == null)
+        {
+            return TypedResults.NotFound();
+        }
+
+        var memoryStream = new MemoryStream();
+        await audioStream.CopyToAsync(memoryStream, cancellationToken);
+        memoryStream.Position = 0;
+        return TypedResults.Stream(memoryStream, "audio/mpeg", "audio-to-speech.mp3", enableRangeProcessing: true);
+    }
+
+    private static async Task<Results<Ok<AudioSettingsResponse>, NotFound>> GetSettings(
         [FromServices] IAudioSettingsReaderService audioSettingsReaderService,
         [FromServices] IMapper mapper,
         [FromServices] ILoggerFactory loggerFactory,
@@ -35,7 +66,7 @@ internal static class TextToSpeechReaderEndpoint
             logger.LogWarning("No audio settings found.");
             return TypedResults.NotFound();
         }
-        
+
         var result = mapper.MapToResponse(audioSettings);
         return TypedResults.Ok(result);
     }

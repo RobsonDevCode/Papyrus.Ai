@@ -78,6 +78,7 @@ public static class ServiceExtensions
         serviceCollection.AddScoped<IAudioSettingsReaderService, AudioSettingsReaderService>();
         serviceCollection.AddScoped<IVoiceReaderService, VoiceReaderService>();
         serviceCollection.AddScoped<IAudiobookWriterService, AudiobookWriterService>();
+        serviceCollection.AddScoped<IAudioReaderService, AudioReaderService>();
         
         serviceCollection.AddSingleton<IPapyrusAiClient, PapyrusAiClient>(); 
         serviceCollection.AddSingleton<IAudioClient, AudioClient>();
