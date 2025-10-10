@@ -1,7 +1,7 @@
 ﻿using MongoDB.Driver;
 using Papyrus.Persistance.Interfaces.Contracts;
-using Papyrus.Persistance.Interfaces.Mongo;
 using Papyrus.Persistance.Interfaces.Reader;
+using Papyrus.Persistence.MongoDb.Connectors;
 
 namespace Papyrus.Persistence.MongoDb.Reader;
 

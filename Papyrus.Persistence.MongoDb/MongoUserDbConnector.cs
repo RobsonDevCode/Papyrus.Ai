@@ -5,17 +5,17 @@ using Papyrus.Persistence.MongoDb.Connectors;
 
 namespace Papyrus.Persistence.MongoDb;
 
-public sealed class MongoAudioSettingDbConnector : IMongoAudioSettingsDbConnector
+public sealed class MongoUserDbConnector : IMongoUserDbConnector
 {
     private readonly IMongoDatabase _database;
 
-    public MongoAudioSettingDbConnector(IOptions<MongoDbSettings> options)
+    public MongoUserDbConnector(IOptions<MongoDbSettings> options)
     {
         var settings = options.Value;
         var client = new MongoClient(settings.ConnectionString);
-        _database = client.GetDatabase(settings.AudioSettingsDatabase);
+        _database = client.GetDatabase(settings.UserDatabase);
     }
-    
+
     public IMongoCollection<T> GetCollection<T>(in string collectionName)
     {
         return _database.GetCollection<T>(collectionName);

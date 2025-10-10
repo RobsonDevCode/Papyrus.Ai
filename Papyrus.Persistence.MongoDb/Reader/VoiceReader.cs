@@ -2,7 +2,7 @@
 using MongoDB.Driver.Linq;
 using Papyrus.Ai.Configuration;
 using Papyrus.Persistance.Interfaces.Contracts;
-using Papyrus.Persistance.Interfaces.Mongo;
+using Papyrus.Persistence.MongoDb.Connectors;
 using Papyrus.Persistence.MongoDb.Extensions;
 using Papyrus.Perstistance.Interfaces.Contracts.Filters;
 using Papyrus.Perstistance.Interfaces.Reader;

@@ -25,7 +25,7 @@ internal static class DocumentWriterEndpoints
         [FromServices] ILoggerFactory loggerFactory,
         CancellationToken cancellationToken)
     {
-        var logger = loggerFactory.CreateLogger(Loggers.DocumentLogger);
+        var logger = loggerFactory.CreateLogger(Loggers.DocumentWriter);
         using var _ = logger.BeginScope(new Dictionary<string, object>
         {
             [Operation] = "Saving Document",

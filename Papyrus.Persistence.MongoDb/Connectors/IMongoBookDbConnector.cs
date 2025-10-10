@@ -1,8 +1,9 @@
 ﻿using MongoDB.Driver;
 
-namespace Papyrus.Persistance.Interfaces.Mongo;
+namespace Papyrus.Persistence.MongoDb.Connectors;
 
-public interface IMongoAudioSettingsDbConnector
+public interface IMongoBookDbConnector
 {
     public IMongoCollection<T> GetCollection<T>(in string collectionName);
+
 }
