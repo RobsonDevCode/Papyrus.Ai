@@ -7,6 +7,7 @@ internal static class UserEndpointMapper
         var userEndpoints = app.MapGroup("user")
             .WithTags("Users");
         
-        userEndpoints.MapUsersEndpoint();
+        userEndpoints.MapUserWriterEndpoint();
+        userEndpoints.MapUserReaderEndpoints();
     }
 }

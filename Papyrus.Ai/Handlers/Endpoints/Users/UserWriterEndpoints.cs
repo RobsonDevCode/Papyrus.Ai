@@ -4,7 +4,9 @@ using Microsoft.AspNetCore.Mvc;
 using Papyrus.Ai.Constants;
 using Papyrus.Api.Contracts.Contracts.Requests;
 using Papyrus.Api.Contracts.Contracts.Responses;
+using Papyrus.Domain.Extensions;
 using Papyrus.Domain.Mappers;
+using Papyrus.Domain.Services.Interfaces.Authentication;
 using Papyrus.Domain.Services.Interfaces.User;
 using static Papyrus.Ai.Constants.LoggingCategories;
 
@@ -13,7 +15,7 @@ namespace Papyrus.Ai.Handlers.Endpoints.Users;
 
 internal static class UserWriterEndpoints
 {
-    internal static void MapUsersEndpoint(this RouteGroupBuilder app)
+    internal static void MapUserWriterEndpoint(this RouteGroupBuilder app)
     {
         app.MapPost("", Create);
     }
@@ -21,10 +23,12 @@ internal static class UserWriterEndpoints
     private static async Task<Results<Created<UserResponse>, BadRequest<string>>> Create(
         [FromBody] CreateUserRequest request,
         [FromServices] IUserWriterService userWriterService,
+        [FromServices] IJwtService jwtService,
         [FromServices] IValidator<CreateUserRequest> createUserRequestValidator,
         [FromServices] IMapper mapper,
         [FromServices] IConfiguration configuration,
         [FromServices] ILoggerFactory loggerFactory,
+        HttpContext httpContext,
         CancellationToken cancellationToken)
     {
         var logger = loggerFactory.CreateLogger(Loggers.UserWriter);
@@ -47,6 +51,9 @@ internal static class UserWriterEndpoints
         var response =
             await userWriterService.CreateAsync(mappedRequest, cancellationToken);
 
+        var authToken = jwtService.GenerateJwtToken(response.Id, response.Username, response.Email, ["User"]);
+        httpContext.AddJwt(authToken.JWT, authToken.Expires);
+        logger.LogInformation(authToken.JWT);
         var baseUrl = configuration.GetValue<string>("PapyrusApiUrl")
             ?? throw new NullReferenceException("PapyrusApiUrl cannot be null");
         

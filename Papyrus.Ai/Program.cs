@@ -4,6 +4,7 @@ using Papyrus.Ai.Configuration;
 using Papyrus.Ai.Extensions;
 using Papyrus.Ai.Handlers.Endpoints;
 using Papyrus.Ai.Handlers.ErrorHandlers;
+using Papyrus.Domain.Models.Authentication;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -35,6 +36,7 @@ builder.Services.AddPapyrusSwagger();
 builder.Services.AddValidators();
 builder.Services.AddExternalHttpClients(builder.Configuration);
 builder.Services.AddCors();
+builder.Services.Configure<JwtSettings>(builder.Configuration.GetSection(nameof(JwtSettings)));
 
 var app = builder.Build();
 

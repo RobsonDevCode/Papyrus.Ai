@@ -16,4 +16,4 @@ public interface IMapper : IPageResponseMapper, IPageDomainMapper,
     ILabelResponseMapper, ILabelsDomainMapper,
     IAudioDomainMapper,
     IAudioAlignmentDomainMapper, IAudioAlignmentPersistenceMapper, IAudioAlignmentResponseMapper,
-    IUserDomainMapper ,IUserPersistenceMapper;
+    IUserResponseMapper, IUserDomainMapper ,IUserPersistenceMapper;

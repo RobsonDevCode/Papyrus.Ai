@@ -81,11 +81,6 @@ public sealed class AudiobookWriterService : IAudiobookWriterService
             };
         }
 
-        request = request with
-        {
-            Text = request.Text.Replace("-", "")
-        };
-
         var audioResult = await _audioClient.CreateWithAlignmentAsync(request, cancellationToken);
         await _audioWriter.SaveAsync(audioS3, audioResult.AudioStream, cancellationToken);
         await _audioWriter.SaveAlignmentsAsync(alignmentS3Key,_mapper.MapToPersistence(audioResult.NormalizedAlignment), cancellationToken);

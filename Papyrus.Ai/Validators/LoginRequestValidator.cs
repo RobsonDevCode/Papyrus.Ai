@@ -3,36 +3,48 @@ using Papyrus.Api.Contracts.Contracts.Requests;
 
 namespace Papyrus.Ai.Validators;
 
-public class CreateUserValidator : AbstractValidator<CreateUserRequest>
+public class LoginRequestValidator : AbstractValidator<LoginRequest>
 {
     private const string SpecialChars = "!@#$%^&*()_+-=[]{}|;:,.<>?";
 
-    public CreateUserValidator()
+    public LoginRequestValidator()
     {
-        RuleFor(x => x.Username)
-            .NotEmpty()
-            .WithMessage("username cannot be empty");
-
-        RuleFor(x => x.Username)
-            .Must(ValidateUsername)
-            .WithMessage("username must be between 3 and 40 characters");
-
         RuleFor(x => x.Email)
             .EmailAddress()
             .WithMessage("Invalid email address");
+        
+        RuleFor(x => x.Username)
+            .Must(IsValidUsername)
+            .WithMessage("username must be between 3 and 40 characters");
+
+        RuleFor(x => x)
+            .Must(x => ValidateEmailOrUsername(x.Username, x.Email))
+            .WithMessage("Either username or password has to be provided");
+
 
         RuleFor(x => x.Password)
             .Must(ValidatePassword)
             .WithMessage("Invalid password");
     }
 
-    private bool ValidateUsername(string username)
+
+    private bool IsValidUsername(string? username)
     {
+        if (string.IsNullOrWhiteSpace(username))
+        {
+            return true;
+        }
+        
         return username.Length > 3 
                && username.Length < 40 &&
                !username.Any(x => SpecialChars.Contains(x));
     }
 
+    private bool ValidateEmailOrUsername(string? username, string? email)
+    {
+        return !(string.IsNullOrWhiteSpace(username) && string.IsNullOrWhiteSpace(email));
+    }
+    
     private bool ValidatePassword(string? password)
     {
         if (string.IsNullOrWhiteSpace(password))

@@ -20,7 +20,7 @@ public static class ElevenLabsResponseExtensions
             foreach (var character in characters.EnumerateArray())
             {
                 var processedChar = character.GetString();
-                if(string.IsNullOrWhiteSpace(processedChar))
+                if (string.IsNullOrEmpty(processedChar))
                     processedChar = " ";
                 
                 alignment.Charaters.Add(processedChar);
