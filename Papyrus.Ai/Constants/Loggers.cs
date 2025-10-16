@@ -2,7 +2,7 @@
 
 public static class Loggers
 {
-    public const string DocumentLogger = nameof(DocumentLogger);
+    public const string DocumentWriter = nameof(DocumentWriter);
     public const string DocumentReader = nameof(DocumentReader);
 
     public const string NoteWriter = nameof(NoteWriter);
@@ -11,4 +11,6 @@ public static class Loggers
     public const string BookmarkWriter = nameof(BookmarkWriter);
     public const string TextToSpeech = nameof(TextToSpeech);
     public const string VoiceReader = nameof(VoiceReader);
+    public const string UserWriter = nameof(UserWriter);
+    public const string UserReader = nameof(UserReader);
 }

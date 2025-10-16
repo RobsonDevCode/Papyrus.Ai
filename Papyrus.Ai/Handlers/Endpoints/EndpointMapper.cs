@@ -3,6 +3,7 @@ using Papyrus.Ai.Handlers.Endpoints.Documents;
 using Papyrus.Ai.Handlers.Endpoints.Images;
 using Papyrus.Ai.Handlers.Endpoints.Notes;
 using Papyrus.Ai.Handlers.Endpoints.TextToSpeech;
+using Papyrus.Ai.Handlers.Endpoints.Users;
 using Papyrus.Ai.Handlers.Endpoints.Voices;
 
 namespace Papyrus.Ai.Handlers.Endpoints;
@@ -15,10 +16,10 @@ public static class EndpointMapper
         app.MapBookmarkEndpoints();
         app.MapTextToSpeechEndpoints();
         app.MapVoiceEndpoints();
+        app.MapUserEndpoints();
         
         app.MapNoteWriterEndpoints();
         app.MapNoteReaderEndpoints();
-
         app.MapImageReaderEndpoints();
     }
 }

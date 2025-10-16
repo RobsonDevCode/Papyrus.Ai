@@ -3,27 +3,30 @@ using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.OpenApi.Models;
 using Papyrus.Ai.Validators;
 using Papyrus.Api.Contracts.Contracts.Requests;
-using Papyrus.Domain.Clients;
 using Papyrus.Domain.Mappers;
 using Papyrus.Domain.Services;
 using Papyrus.Domain.Services.AudioBook;
+using Papyrus.Domain.Services.Authentication;
 using Papyrus.Domain.Services.Bookmark;
 using Papyrus.Domain.Services.Images;
 using Papyrus.Domain.Services.Interfaces;
 using Papyrus.Domain.Services.Interfaces.AudioBook;
+using Papyrus.Domain.Services.Interfaces.Authentication;
 using Papyrus.Domain.Services.Interfaces.Bookmark;
 using Papyrus.Domain.Services.Interfaces.Images;
 using Papyrus.Domain.Services.Interfaces.Notes;
+using Papyrus.Domain.Services.Interfaces.User;
 using Papyrus.Domain.Services.Notes;
 using Papyrus.Domain.Services.Pdf;
+using Papyrus.Domain.Services.User;
 using Papyrus.Domain.Services.Voices;
 using Papyrus.Mappers;
 using Papyrus.Persistence.MongoDb;
 using Papyrus.Persistence.MongoDb.Reader;
 using Papyrus.Persistence.MongoDb.Writer;
-using Papyrus.Persistance.Interfaces.Mongo;
 using Papyrus.Persistance.Interfaces.Reader;
 using Papyrus.Persistance.Interfaces.Writer;
+using Papyrus.Persistence.MongoDb.Connectors;
 using Papyrus.Persistence.S3Bucket;
 using Papyrus.Persistence.S3Bucket.Writer;
 using Papyrus.Perstistance.Interfaces.Reader;
@@ -54,11 +57,14 @@ public static class ServiceExtensions
         serviceCollection.AddScoped<IVoiceReader, VoiceReader>();
         serviceCollection.AddScoped<IAudioWriter, AudioWriter>();
         serviceCollection.AddScoped<IAudioReader, AudioReader>();
+        serviceCollection.AddScoped<IUserWriter, UserWriter>();
+        serviceCollection.AddScoped<IUserReader, UserReader>();
         
         serviceCollection.AddSingleton<IMongoVoiceDbConnector, MongoVoiceDbConnector>();
         serviceCollection.AddSingleton<IMongoPromptDbConnector, MongoPromptDbConnector>();
         serviceCollection.AddSingleton<IMongoBookDbConnector, MongoBookDbConnector>();
         serviceCollection.AddSingleton<IMongoAudioSettingsDbConnector, MongoAudioSettingDbConnector>();
+        serviceCollection.AddSingleton<IMongoUserDbConnector, MongoUserDbConnector>();
     }
 
     public static void AddDomain(this IServiceCollection serviceCollection)
@@ -79,10 +85,11 @@ public static class ServiceExtensions
         serviceCollection.AddScoped<IVoiceReaderService, VoiceReaderService>();
         serviceCollection.AddScoped<IAudiobookWriterService, AudiobookWriterService>();
         serviceCollection.AddScoped<IAudioReaderService, AudioReaderService>();
+        serviceCollection.AddScoped<IUserWriterService, UserWriterService>();
+        serviceCollection.AddScoped<IUserReaderService, UserReaderService>();
+        serviceCollection.AddScoped<IJwtService, JwtService>();
         
-        serviceCollection.AddSingleton<IPapyrusAiClient, PapyrusAiClient>(); 
-        serviceCollection.AddSingleton<IAudioClient, AudioClient>();
-        serviceCollection.AddSingleton<IMapper, Mapper>();
+        serviceCollection.AddScoped<IMapper, Mapper>();
         serviceCollection.AddMemoryCache();
     }
 
@@ -121,12 +128,14 @@ public static class ServiceExtensions
 
     public static void AddValidators(this IServiceCollection serviceCollection)
     {
-        serviceCollection.AddScoped<IValidator<FormFile>, FormFileValidator>();
-        serviceCollection.AddScoped<IValidator<WriteNoteRequest>, WriteNotesValidator>();
-        serviceCollection.AddScoped<IValidator<WriteImageNoteRequest>, WriteImageNoteValidator>();
-        serviceCollection.AddScoped<IValidator<EditNoteRequest>, EditNoteRequestValidator>();
-        serviceCollection.AddScoped<IValidator<CreateBookmarkRequest>, CreateBookmarkRequestValidator>();
-        serviceCollection.AddScoped<IValidator<CreateAudioBookRequest>, CreateAudioBookRequestValidator>();
-        serviceCollection.AddScoped<IValidator<AudioSettingsRequest>, AudioSettingsRequestValidator>();
+        serviceCollection.AddScoped<IValidator<FormFile>, FormFileValidator>()
+            .AddScoped<IValidator<WriteNoteRequest>, WriteNotesValidator>()
+            .AddScoped<IValidator<WriteImageNoteRequest>, WriteImageNoteValidator>()
+            .AddScoped<IValidator<EditNoteRequest>, EditNoteRequestValidator>()
+            .AddScoped<IValidator<CreateBookmarkRequest>, CreateBookmarkRequestValidator>()
+            .AddScoped<IValidator<CreateAudioBookRequest>, CreateAudioBookRequestValidator>()
+            .AddScoped<IValidator<AudioSettingsRequest>, AudioSettingsRequestValidator>()
+            .AddScoped<IValidator<CreateUserRequest>, CreateUserValidator>()
+            .AddScoped<IValidator<LoginRequest>, LoginRequestValidator>();
     }
 }

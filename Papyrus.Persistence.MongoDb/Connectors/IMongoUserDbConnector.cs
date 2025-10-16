@@ -1,8 +1,8 @@
 ﻿using MongoDB.Driver;
 
-namespace Papyrus.Persistance.Interfaces.Mongo;
+namespace Papyrus.Persistence.MongoDb.Connectors;
 
-public interface IMongoPromptDbConnector
+public interface IMongoUserDbConnector
 {
     IMongoCollection<T> GetCollection<T>(in string collectionName);
 }
