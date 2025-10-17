@@ -34,8 +34,7 @@ internal static class UserReaderEndpoints
         using var _ = logger.BeginScope(new Dictionary<string, object>
         {
             [Operation] = "Login Request",
-            [Username] = request.Username ?? "Not Given",
-            [Email] = request.Email ?? "Not Given",
+            [Email] = request.Email
         });
 
         var validator = await loginRequestValidator.ValidateAsync(request, cancellationToken);
@@ -46,7 +45,7 @@ internal static class UserReaderEndpoints
         }
 
         logger.LogInformation("Attempting to Login");
-        var user = await userReaderService.LoginAsync(request.Username, request.Email, request.Password,
+        var user = await userReaderService.LoginAsync( request.Email, request.Password,
             cancellationToken);
 
         var authToken = jwtService.GenerateJwtToken(user.Id, user.Username, user.Email, ["User"]);

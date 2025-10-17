@@ -20,18 +20,18 @@ public sealed class UserReaderService : IUserReaderService
         _logger = logger;
     }
     
-    public async Task<UserModel> LoginAsync(string? username, string? email, string password,
+    public async Task<UserModel> LoginAsync(string email, string password,
         CancellationToken cancellationToken)
     {
-        var user = await _userReader.GetAsync(username, email, cancellationToken);
+        var user = await _userReader.GetAsync(email, cancellationToken);
         if (user is null)
         {
-            throw new UserNotFoundException($"{username} {email} is not found");
+            throw new UserNotFoundException($"{email} is not found");
         }
 
         if (!BCrypt.Net.BCrypt.Verify(password, user.PasswordHash))
         {
-            _logger.LogError("User username: {username}, email:{email} inputted incorrect password", username, email);
+            _logger.LogError("User username: {username}, email:{email} inputted incorrect password", user.Username, email);
             throw new InvalidOperationException("Incorrect password!");
         }
 

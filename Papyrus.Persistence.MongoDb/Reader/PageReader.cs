@@ -51,6 +51,22 @@ public sealed class PageReader : IPageReader
         return result;
     }
 
+    public async Task<Page?> GetByGroupIdAsync(Guid documentGroupId, Guid userId, int page, CancellationToken cancellationToken)
+    {
+        if (page == 0)
+        {
+            _logger.LogWarning("GetPageById called with invalid page number 0 returning page 1");
+            page = 1;
+        }
+
+        var result = await _pageCollection.Find(p => p.DocumentGroupId == documentGroupId 
+                                                     && p.PageNumber == page
+                                                     && p.UserId == userId)
+            .SingleOrDefaultAsync(cancellationToken);
+        
+        return result;
+    }
+
     public async Task<bool> ExistsAsync(string documentName, CancellationToken cancellationToken)
     {
         var result = await _pageCollection.Find(p => p.DocumentName == documentName).AnyAsync(cancellationToken);

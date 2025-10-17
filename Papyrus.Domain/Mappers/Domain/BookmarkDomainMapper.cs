@@ -10,10 +10,22 @@ public partial class Mapper
     {
         return new BookmarkModel
         {
-            Id = request.Id,
+            Id = request.Id ?? Guid.Empty,
             DocumentGroupId = request.DocumentGroupId,
+            UserId = request.UserId,
             Page = request.Page,
             CreatedAt = request.CreateAt
+        };
+    }
+
+    public BookmarkModel MapToDomain(UpdateBookmarkRequest request)
+    {
+        return new BookmarkModel
+        {
+            Id = request.Id,
+            DocumentGroupId = request.DocumentGroupId,
+            UserId = request.UserId,
+            Page = request.NewPage
         };
     }
 

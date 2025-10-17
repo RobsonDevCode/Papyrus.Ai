@@ -4,5 +4,5 @@ namespace Papyrus.Domain.Services.Interfaces.Bookmark;
 
 public interface IBookmarkWriterService
 {
-    Task Create(BookmarkModel bookmark, CancellationToken cancellationToken);
+    Task UpsertAsync(BookmarkModel bookmark, CancellationToken cancellationToken);
 }

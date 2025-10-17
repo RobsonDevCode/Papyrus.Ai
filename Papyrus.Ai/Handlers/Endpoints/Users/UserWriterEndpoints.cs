@@ -34,7 +34,7 @@ internal static class UserWriterEndpoints
         var logger = loggerFactory.CreateLogger(Loggers.UserWriter);
         using var _ = logger.BeginScope(new Dictionary<string, object>
         {
-            [Operation] = $"Create User {request.Username}"
+            [Operation] = $"UpsertAsync User {request.Username}"
         });
 
         var validator = await createUserRequestValidator.ValidateAsync(request, cancellationToken);

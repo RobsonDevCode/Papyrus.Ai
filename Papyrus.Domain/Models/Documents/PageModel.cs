@@ -4,6 +4,8 @@ public record PageModel
 {
     public Guid DocumentGroupId { get; init; }
     public Guid ChatId { get; init; }
+    
+    public Guid? UserId { get; init; } //null for now i can be arsed to make a new model adding it in while i add users 
     public required string DocumentName { get; init; }
     
     public required string S3Key { get; init; }

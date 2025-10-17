@@ -4,5 +4,5 @@ namespace Papyrus.Domain.Services.Interfaces.User;
 
 public interface IUserReaderService
 {
-    Task<UserModel> LoginAsync(string? username, string? email, string password, CancellationToken cancellationToken);
+    Task<UserModel> LoginAsync(string email, string password, CancellationToken cancellationToken);
 }
