@@ -12,7 +12,11 @@ public record Bookmark
     [BsonRepresentation(BsonType.String)]
     public required Guid DocumentGroupId { get; init; }
     
+    [BsonRepresentation(BsonType.String)]
+    public Guid? UserId { get; init; }
+    
     public required int Page { get; init; }
     
     public required DateTime CreatedAt { get; init; }
+    public DateTime UpdatedAt { get; init; }
 }

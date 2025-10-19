@@ -4,5 +4,5 @@ namespace Papyrus.Perstistance.Interfaces.Writer;
 
 public interface IBookmarkWriter
 {
-    Task InsertAsync(Bookmark bookmark, CancellationToken cancellationToken);
+    Task UpsertAsync(Bookmark bookmark, CancellationToken cancellationToken);
 }

@@ -12,7 +12,9 @@ public record Page
     
     [BsonRepresentation(BsonType.String)]
     public Guid DocumentGroupId { get; init; }
-    
+
+    [BsonRepresentation(BsonType.String)]
+    public Guid UserId { get; init; }
     public required string DocumentName { get; init; }
     
     public required string S3Key { get; init; }

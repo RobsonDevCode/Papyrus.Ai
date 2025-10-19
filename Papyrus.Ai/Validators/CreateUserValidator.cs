@@ -16,6 +16,10 @@ public class CreateUserValidator : AbstractValidator<CreateUserRequest>
         RuleFor(x => x.Username)
             .Must(ValidateUsername)
             .WithMessage("username must be between 3 and 40 characters");
+        
+        RuleFor(x => x.Name)
+            .Must(ValidateName)
+            .WithMessage("name must be between 3 and 40 characters");
 
         RuleFor(x => x.Email)
             .EmailAddress()
@@ -31,6 +35,16 @@ public class CreateUserValidator : AbstractValidator<CreateUserRequest>
         return username.Length > 3 
                && username.Length < 40 &&
                !username.Any(x => SpecialChars.Contains(x));
+    }
+
+    private bool ValidateName(string? name)
+    {
+        if (string.IsNullOrWhiteSpace(name))
+        {
+            return true;
+        }
+        
+        return name.Length > 3 && name.Length <= 40;
     }
 
     private bool ValidatePassword(string? password)

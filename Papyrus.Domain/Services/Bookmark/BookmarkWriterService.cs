@@ -24,16 +24,22 @@ public sealed class BookmarkWriterService : IBookmarkWriterService
         _logger = logger;
     }
     
-    public async Task Create(BookmarkModel bookmark, CancellationToken cancellationToken)
+    public async Task UpsertAsync(BookmarkModel bookmark, CancellationToken cancellationToken)
     {
-        if (await _pageReaderService.GetByGroupIdAsync(bookmark.DocumentGroupId, bookmark.Page, cancellationToken)
+        if (await _pageReaderService.GetByGroupIdAsync(bookmark.DocumentGroupId, (Guid)bookmark.UserId!, bookmark.Page, cancellationToken)
             is null)
         {
             _logger.LogError("Document group {id} page {page} not found", bookmark.DocumentGroupId, bookmark.Page);
             throw new KeyNotFoundException($"Document group {bookmark.DocumentGroupId} page {bookmark.Page} not found");
         }
 
+        //new bookmark
+        if (bookmark.Id == Guid.Empty)
+        {
+            bookmark.Id = Guid.NewGuid();
+        }
+        
         var mapped = _mapper.MapToPersistence(bookmark);
-        await _bookmarkWriter.InsertAsync(mapped, cancellationToken);        
+        await _bookmarkWriter.UpsertAsync(mapped, cancellationToken);        
     }
 }

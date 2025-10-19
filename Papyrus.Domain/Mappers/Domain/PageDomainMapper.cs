@@ -15,6 +15,7 @@ public partial class Mapper
         {
             DocumentGroupId = page.DocumentGroupId,
             DocumentName = page.DocumentName,
+            UserId = page.UserId,
             S3Key = page.S3Key,
             Content = page.Content,
             PageNumber = page.PageNumber,

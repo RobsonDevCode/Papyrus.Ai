@@ -13,10 +13,10 @@ internal static class BookmarkWriterEndpoint
 {
     internal static void MapBookmarkWriterEndpoints(this RouteGroupBuilder app)
     {
-        app.MapPost("", Create);
+        app.MapPost("", Upsert);
     }
 
-    private static async Task<Results<Created, BadRequest<string>>> Create(
+    private static async Task<Results<Created, BadRequest<string>>> Upsert(
         [FromBody] CreateBookmarkRequest createBookmarkRequest,
         [FromServices] IValidator<CreateBookmarkRequest> validator,
         [FromServices] IBookmarkWriterService bookmarkWriterService,
@@ -28,7 +28,7 @@ internal static class BookmarkWriterEndpoint
         var logger = loggerFactory.CreateLogger(Loggers.BookmarkWriter);
         using var _ = logger.BeginScope(new Dictionary<string, object>
         {
-            [Operation] = "Create Bookmark",
+            [Operation] = "Upsert Bookmark",
             [Filter] = createBookmarkRequest
         });
 
@@ -40,7 +40,7 @@ internal static class BookmarkWriterEndpoint
         }
         
         var mappedToDomain = mapper.MapToDomain(createBookmarkRequest);
-        await bookmarkWriterService.Create(mappedToDomain, cancellationToken);
+        await bookmarkWriterService.UpsertAsync(mappedToDomain, cancellationToken);
         
         return TypedResults.Created();
     }
