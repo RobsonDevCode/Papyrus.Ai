@@ -5,5 +5,5 @@ namespace Papyrus.Domain.Services.Interfaces;
 
 public interface IDocumentWriterService
 {
-    Task StoreDocumentAsync(DocumentModel document, CancellationToken cancellationToken);
+    Task StoreDocumentAsync(Guid userId, DocumentModel document, CancellationToken cancellationToken);
 }

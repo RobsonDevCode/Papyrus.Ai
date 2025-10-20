@@ -24,12 +24,12 @@ public sealed class PdfReaderService : IPdfReaderService
         _pageReaderService = pageReaderService;
         _memoryCache = memoryCache;
     }
-    public async Task<byte[]> GetPdfBytesAsync(Guid documentGroupId, CancellationToken cancellationToken)
+    public async Task<byte[]> GetPdfBytesAsync(Guid userId, Guid documentGroupId, CancellationToken cancellationToken)
     {
         var result = await _memoryCache.GetOrCreate(documentGroupId, async entry =>
         {
             entry.SetAbsoluteExpiration(TimeSpan.FromMinutes(10));
-            var page = await _pageReaderService.GetByGroupIdAsync(documentGroupId, null, cancellationToken);
+            var page = await _pageReaderService.GetByGroupIdAsync(documentGroupId, userId, null, cancellationToken);
             if (page is null)
             {
                 return [];

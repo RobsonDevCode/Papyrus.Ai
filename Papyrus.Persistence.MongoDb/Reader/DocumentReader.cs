@@ -14,27 +14,30 @@ public sealed class DocumentReader : IDocumentReader
     {
         _documentCollection = connector.GetCollection<DocumentPreview>(DatabaseConstants.DocumentsCollectionName);
     }
-    public async Task<PagedResponse<DocumentPreview>> GetPagedDocumentsAsync(string? searchTerm, PaginationOptions pagination, CancellationToken cancellationToken)
+
+    public async Task<PagedResponse<DocumentPreview>> GetPagedDocumentsAsync(Guid userId, string? searchTerm,
+        PaginationOptions pagination, CancellationToken cancellationToken)
     {
         List<DocumentPreview> documents;
 
         if (string.IsNullOrWhiteSpace(searchTerm))
         {
-            documents = await _documentCollection.Find(x => true)
+            documents = await _documentCollection.Find(x => x.UserId == userId)
                 .Skip((pagination.Page - 1) * pagination.Size)
                 .Limit(pagination.Size)
                 .ToListAsync(cancellationToken);
         }
         else
         {
-            documents = await _documentCollection.Find(x => x.Name.Contains(searchTerm))
+            documents = await _documentCollection.Find(x => x.UserId == userId
+                                                            && x.Name.Contains(searchTerm))
                 .Skip((pagination.Page - 1) * pagination.Size)
                 .Limit(pagination.Size)
                 .ToListAsync(cancellationToken);
         }
-   
-        
-        var totalCount = await _documentCollection.CountDocumentsAsync(x => true, cancellationToken:cancellationToken);
+
+
+        var totalCount = await _documentCollection.CountDocumentsAsync(x => true, cancellationToken: cancellationToken);
 
 
         return new PagedResponse<DocumentPreview>

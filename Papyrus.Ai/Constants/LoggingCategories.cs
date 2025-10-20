@@ -10,6 +10,7 @@ public static class LoggingCategories
     public static string Operation = nameof(Operation);
     public static string PdfPage = nameof(PdfPage);
     public static string PageNumbers = nameof(PageNumbers);
+    public static string User = nameof(User);
     public static string Username = nameof(Username);
     public static string Email = nameof(Email);
 }

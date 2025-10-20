@@ -19,9 +19,9 @@ public sealed class DocumentReaderService : IDocumentReaderService
         _mapper = mapper;
     }
 
-    public async Task<PagedResponseModel<DocumentPreviewModel>> GetDocuments(string? searchTerm, PaginationRequestModel pagination, CancellationToken cancellationToken)
+    public async Task<PagedResponseModel<DocumentPreviewModel>> GetDocuments(Guid userId, string? searchTerm, PaginationRequestModel pagination, CancellationToken cancellationToken)
     {
-        var response = await _documentReader.GetPagedDocumentsAsync(searchTerm, new PaginationOptions
+        var response = await _documentReader.GetPagedDocumentsAsync(userId, searchTerm, new PaginationOptions
         {
             Page = pagination.Page,
             Size = pagination.Size,

@@ -2,5 +2,5 @@
 
 public interface IPdfReaderService
 {
-    Task<byte[]> GetPdfBytesAsync(Guid documentGroupId, CancellationToken cancellationToken);
+    Task<byte[]> GetPdfBytesAsync(Guid userId, Guid documentGroupId, CancellationToken cancellationToken);
 }

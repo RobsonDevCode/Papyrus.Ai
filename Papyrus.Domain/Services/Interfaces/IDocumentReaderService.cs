@@ -6,5 +6,5 @@ namespace Papyrus.Domain.Services.Interfaces;
 
 public interface IDocumentReaderService
 { 
-    Task<PagedResponseModel<DocumentPreviewModel>> GetDocuments(string? searchTerm, PaginationRequestModel pagination, CancellationToken cancellationToken);
+    Task<PagedResponseModel<DocumentPreviewModel>> GetDocuments(Guid userId, string? searchTerm, PaginationRequestModel pagination, CancellationToken cancellationToken);
 }

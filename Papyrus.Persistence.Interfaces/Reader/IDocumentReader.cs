@@ -4,5 +4,5 @@ namespace Papyrus.Persistance.Interfaces.Reader;
 
 public interface IDocumentReader
 {
-    Task<PagedResponse<DocumentPreview>> GetPagedDocumentsAsync(string? searchTerm, PaginationOptions pagination, CancellationToken cancellationToken);
+    Task<PagedResponse<DocumentPreview>> GetPagedDocumentsAsync(Guid userId,string? searchTerm, PaginationOptions pagination, CancellationToken cancellationToken);
 }
