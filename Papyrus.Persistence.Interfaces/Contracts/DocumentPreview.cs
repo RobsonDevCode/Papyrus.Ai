@@ -9,6 +9,9 @@ public record DocumentPreview
     [BsonRepresentation(BsonType.String)]
     public required Guid DocumentGroupId { get; init; }
     
+    [BsonRepresentation(BsonType.String)]
+    public required Guid UserId { get; init; }
+    
     public string? FrontCoverImageUrl { get; init; }
 
     public required string Name { get; init; }

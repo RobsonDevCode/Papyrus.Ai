@@ -16,16 +16,17 @@ internal static class DocumentReaderEndpoints
 {
     internal static void MapDocumentReaderEndpoints(this RouteGroupBuilder app)
     {
-        app.MapGet("page/{documentGroupId}/{pageNumber}", GetPage);
+        app.MapGet("page/{userId}/{documentGroupId}/{pageNumber}", GetPage);
 
-        app.MapGet("pages/{documentGroupId}", GetPages);
+        app.MapGet("pages/{userId}/{documentGroupId}", GetPages);
         
-        app.MapGet("{documentGroupId}", GetDocument);
+        app.MapGet("{userId}/{documentGroupId}", GetDocument);
         
-        app.MapGet("", GetDocuments);
+        app.MapGet("{userId}", GetDocuments);
     }
 
     private static async Task<Results<Ok<DocumentPageResponse>, NotFound, BadRequest<string>>> GetPage(
+        [FromRoute] Guid userId,
         [FromRoute] Guid documentGroupId,
         [FromRoute] int pageNumber,
         [FromServices] IPageReaderService pageReaderService,
@@ -41,7 +42,7 @@ internal static class DocumentReaderEndpoints
             [Filter] = documentGroupId.ToString()
         });
 
-        var response = await pageReaderService.GetByGroupIdAsync(documentGroupId, pageNumber, cancellationToken);
+        var response = await pageReaderService.GetByGroupIdAsync(userId, documentGroupId, pageNumber, cancellationToken);
 
         if (response is null)
         {
@@ -53,6 +54,7 @@ internal static class DocumentReaderEndpoints
     }
 
     private static async Task<Ok<DocumentPagesResponse>> GetPages(
+        [FromRoute] Guid userId,
         [FromRoute] Guid documentGroupId,
         [FromQuery] int[] pageNumbers,
         [FromServices] IPageReaderService pageReaderService,
@@ -69,12 +71,13 @@ internal static class DocumentReaderEndpoints
             [PageNumbers] = pageNumbers
         });
         
-        var response = await pageReaderService.GetPages(documentGroupId, pageNumbers, cancellationToken);
+        var response = await pageReaderService.GetPages(documentGroupId, userId, pageNumbers, cancellationToken);
         
         return TypedResults.Ok(mapper.MapToResponse(response.Pages, response.TotalPages));
     }
 
     private static async Task<Results<FileContentHttpResult, NotFound>> GetDocument(
+        [FromRoute] Guid userId,
         [FromRoute] Guid documentGroupId,
         [FromServices] IPdfReaderService pdfReaderService,
         [FromServices] ILoggerFactory loggerFactory,
@@ -88,7 +91,7 @@ internal static class DocumentReaderEndpoints
             [Filter] = documentGroupId.ToString()
         });
 
-        var response = await pdfReaderService.GetPdfBytesAsync(documentGroupId, cancellationToken);
+        var response = await pdfReaderService.GetPdfBytesAsync(userId, documentGroupId, cancellationToken);
         if (response.Length == 0)
         {
             return TypedResults.NotFound();
@@ -98,6 +101,7 @@ internal static class DocumentReaderEndpoints
     }
 
     private static async Task<Ok<PagedResponse<DocumentResponse>>> GetDocuments(
+        [FromRoute] Guid userId,
         [AsParameters] PaginationOptions paginationOptions,
         [FromQuery] string? searchTerm,
         [FromServices] IDocumentReaderService documentReaderService,
@@ -109,16 +113,18 @@ internal static class DocumentReaderEndpoints
         using var _ = logger.BeginScope(new Dictionary<string, object>
         {
             [Operation] = "Get Documents",
-            [Filter] = paginationOptions
+            [Filter] = paginationOptions,
+            [User] = userId.ToString()
         });
 
-        logger.LogInformation("Getting Documents page {page}, page size {pageSize}", paginationOptions.Page, paginationOptions.Size);
+        logger.LogInformation("Getting Documents page {page}, page size {pageSize} for user {id}", paginationOptions.Page, paginationOptions.Size, userId);
 
         if (!string.IsNullOrWhiteSpace(searchTerm))
         {
             logger.LogInformation("search term: {searchTerm}", searchTerm);
         }
-        var response = await documentReaderService.GetDocuments(searchTerm, new PaginationRequestModel
+        
+        var response = await documentReaderService.GetDocuments(userId, searchTerm, new PaginationRequestModel
         {
             Page = paginationOptions.Page,
             Size = paginationOptions.Size

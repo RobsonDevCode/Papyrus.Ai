@@ -34,24 +34,6 @@ public sealed class PageReaderService : IPageReaderService
         });
     } 
     
-    public async Task<PageModel?> GetByGroupIdAsync(Guid documentGroupId, int? pageNumber,
-        CancellationToken cancellationToken)
-    {
-        if (pageNumber is null or 0)
-        {
-            pageNumber = 1;
-        }
-
-        return await _memoryCache.GetOrCreateAsync($"{documentGroupId}-{pageNumber}", async entry =>
-        {
-            entry.Size = 100;
-            entry.SetAbsoluteExpiration(TimeSpan.FromMinutes(2));
-
-            var page = await _pageReader.GetByGroupIdAsync(documentGroupId, (int)pageNumber, cancellationToken);
-            return page is null ? null : _mapper.MapToDomain(page);
-        });
-    }
-
     public async Task<PageModel?> GetByGroupIdAsync(Guid documentGroupId, Guid userId, int? pageNumber, CancellationToken cancellationToken)
     {
         if (pageNumber is null or 0)
@@ -69,7 +51,7 @@ public sealed class PageReaderService : IPageReaderService
         });
     }
 
-    public async Task<(IEnumerable<PageModel> Pages, int TotalPages)> GetPages(Guid documentGroupId, int[] pageNumbers, CancellationToken cancellationToken)
+    public async Task<(IEnumerable<PageModel> Pages, int TotalPages)> GetPages(Guid documentGroupId, Guid userId, int[] pageNumbers, CancellationToken cancellationToken)
     {
         for (var i = 0; i < pageNumbers.Length; i++)
         {
@@ -79,7 +61,7 @@ public sealed class PageReaderService : IPageReaderService
             } 
         }
         
-        var response = await _pageReader.GetPages(documentGroupId, pageNumbers, cancellationToken);
+        var response = await _pageReader.GetPages(documentGroupId, userId, pageNumbers, cancellationToken);
         if (!response.Pages.Any())
         {
             return ([], 0);

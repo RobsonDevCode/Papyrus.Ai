@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
+using Papyrus.Domain.Exceptions;
 using Papyrus.Domain.Extensions;
 using Papyrus.Domain.Mappers;
 using Papyrus.Domain.Models.Documents;
@@ -8,6 +9,7 @@ using Papyrus.Domain.Services.Interfaces;
 using Papyrus.Persistance.Interfaces.Contracts;
 using Papyrus.Persistance.Interfaces.Reader;
 using Papyrus.Persistance.Interfaces.Writer;
+using Papyrus.Perstistance.Interfaces.Reader;
 using Papyrus.Perstistance.Interfaces.Writer;
 using UglyToad.PdfPig;
 using PdfExtensions = Papyrus.Domain.Extensions.PdfExtensions;
@@ -16,6 +18,7 @@ namespace Papyrus.Domain.Services;
 
 public sealed class DocumentWriterService : IDocumentWriterService
 {
+    private readonly IUserReader _userReader;
     private readonly IPageWriter _pageWriter;
     private readonly IPageReader _pageReader;
     private readonly IDocumentWriter _documentWriter;
@@ -26,7 +29,9 @@ public sealed class DocumentWriterService : IDocumentWriterService
     private readonly ILogger<DocumentWriterService> _logger;
     private readonly string _papyrusApiUrl;
 
-    public DocumentWriterService(IPageWriter pageWriter,
+    public DocumentWriterService(
+        IUserReader userReader,
+        IPageWriter pageWriter,
         IPageReader pageReader,
         IDocumentWriter documentWriter,
         IPdfWriterService pdfWriterService,
@@ -36,6 +41,7 @@ public sealed class DocumentWriterService : IDocumentWriterService
         IConfiguration configuration,
         ILogger<DocumentWriterService> logger)
     {
+        _userReader = userReader;
         _pageWriter = pageWriter;
         _pageReader = pageReader;
         _documentWriter = documentWriter;
@@ -48,9 +54,15 @@ public sealed class DocumentWriterService : IDocumentWriterService
         _logger = logger;
     }
 
-    public async Task StoreDocumentAsync(DocumentModel document, CancellationToken cancellationToken)
+    public async Task StoreDocumentAsync(Guid userId, DocumentModel document, CancellationToken cancellationToken)
     {
-        if (await _pageReader.ExistsAsync(document.Name, cancellationToken))
+        var user = await _userReader.GetAsync(userId, cancellationToken);
+        if (user is null)
+        {
+            throw new UserNotFoundException("User not found when creating document");
+        }
+        
+        if (await _pageReader.ExistsAsync(document.Name, userId, cancellationToken))
         {
             throw new BadHttpRequestException($"Document with name {document.Name} already exists.");
         }
@@ -72,11 +84,11 @@ public sealed class DocumentWriterService : IDocumentWriterService
 
         document.Name = document.Name.Replace(".pdf", "");
 
-        await SavePdfPagesAsync(pdfDoc, document, groupId, s3PdfKey, cancellationToken);
+        await SavePdfPagesAsync(pdfDoc, document, groupId, user.Id ,s3PdfKey, cancellationToken);
     }
 
     private async Task SavePdfPagesAsync(PdfDocument pdfDoc, DocumentModel document,
-        Guid groupId, string s3PdfKey, CancellationToken cancellationToken)
+        Guid groupId, Guid userId, string s3PdfKey, CancellationToken cancellationToken)
     {
         var textOnlyPagesToSave = new List<Page>();
         const int batchSize = 25;
@@ -100,6 +112,7 @@ public sealed class DocumentWriterService : IDocumentWriterService
             {
                 DocumentGroupId = groupId,
                 DocumentName = document.Name,
+                UserId = userId,
                 S3Key = s3PdfKey,
                 Content = string.Join(" ", orderedContent),
                 PageNumber = pdfPageNumber,
@@ -136,7 +149,7 @@ public sealed class DocumentWriterService : IDocumentWriterService
 
             if (pdfPageNumber == 1)
             {
-                var saveDocumentInfo = _mapper.MapToPersistence(mappedPage, totalPages);
+                var saveDocumentInfo = _mapper.MapToPersistence(mappedPage, totalPages, userId);
                 await _documentWriter.InsertAsync(saveDocumentInfo, cancellationToken);
                 continue;
             }

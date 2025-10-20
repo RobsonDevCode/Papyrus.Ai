@@ -13,12 +13,13 @@ internal static class DocumentWriterEndpoints
 {
     internal static void MapDocumentWriterEndpoints(this RouteGroupBuilder app)
     {
-        app.MapPost("save", SaveDocumentAsync)
+        app.MapPost("{userId}/save", SaveDocumentAsync)
             .DisableAntiforgery()
             .Accepts<IFormFile>("multipart/form-data");
     }
 
     private static async Task<Results<Ok, BadRequest<string>>> SaveDocumentAsync(
+        [FromRoute] Guid userId,
         IFormFile pdfFile,
         [FromServices] IDocumentWriterService documentWriterService,
         [FromServices] IValidator<FormFile> pdfFileValidator,
@@ -29,6 +30,7 @@ internal static class DocumentWriterEndpoints
         using var _ = logger.BeginScope(new Dictionary<string, object>
         {
             [Operation] = "Saving Document",
+            [User] = userId.ToString(),
             [FileLength] = pdfFile.Length
         });
         
@@ -48,7 +50,7 @@ internal static class DocumentWriterEndpoints
             Size = pdfFile.Length
         };
 
-        await documentWriterService.StoreDocumentAsync(document, cancellationToken);
+        await documentWriterService.StoreDocumentAsync(userId, document, cancellationToken);
 
         logger.LogInformation("Document Saved");
         return TypedResults.Ok();
