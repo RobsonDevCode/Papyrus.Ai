@@ -62,7 +62,7 @@ public sealed class DocumentWriterService : IDocumentWriterService
             throw new UserNotFoundException("User not found when creating document");
         }
         
-        if (await _pageReader.ExistsAsync(document.Name, cancellationToken))
+        if (await _pageReader.ExistsAsync(document.Name, userId, cancellationToken))
         {
             throw new BadHttpRequestException($"Document with name {document.Name} already exists.");
         }

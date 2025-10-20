@@ -18,7 +18,7 @@ internal static class DocumentReaderEndpoints
     {
         app.MapGet("page/{documentGroupId}/{pageNumber}", GetPage);
 
-        app.MapGet("pages/{documentGroupId}", GetPages);
+        app.MapGet("pages/{userId}/{documentGroupId}", GetPages);
         
         app.MapGet("{userId}/{documentGroupId}", GetDocument);
         
@@ -26,6 +26,7 @@ internal static class DocumentReaderEndpoints
     }
 
     private static async Task<Results<Ok<DocumentPageResponse>, NotFound, BadRequest<string>>> GetPage(
+        [FromRoute] Guid userId,
         [FromRoute] Guid documentGroupId,
         [FromRoute] int pageNumber,
         [FromServices] IPageReaderService pageReaderService,
@@ -41,7 +42,7 @@ internal static class DocumentReaderEndpoints
             [Filter] = documentGroupId.ToString()
         });
 
-        var response = await pageReaderService.GetByGroupIdAsync(documentGroupId, pageNumber, cancellationToken);
+        var response = await pageReaderService.GetByGroupIdAsync(userId, documentGroupId, pageNumber, cancellationToken);
 
         if (response is null)
         {
@@ -53,6 +54,7 @@ internal static class DocumentReaderEndpoints
     }
 
     private static async Task<Ok<DocumentPagesResponse>> GetPages(
+        [FromRoute] Guid userId,
         [FromRoute] Guid documentGroupId,
         [FromQuery] int[] pageNumbers,
         [FromServices] IPageReaderService pageReaderService,
@@ -69,7 +71,7 @@ internal static class DocumentReaderEndpoints
             [PageNumbers] = pageNumbers
         });
         
-        var response = await pageReaderService.GetPages(documentGroupId, pageNumbers, cancellationToken);
+        var response = await pageReaderService.GetPages(documentGroupId, userId, pageNumbers, cancellationToken);
         
         return TypedResults.Ok(mapper.MapToResponse(response.Pages, response.TotalPages));
     }
