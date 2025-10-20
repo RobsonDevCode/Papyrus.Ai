@@ -16,7 +16,7 @@ internal static class DocumentReaderEndpoints
 {
     internal static void MapDocumentReaderEndpoints(this RouteGroupBuilder app)
     {
-        app.MapGet("page/{documentGroupId}/{pageNumber}", GetPage);
+        app.MapGet("page/{userId}/{documentGroupId}/{pageNumber}", GetPage);
 
         app.MapGet("pages/{userId}/{documentGroupId}", GetPages);
         
