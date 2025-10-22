@@ -7,4 +7,6 @@ public interface IAudioWriter
     Task SaveAsync(string s3Key, Stream audioStream, CancellationToken cancellationToken);
 
     Task SaveAlignmentsAsync(string s3Key, IEnumerable<AlignmentData> alignment, CancellationToken cancellationToken);
+    
+    Task DeleteAsync(string s3Key, CancellationToken cancellationToken);
 }

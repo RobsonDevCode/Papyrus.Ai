@@ -24,4 +24,9 @@ public sealed class PageWriter : IPageWriter
     {
         await _pagesCollection.InsertManyAsync(pages, null, cancellationToken);
     }
+
+    public Task DeleteAsync(Guid userId, Guid documentGroupId, CancellationToken cancellationToken)
+    {
+        return _pagesCollection.DeleteOneAsync(x => x.UserId == userId && x.DocumentGroupId == documentGroupId, cancellationToken);
+    }
 }

@@ -2,6 +2,7 @@
 using Papyrus.Domain.Models.Audio;
 using Papyrus.Domain.Services.Interfaces.AudioBook;
 using Papyrus.Persistance.Interfaces.Contracts;
+using Papyrus.Perstistance.Interfaces.Contracts;
 
 namespace Papyrus.Mappers;
 

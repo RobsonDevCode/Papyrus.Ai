@@ -19,4 +19,9 @@ public sealed class DocumentWriter : IDocumentWriter
     {
         return _collection.InsertOneAsync(documentPreview, cancellationToken: cancellationToken);
     }
+
+    public Task DeleteAsync(Guid userId, Guid documentId, CancellationToken cancellationToken)
+    {
+        return _collection.DeleteOneAsync(x => x.UserId == userId && x.DocumentGroupId == documentId, cancellationToken: cancellationToken);
+    }
 }

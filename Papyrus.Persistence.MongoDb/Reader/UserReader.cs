@@ -25,6 +25,11 @@ public sealed class UserReader : IUserReader
         return await _userCollection.Find(x => x.Email == email).AnyAsync(cancellationToken);
     }
 
+    public async Task<bool> ExistsAsync(Guid userId, CancellationToken cancellationToken)
+    {
+        return await _userCollection.Find(x => x.Id == userId).AnyAsync(cancellationToken);
+    }
+
     public async Task<User?> GetAsync(string email, CancellationToken cancellationToken)
     {
         return await _userCollection.Find(x => x.Email == email).FirstOrDefaultAsync(cancellationToken);

@@ -3,6 +3,7 @@ using Papyrus.Domain.Models;
 using Papyrus.Domain.Models.Audio;
 using Papyrus.Domain.Services.Interfaces.AudioBook;
 using Papyrus.Persistance.Interfaces.Contracts;
+using Papyrus.Perstistance.Interfaces.Contracts;
 using VoiceSettings = Papyrus.Api.Contracts.Contracts.VoiceSettings;
 
 namespace Papyrus.Mappers;
