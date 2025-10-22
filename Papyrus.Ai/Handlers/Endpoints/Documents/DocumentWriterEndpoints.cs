@@ -16,6 +16,8 @@ internal static class DocumentWriterEndpoints
         app.MapPost("{userId}/save", SaveDocumentAsync)
             .DisableAntiforgery()
             .Accepts<IFormFile>("multipart/form-data");
+
+        app.MapDelete("{userId}/{documentGroupId}", DeleteAsync);
     }
 
     private static async Task<Results<Ok, BadRequest<string>>> SaveDocumentAsync(
@@ -33,6 +35,7 @@ internal static class DocumentWriterEndpoints
             [User] = userId.ToString(),
             [FileLength] = pdfFile.Length
         });
+
         
         var validator = await pdfFileValidator.ValidateAsync(pdfFile, cancellationToken);
         if (!validator.IsValid)
@@ -56,4 +59,24 @@ internal static class DocumentWriterEndpoints
         return TypedResults.Ok();
     }
 
+    private static async Task<Ok> DeleteAsync(
+        [FromRoute] Guid userId,
+        [FromRoute] Guid documentGroupId,
+        [FromServices] IDocumentWriterService documentWriterService,
+        [FromServices] ILoggerFactory loggerFactory,
+        CancellationToken cancellationToken)
+    {
+        var logger = loggerFactory.CreateLogger(Loggers.DocumentWriter);
+        using var _ = logger.BeginScope(new Dictionary<string, object>
+        {
+            [Operation] = "Deleting Document",
+            [User] = userId.ToString(),
+            [DocumentGroupId] = documentGroupId.ToString(),
+        });
+
+        logger.LogInformation("Deleting Document {docId} for user {userId}", documentGroupId, userId);
+
+        await documentWriterService.DeleteByIdAsync(userId, documentGroupId, cancellationToken);
+        return TypedResults.Ok();
+    }
 }

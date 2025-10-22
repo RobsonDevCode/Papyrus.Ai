@@ -8,4 +8,5 @@ public interface IPageWriter
 
     Task InsertManyAsync(IEnumerable<Page> pages, CancellationToken cancellationToken);
     
+    Task DeleteAsync(Guid userId, Guid documentGroupId, CancellationToken cancellationToken);
 }

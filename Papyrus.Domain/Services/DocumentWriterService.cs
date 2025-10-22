@@ -22,6 +22,7 @@ public sealed class DocumentWriterService : IDocumentWriterService
     private readonly IPageWriter _pageWriter;
     private readonly IPageReader _pageReader;
     private readonly IDocumentWriter _documentWriter;
+    private readonly IDocumentTransactionalWriter _documentTransactionalWriter;
     private readonly IPdfWriterService _pdfWriterService;
     private readonly IImageWriter _imageWriter;
     private readonly IImageInfoWriterService _imageInfoWriterService;
@@ -34,6 +35,7 @@ public sealed class DocumentWriterService : IDocumentWriterService
         IPageWriter pageWriter,
         IPageReader pageReader,
         IDocumentWriter documentWriter,
+        IDocumentTransactionalWriter documentTransactionalWriter,
         IPdfWriterService pdfWriterService,
         IImageWriter imageWriter,
         IImageInfoWriterService imageInfoWriterService,
@@ -45,6 +47,7 @@ public sealed class DocumentWriterService : IDocumentWriterService
         _pageWriter = pageWriter;
         _pageReader = pageReader;
         _documentWriter = documentWriter;
+        _documentTransactionalWriter = documentTransactionalWriter;
         _pdfWriterService = pdfWriterService;
         _imageWriter = imageWriter;
         _imageInfoWriterService = imageInfoWriterService;
@@ -61,7 +64,7 @@ public sealed class DocumentWriterService : IDocumentWriterService
         {
             throw new UserNotFoundException("User not found when creating document");
         }
-        
+
         if (await _pageReader.ExistsAsync(document.Name, userId, cancellationToken))
         {
             throw new BadHttpRequestException($"Document with name {document.Name} already exists.");
@@ -84,7 +87,17 @@ public sealed class DocumentWriterService : IDocumentWriterService
 
         document.Name = document.Name.Replace(".pdf", "");
 
-        await SavePdfPagesAsync(pdfDoc, document, groupId, user.Id ,s3PdfKey, cancellationToken);
+        await SavePdfPagesAsync(pdfDoc, document, groupId, user.Id, s3PdfKey, cancellationToken);
+    }
+
+    public async Task DeleteByIdAsync(Guid userId, Guid documentGroupId, CancellationToken cancellationToken)
+    {
+        if (!await _userReader.ExistsAsync(userId, cancellationToken))
+        {
+            throw new UserNotFoundException($"User {userId} not found when deleting document {documentGroupId}.");
+        }
+
+        await _documentTransactionalWriter.DeleteDocumentTransaction(userId, documentGroupId, cancellationToken);
     }
 
     private async Task SavePdfPagesAsync(PdfDocument pdfDoc, DocumentModel document,
@@ -93,7 +106,7 @@ public sealed class DocumentWriterService : IDocumentWriterService
         var textOnlyPagesToSave = new List<Page>();
         const int batchSize = 25;
         var totalPages = pdfDoc.NumberOfPages;
-        
+
         for (var i = 0; i < totalPages; i++)
         {
             var pdfPageNumber = i + 1;
@@ -122,7 +135,7 @@ public sealed class DocumentWriterService : IDocumentWriterService
                 UpdatedAt = DateTime.UtcNow,
                 Type = "pdf"
             };
-            
+
             //If pdf page contains image we want to dispose as quick as possible because base64 encoding strings are expensive to store in memory.
             if (imageCount > 0)
             {
@@ -156,7 +169,7 @@ public sealed class DocumentWriterService : IDocumentWriterService
 
             textOnlyPagesToSave.Add(mappedPage);
             if (textOnlyPagesToSave.Count < batchSize && i != totalPages - 1) continue;
-            
+
             await _pageWriter.InsertManyAsync(textOnlyPagesToSave, cancellationToken);
             textOnlyPagesToSave.Clear();
         }

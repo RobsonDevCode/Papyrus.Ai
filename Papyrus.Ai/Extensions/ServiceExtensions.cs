@@ -59,6 +59,7 @@ public static class ServiceExtensions
         serviceCollection.AddScoped<IAudioReader, AudioReader>();
         serviceCollection.AddScoped<IUserWriter, UserWriter>();
         serviceCollection.AddScoped<IUserReader, UserReader>();
+        serviceCollection.AddScoped<IDocumentTransactionalWriter, DocumentTransactionalWriter>();
         
         serviceCollection.AddSingleton<IMongoVoiceDbConnector, MongoVoiceDbConnector>();
         serviceCollection.AddSingleton<IMongoPromptDbConnector, MongoPromptDbConnector>();

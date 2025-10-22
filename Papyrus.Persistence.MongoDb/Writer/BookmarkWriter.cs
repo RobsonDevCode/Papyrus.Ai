@@ -12,9 +12,9 @@ public sealed class BookmarkWriter : IBookmarkWriter
 
     public BookmarkWriter(IMongoBookDbConnector connector)
     {
-        _bookmarkCollection = connector.GetCollection<Bookmark>(DatabaseConstants.BookmarksCollectionName);    
+        _bookmarkCollection = connector.GetCollection<Bookmark>(DatabaseConstants.BookmarksCollectionName);
     }
-    
+
     public async Task UpsertAsync(Bookmark bookmark, CancellationToken cancellationToken)
     {
         var filter = Builders<Bookmark>.Filter.Eq(x => x.Id, bookmark.Id);
@@ -25,8 +25,13 @@ public sealed class BookmarkWriter : IBookmarkWriter
             .Set(x => x.UpdatedAt, DateTime.UtcNow)
             .SetOnInsert(x => x.Id, bookmark.Id)
             .SetOnInsert(x => x.CreatedAt, bookmark.CreatedAt);
-        
+
         var options = new UpdateOptions { IsUpsert = true };
         await _bookmarkCollection.UpdateOneAsync(filter, update, options, cancellationToken);
+    }
+
+    public async Task DeleteAsync(Guid userId, Guid documentId, CancellationToken cancellationToken)
+    {
+        await _bookmarkCollection.DeleteOneAsync(x => x.Id == documentId && x.UserId == userId, cancellationToken);
     }
 }
