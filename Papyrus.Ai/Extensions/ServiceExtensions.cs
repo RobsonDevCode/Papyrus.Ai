@@ -60,7 +60,10 @@ public static class ServiceExtensions
         serviceCollection.AddScoped<IUserWriter, UserWriter>();
         serviceCollection.AddScoped<IUserReader, UserReader>();
         serviceCollection.AddScoped<IDocumentTransactionalWriter, DocumentTransactionalWriter>();
+        serviceCollection.AddScoped<ITokenWriter, TokenWriter>();
+        serviceCollection.AddScoped<ITokenReader, TokenReader>();
         
+        serviceCollection.AddSingleton<IMongoTokenDbConnector, MongoTokenDbConnector>();
         serviceCollection.AddSingleton<IMongoVoiceDbConnector, MongoVoiceDbConnector>();
         serviceCollection.AddSingleton<IMongoPromptDbConnector, MongoPromptDbConnector>();
         serviceCollection.AddSingleton<IMongoBookDbConnector, MongoBookDbConnector>();

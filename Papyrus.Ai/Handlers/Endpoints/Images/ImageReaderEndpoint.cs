@@ -13,7 +13,8 @@ internal static class ImageReaderEndpoint
         var imageGroup = app.MapGroup("image");
 
         imageGroup.MapGet("{id}", GetImage)
-            .WithTags(ImageApiTags.ImageReader);
+            .WithTags(ImageApiTags.ImageReader)
+            .RequireAuthorization();
     }
 
     private static async Task<Results<FileContentHttpResult, NotFound>> GetImage(

@@ -25,8 +25,4 @@
       <ProjectReference Include="..\Papyrus.Persistence.S3Bucket\Papyrus.Persistence.S3Bucket.csproj" />
     </ItemGroup>
 
-    <ItemGroup>
-      <Folder Include="Handlers\Endpoints\Pages\" />
-    </ItemGroup>
-
 </Project>

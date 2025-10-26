@@ -15,11 +15,11 @@ public sealed class AudioReaderService : IAudioReaderService
         _logger = logger;
     }
 
-    public async Task<Stream?> GetAsync(Guid documentGroupId, string voiceId, int[] pageNumbers,
+    public async Task<Stream?> GetAsync(Guid userId, Guid documentGroupId, string voiceId, int[] pageNumbers,
         CancellationToken cancellationToken)
     {
         var formattedPages = string.Join('-', pageNumbers);
-        var s3Key = $"{documentGroupId}-{voiceId}/{formattedPages}/Audio";
+        var s3Key = $"{userId}/{documentGroupId}-{voiceId}/{formattedPages}/Audio";
         
         _logger.LogInformation("Getting Audio for pages {pages}", formattedPages);
         var result = await _audioReader.GetAudioAsync(s3Key, cancellationToken);

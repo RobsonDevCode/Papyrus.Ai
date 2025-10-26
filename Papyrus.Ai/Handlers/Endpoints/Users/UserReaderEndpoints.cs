@@ -17,8 +17,8 @@ internal static class UserReaderEndpoints
     internal static void MapUserReaderEndpoints(this RouteGroupBuilder app)
     {
         app.MapPost("login", Login);
+        app.MapGet("refresh-token", RefreshToken);
     }
-
 
     private static async Task<Results<Ok<UserResponse>, BadRequest<string>>> Login(
         [FromBody] LoginRequest request,
@@ -48,10 +48,31 @@ internal static class UserReaderEndpoints
         var user = await userReaderService.LoginAsync( request.Email, request.Password,
             cancellationToken);
 
-        var authToken = jwtService.GenerateJwtToken(user.Id, user.Username, user.Email, ["User"]);
-        
-        httpContext.AddJwt(authToken.JWT, authToken.Expires);
-
+        var authToken = await jwtService.GenerateJwtToken(user.Id, user.Username, user.Email, ["User"], cancellationToken);
+          
+        logger.LogInformation(authToken.AccessToken);
+        httpContext.AddJwt(authToken.AccessToken, authToken.ExpiresAt, authToken.RefreshToken);
         return TypedResults.Ok(mapper.MapToResponse(user));
+    }
+    
+    private static async Task<Ok> RefreshToken(
+        [FromServices] IJwtService jwtService,
+        [FromServices] ILoggerFactory loggerFactory,
+        HttpContext httpContext,
+        CancellationToken cancellationToken)
+    {
+        var logger = loggerFactory.CreateLogger(Loggers.UserReader);
+        using var _ = logger.BeginScope(new Dictionary<string, object>
+        {
+            [Operation] = "Refresh Token"
+        });
+        
+        logger.LogInformation("Attempting to Refresh");
+        
+        var newJwt = await jwtService.ReGenerateJwtAsync(httpContext, cancellationToken);
+        httpContext.AddJwt(newJwt.AccessToken, newJwt.ExpiresAt, newJwt.RefreshToken);
+        
+        logger.LogInformation(newJwt.AccessToken);
+        return TypedResults.Ok();
     }
 }

@@ -59,8 +59,9 @@ public sealed class AudiobookWriterService : IAudiobookWriterService
         CancellationToken cancellationToken)
     {
         var formattedPages = string.Join("-", request.Pages);
-        var audioS3 = $"{request.DocumentGroupId}-{request.VoiceId}/{formattedPages}/Audio";
-        var alignmentS3Key = $"{request.DocumentGroupId}-{request.VoiceId}/{formattedPages}/alignment";
+        var baseKey = $"{request.UserId}/{request.DocumentGroupId}-{request.VoiceId}/{formattedPages}";
+        var audioS3 = $"{baseKey}/Audio";
+        var alignmentS3Key = $"{baseKey}/alignment";
         
         if (await _audioReader.ExistsAsync(audioS3, cancellationToken))
         {
@@ -76,7 +77,7 @@ public sealed class AudiobookWriterService : IAudiobookWriterService
             
             return new AudioAlignmentResultModel
             {
-                AudioUrl = $"{_papyrusApiUrl}/text-to-speech/{request.DocumentGroupId}/{request.VoiceId}?pageNumbers={request.Pages[0]}&pageNumbers={request.Pages[1]}",
+                AudioUrl = $"{_papyrusApiUrl}/text-to-speech/{request.UserId}/{request.DocumentGroupId}/{request.VoiceId}?pageNumbers={request.Pages[0]}&pageNumbers={request.Pages[1]}",
                 Alignment = _mapper.MapToDomain(alignment!).ToList() 
             };
         }
@@ -86,7 +87,7 @@ public sealed class AudiobookWriterService : IAudiobookWriterService
         await _audioWriter.SaveAlignmentsAsync(alignmentS3Key,_mapper.MapToPersistence(audioResult.NormalizedAlignment), cancellationToken);
         return new AudioAlignmentResultModel
         {
-            AudioUrl =  $"{_papyrusApiUrl}/text-to-speech/{request.DocumentGroupId}/{request.VoiceId}?pageNumbers={request.Pages[0]}&pageNumbers={request.Pages[1]}",
+            AudioUrl =  $"{_papyrusApiUrl}/text-to-speech/{request.UserId}/{request.DocumentGroupId}/{request.VoiceId}?pageNumbers={request.Pages[0]}&pageNumbers={request.Pages[1]}",
             Alignment = audioResult.NormalizedAlignment.ToList()
         };
     }

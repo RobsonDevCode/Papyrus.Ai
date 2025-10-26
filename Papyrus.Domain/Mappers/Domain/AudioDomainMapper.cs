@@ -10,6 +10,7 @@ public partial class Mapper
         return new CreateAudioRequestModel
         {
             DocumentGroupId = request.DocumentGroupId,
+            UserId = request.UserId,
             VoiceId = request.VoiceId,
             Pages = request.Pages,
             Text = request.Text,
