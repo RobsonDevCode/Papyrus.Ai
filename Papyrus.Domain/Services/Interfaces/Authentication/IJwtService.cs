@@ -1,6 +1,12 @@
-﻿namespace Papyrus.Domain.Services.Interfaces.Authentication;
+﻿using Microsoft.AspNetCore.Http;
+using Papyrus.Domain.Models.Authentication;
+
+namespace Papyrus.Domain.Services.Interfaces.Authentication;
 
 public interface IJwtService
 {
-    (string JWT, DateTime Expires) GenerateJwtToken(Guid userId, string username, string email, IEnumerable<string>? roles = null);
+    Task<JwtModel> GenerateJwtToken(Guid userId, string username, string email,
+        IEnumerable<string>? roles = null, CancellationToken cancellationToken = default);
+
+    Task<JwtModel> ReGenerateJwtAsync(HttpContext httpContext, CancellationToken cancellationToken);
 }

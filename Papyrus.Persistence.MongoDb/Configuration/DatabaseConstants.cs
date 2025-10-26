@@ -11,4 +11,5 @@ public static class DatabaseConstants
     public const string DocumentsCollectionName = "documents";
     public const string VoiceCollectionName = "voices";
     public const string UsersCollectionName = "users";
+    public const string RefreshTokenCollectionName = "tokens";
 }

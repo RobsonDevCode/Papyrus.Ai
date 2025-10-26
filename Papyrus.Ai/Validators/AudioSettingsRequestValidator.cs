@@ -10,6 +10,10 @@ public class AudioSettingsRequestValidator : AbstractValidator<AudioSettingsRequ
         RuleFor(x => x.Id)
             .NotEmpty()
             .WithMessage("id cannot be empty");
+
+        RuleFor(x => x.UserId)
+            .NotEmpty()
+            .WithMessage("userId cannot be empty");
         
         RuleFor(x => x.VoiceId)
             .NotEmpty()

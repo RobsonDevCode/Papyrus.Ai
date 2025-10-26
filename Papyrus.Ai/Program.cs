@@ -35,20 +35,35 @@ builder.Services.AddPersistence();
 builder.Services.AddPapyrusSwagger();
 builder.Services.AddValidators();
 builder.Services.AddExternalHttpClients(builder.Configuration);
-builder.Services.AddCors();
+builder.Services.AddCors(options =>
+{
+    options.AddPolicy("AllowFrontend", policy =>
+    {
+        policy.WithOrigins("https://localhost:5173")
+            .AllowCredentials()
+            .AllowAnyHeader()
+            .AllowAnyMethod();
+    }); 
+});
 builder.Services.Configure<JwtSettings>(builder.Configuration.GetSection(nameof(JwtSettings)));
+builder.Services.AddPapyrusAuthentication(builder.Configuration);
+
 
 var app = builder.Build();
 
+app.UseCors("AllowFrontend");
 app.UseExceptionHandler();
 app.UseHttpsRedirection();
-app.UseCors(policy => policy.AllowAnyOrigin().AllowAnyHeader().AllowAnyMethod());
+
 
 if (app.Environment.IsDevelopment())
 {
     app.UseSwagger();
     app.UseSwaggerUI();
 }
+
+app.UseAuthentication();
+app.UseAuthorization();
 
 // Map endpoints last
 app.MapEndpoints();

@@ -3,6 +3,7 @@ using MongoDB.Driver;
 using Papyrus.Ai.Configuration;
 using Papyrus.Persistance.Interfaces.Reader;
 using Papyrus.Persistance.Interfaces.Writer;
+using Papyrus.Perstistance.Interfaces.Reader;
 using Papyrus.Perstistance.Interfaces.Writer;
 
 namespace Papyrus.Persistence.MongoDb.Writer;

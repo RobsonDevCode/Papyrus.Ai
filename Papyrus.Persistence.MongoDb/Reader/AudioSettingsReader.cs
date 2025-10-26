@@ -1,9 +1,8 @@
 ﻿using MongoDB.Driver;
 using Papyrus.Ai.Configuration;
-using Papyrus.Persistance.Interfaces.Contracts;
-using Papyrus.Persistance.Interfaces.Reader;
 using Papyrus.Persistence.MongoDb.Connectors;
 using Papyrus.Perstistance.Interfaces.Contracts;
+using Papyrus.Perstistance.Interfaces.Reader;
 
 namespace Papyrus.Persistence.MongoDb.Reader;
 
@@ -19,6 +18,12 @@ public sealed class AudioSettingsReader : IAudioSettingReader
     public async Task<AudioSettings?> GetAsync(CancellationToken cancellationToken)
     {
         return await _audioSettingsCollection.Find(x => true).FirstOrDefaultAsync(cancellationToken);
+    }
+
+    public async Task<AudioSettings?> GetAsync(Guid userId, CancellationToken cancellationToken)
+    {
+        return await _audioSettingsCollection.Find(x => x.UserId == userId)
+            .SingleOrDefaultAsync(cancellationToken);
     }
 
     public Task<AudioSettings?> GetByDocIdAsync(Guid userId, Guid documentGroupId, CancellationToken cancellationToken)

@@ -51,9 +51,9 @@ internal static class UserWriterEndpoints
         var response =
             await userWriterService.CreateAsync(mappedRequest, cancellationToken);
 
-        var authToken = jwtService.GenerateJwtToken(response.Id, response.Username, response.Email, ["User"]);
-        httpContext.AddJwt(authToken.JWT, authToken.Expires);
-        logger.LogInformation(authToken.JWT);
+        var authToken = await jwtService.GenerateJwtToken(response.Id, response.Username, response.Email, ["User"], cancellationToken);
+        httpContext.AddJwt(authToken.AccessToken, authToken.ExpiresAt);
+        logger.LogInformation(authToken.AccessToken);
         var baseUrl = configuration.GetValue<string>("PapyrusApiUrl")
             ?? throw new NullReferenceException("PapyrusApiUrl cannot be null");
         

@@ -64,7 +64,8 @@ internal static class TextToSpeechWriterEndpoints
       {
          [Operation] = "Creating Audio Book",
          [DocumentGroupId] = request.DocumentGroupId,
-         [Filter] = request
+         [Filter] = request,
+         [User] = request.UserId
       });
       
       var validationResult = await requestValidator.ValidateAsync(request, cancellationToken);

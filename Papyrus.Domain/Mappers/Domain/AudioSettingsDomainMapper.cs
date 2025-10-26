@@ -15,6 +15,7 @@ public partial class Mapper
         return new AudioSettingsRequestModel
         {
             Id = request.Id,
+            UserId = request.UserId,
             VoiceId = request.VoiceId,
             VoiceSettings = MapToDomain(request.VoiceSettings)
         };
@@ -26,6 +27,7 @@ public partial class Mapper
         {
             Id = audioSettings.Id,
             VoiceId = audioSettings.VoiceId,
+            UserId = audioSettings.UserId,
             VoiceSettings = MapToDomain(audioSettings.VoiceSetting),
             CreatedAt = audioSettings.CreatedAt,
             UpdatedAt = audioSettings.UpdatedAt,

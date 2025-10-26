@@ -11,7 +11,7 @@ public sealed record AudioSettings
     public required Guid Id { get; init; }
     
     [BsonRepresentation(BsonType.String)]
-    public Guid? UserId { get; init; }
+    public Guid UserId { get; init; }
     
     public required string VoiceId { get; init; }
     

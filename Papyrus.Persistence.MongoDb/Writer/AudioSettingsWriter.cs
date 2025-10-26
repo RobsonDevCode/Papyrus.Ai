@@ -26,6 +26,7 @@ public sealed class AudioSettingsWriter : IAudioSettingsWriter
             .Set(x => x.VoiceId, audioSettings.VoiceId)
             .Set(x => x.UpdatedAt, DateTime.UtcNow)
             .SetOnInsert(x => x.Id, audioSettings.Id)
+            .SetOnInsert(x => x.UserId, audioSettings.UserId)
             .SetOnInsert(x => x.CreatedAt, DateTime.UtcNow);
 
         var options = new UpdateOptions { IsUpsert = true };

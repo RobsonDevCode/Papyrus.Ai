@@ -10,6 +10,10 @@ public class CreateAudioBookRequestValidator : AbstractValidator<CreateAudioBook
       RuleFor(x => x.DocumentGroupId).NotEmpty()
          .WithMessage("documentGroupId is required");
       
+      RuleFor(x => x.UserId)
+         .NotEmpty()
+         .WithMessage("userId is required");
+      
       RuleFor(x => x.VoiceId)
          .NotEmpty()
          .WithMessage("voiceId is required");

@@ -13,6 +13,7 @@ public partial class Mapper
         return new AudioSettings
         {
             Id = audioSettingsRequestModel.Id,
+            UserId = audioSettingsRequestModel.UserId,
             VoiceId = audioSettingsRequestModel.VoiceId,
             VoiceSetting = MapToPersistence(audioSettingsRequestModel.VoiceSettings),
         };

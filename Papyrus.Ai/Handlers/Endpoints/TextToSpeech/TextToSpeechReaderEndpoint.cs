@@ -13,12 +13,13 @@ internal static class TextToSpeechReaderEndpoint
 {
     internal static void MapTextToSpeechReaderEndpoints(this RouteGroupBuilder app)
     {
-        app.MapGet("setting", GetSettings);
-        app.MapGet("{documentGroupId:guid}/{voiceId}", Get);
+        app.MapGet("setting/{userId}", GetSettings);
+        app.MapGet("{userId}/{documentGroupId:guid}/{voiceId}", Get);
     }
 
 
     private static async Task<Results<FileStreamHttpResult, NotFound>> Get(
+        [FromRoute] Guid userId,
         [FromRoute] Guid documentGroupId,
         [FromRoute] string voiceId,
         [FromQuery] int[] pageNumbers,
@@ -34,9 +35,9 @@ internal static class TextToSpeechReaderEndpoint
             [DocumentGroupId] = documentGroupId
         });
         
-        logger.LogInformation("starting to get audio");
+        logger.LogInformation("Getting Audio for {userId}, on document {documentGroupId}", userId, documentGroupId);
         
-        var audioStream = await audioReaderService.GetAsync(documentGroupId, voiceId, pageNumbers, cancellationToken);
+        var audioStream = await audioReaderService.GetAsync(userId, documentGroupId, voiceId, pageNumbers, cancellationToken);
         if (audioStream == null)
         {
             return TypedResults.NotFound();
@@ -49,6 +50,7 @@ internal static class TextToSpeechReaderEndpoint
     }
 
     private static async Task<Results<Ok<AudioSettingsResponse>, NotFound>> GetSettings(
+        Guid userId,
         [FromServices] IAudioSettingsReaderService audioSettingsReaderService,
         [FromServices] IMapper mapper,
         [FromServices] ILoggerFactory loggerFactory,
@@ -57,10 +59,11 @@ internal static class TextToSpeechReaderEndpoint
         var logger = loggerFactory.CreateLogger(Loggers.TextToSpeech);
         using var _ = logger.BeginScope(new Dictionary<string, object>
         {
-            [Operation] = "Getting Audio Settings"
+            [Operation] = "Getting Audio Settings",
+            [User] = userId
         });
 
-        var audioSettings = await audioSettingsReaderService.GetAsync(cancellationToken);
+        var audioSettings = await audioSettingsReaderService.GetAsync(userId, cancellationToken);
         if (audioSettings == null)
         {
             logger.LogWarning("No audio settings found.");
