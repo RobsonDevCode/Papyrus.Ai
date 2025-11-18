@@ -12,10 +12,11 @@ internal static class BookmarkReaderEndpointMapper
 {
     internal static void MapBookmarkReaderEndpoints(this RouteGroupBuilder app)
     {
-        app.MapGet("{documentGroupId:guid}", GetBookmark);
+        app.MapGet("{userId}/{documentGroupId:guid}", GetBookmark);
     }
 
     private static async Task<Results<Ok<BookmarkResponse>, NotFound>> GetBookmark(
+        [FromRoute] Guid userId,
         [FromRoute] Guid documentGroupId,
         [FromServices] IBookmarkReaderService bookmarkReaderService,
         [FromServices] IMapper mapper,
@@ -29,8 +30,8 @@ internal static class BookmarkReaderEndpointMapper
             [DocumentGroupId] = documentGroupId 
         });
 
-        logger.LogInformation("Getting Bookmark for {id}", documentGroupId);
-        var bookmark = await bookmarkReaderService.GetByGroupIdAsync(documentGroupId, cancellationToken);
+        logger.LogInformation("Getting Bookmark for user {userId}, for document {id}", userId ,documentGroupId);
+        var bookmark = await bookmarkReaderService.GetByGroupIdAsync(userId, documentGroupId, cancellationToken);
         if (bookmark == null)
         {
             logger.LogInformation("No bookmark for {id}", documentGroupId);

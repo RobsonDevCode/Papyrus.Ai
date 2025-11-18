@@ -11,6 +11,7 @@ public partial class Mapper
         {
             Id = bookmark.Id,
             DocumentGroupId = bookmark.DocumentGroupId,
+            Timestamp = bookmark.Timestamp,
             Page = bookmark.Page,
             CreateAt = bookmark.CreatedAt
         };

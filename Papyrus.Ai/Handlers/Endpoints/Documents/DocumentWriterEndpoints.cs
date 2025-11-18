@@ -15,7 +15,8 @@ internal static class DocumentWriterEndpoints
     {
         app.MapPost("{userId}/save", SaveDocumentAsync)
             .DisableAntiforgery()
-            .Accepts<IFormFile>("multipart/form-data");
+            .Accepts<IFormFile>("multipart/form-data")
+            .RequireRateLimiting(RateLimitPolicyConstants.FixedWindowLimitPolicy);
 
         app.MapDelete("{userId}/{documentGroupId}", DeleteAsync);
     }

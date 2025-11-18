@@ -15,11 +15,10 @@ public sealed class BookmarkReader : IBookmarkReader
         _bookmarkCollection = connector.GetCollection<Bookmark>(DatabaseConstants.BookmarksCollectionName);
     }
     
-    public async Task<Bookmark?> GetByGroupIdAsync(Guid documentGroupId, CancellationToken cancellationToken)
+    public async Task<Bookmark?> GetByGroupIdAsync(Guid userId, Guid documentGroupId, CancellationToken cancellationToken)
     {
-        //Get the latest bookmark made, I will eventually make this a transactional process moving into a history table blah blah blah
-        return await _bookmarkCollection.Find(bookmark => bookmark.DocumentGroupId == documentGroupId)
-            .SortByDescending(x => x.CreatedAt)
+        return await _bookmarkCollection.Find(bookmark => bookmark.DocumentGroupId == documentGroupId 
+                                                          && bookmark.UserId == userId)
             .FirstOrDefaultAsync(cancellationToken); 
     }
 }

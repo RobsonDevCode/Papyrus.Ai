@@ -1,5 +1,4 @@
-﻿using Papyrus.Domain.Models;
-
+﻿
 namespace Papyrus.Domain.Services.Interfaces.Images;
 
 public interface IImageReaderService

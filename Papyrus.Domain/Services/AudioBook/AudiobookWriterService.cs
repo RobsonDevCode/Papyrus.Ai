@@ -36,25 +36,6 @@ public sealed class AudiobookWriterService : IAudiobookWriterService
         _logger = logger;
     }
 
-    public async Task<Stream> CreateAsync(CreateAudioRequestModel request, CancellationToken cancellationToken)
-    {
-        var formattedPages = string.Join("-", request.Pages);
-        var s3Key = $"{request.DocumentGroupId}-{request.VoiceId}/{formattedPages}";
-        var previouslyMadeAudio = await _audioReader.GetAudioAsync(s3Key, cancellationToken);
-        if (previouslyMadeAudio != null)
-        {
-            _logger.LogInformation(
-                "Audio previously created for pages {pages} on document {id} with voice id {voiceId}",
-                formattedPages, request.DocumentGroupId, request.VoiceId);
-            return previouslyMadeAudio;
-        }
-
-        var audio = await _audioClient.CreateAudioAsync(request, cancellationToken);
-
-        await _audioWriter.SaveAsync(s3Key, audio, cancellationToken);
-        return audio;
-    }
-
     public async Task<AudioAlignmentResultModel> CreateWithAlignmentAsync(CreateAudioRequestModel request,
         CancellationToken cancellationToken)
     {

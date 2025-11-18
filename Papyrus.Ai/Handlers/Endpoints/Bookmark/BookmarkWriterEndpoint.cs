@@ -32,6 +32,8 @@ internal static class BookmarkWriterEndpoint
             [Filter] = createBookmarkRequest
         });
 
+        logger.LogInformation("Creating bookmark");
+        
         var validationResult = await validator.ValidateAsync(createBookmarkRequest, cancellationToken);
         if (!validationResult.IsValid)
         {

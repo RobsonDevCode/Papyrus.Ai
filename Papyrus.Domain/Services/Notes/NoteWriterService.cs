@@ -71,7 +71,7 @@ public sealed class NoteWriterService : INoteWriterService
 
         _logger.LogInformation("Writing note on selected page");
         var prompt = PromptGenerator.PagePrompt(page.DocumentName);
-        var llmResponse = await _papyrusAiClient.CreateNoteAsync(prompt, images: page.ImageUrl, cancellationToken: cancellationToken);
+        var llmResponse = await _papyrusAiClient.PromptAsync(prompt, images: page.ImageUrl, cancellationToken: cancellationToken);
         
         var note = _mapper.MapToPersistence(llmResponse, page);
         var chatId = Guid.NewGuid();
@@ -113,7 +113,7 @@ public sealed class NoteWriterService : INoteWriterService
         var promptHistory = await _promptHistoryReader.GetHistory(request.NoteId, cancellationToken);
         var mappedPrompts = _mapper.Map(promptHistory);
         
-        var llmResponse = await _papyrusAiClient.CreateNoteAsync(request.Text, mappedPrompts, images: page.ImageUrl,
+        var llmResponse = await _papyrusAiClient.PromptAsync(request.Text, mappedPrompts, images: page.ImageUrl,
             cancellationToken: cancellationToken);
 
         var promptToSave = new Prompt
@@ -145,7 +145,7 @@ public sealed class NoteWriterService : INoteWriterService
 
         var prompt = PromptGenerator.ImageFocusedNote(page.DocumentName, imageReference);
         var llmResponse =
-            await _papyrusAiClient.CreateNoteAsync(prompt, images: page.ImageUrl, cancellationToken: cancellationToken);
+            await _papyrusAiClient.PromptAsync(prompt, images: page.ImageUrl, cancellationToken: cancellationToken);
         
         var note = _mapper.MapToPersistence(llmResponse, page);
 
@@ -175,7 +175,7 @@ public sealed class NoteWriterService : INoteWriterService
             : PromptGenerator.PromptTextWithImage(page.DocumentName, text);
 
         var llmResponse =
-            await _papyrusAiClient.CreateNoteAsync(prompt, images: page.ImageUrl, cancellationToken: cancellationToken);
+            await _papyrusAiClient.PromptAsync(prompt, images: page.ImageUrl, cancellationToken: cancellationToken);
         var note = _mapper.MapToPersistence(llmResponse, page);
 
         var promptToSave = new Prompt

@@ -8,6 +8,47 @@ public static class PromptGenerator
                 Please analyze this entire PDF page from "{book}" and generate detailed bullet point notes covering all content.
                 """;
     }
+
+    public static string ExplanationPrompt(bool hasImage, string textToExplain, string pageContext)
+    {
+        if (hasImage)
+        {
+            return $"""
+                    I'm studying the attached page and need help understanding a specific concept or passage.
+
+                    Please provide a clear, detailed explanation that:
+                    - IMPORTANT make sure the response is no longer than 500 characters.
+                    - Breaks down any complex terminology or concepts into simpler terms
+                    - Uses analogies or examples where helpful to illustrate the ideas
+                    - Connects the concept to other relevant information visible on this page
+                    - Explains why this concept is important and how it fits into the broader topic
+                    - Identifies any prerequisite knowledge I should understand first
+
+                    Please tailor your explanation to someone actively learning this material, aiming for clarity over brevity.
+                    
+                    [The specific text or concept I need explained: {textToExplain}]
+                    """;
+        }
+        
+        return $"""
+               I'm studying the attached page and need help understanding a specific concept or passage.
+               
+               Please provide a clear, detailed explanation that:
+               - IMPORTANT make sure the response is no longer than 500 characters.
+               - Breaks down any complex terminology or concepts into simpler terms
+               - Uses analogies or examples where helpful to illustrate the ideas
+               - Connects the concept to other relevant information visible on this page
+               - Explains why this concept is important and how it fits into the broader topic
+               - Identifies any prerequisite knowledge I should understand first
+               
+               Please tailor your explanation to someone actively learning this material, aiming for clarity over brevity.
+               
+               [The specific text or concept I need explained: {textToExplain}]
+               
+               [The entire page for context: {pageContext}] 
+               """;
+    }
+    
     
     public static string BasicNotePrompt(string book, string text)
     {

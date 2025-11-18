@@ -13,8 +13,9 @@ public record Bookmark
     public required Guid DocumentGroupId { get; init; }
     
     [BsonRepresentation(BsonType.String)]
-    public Guid? UserId { get; init; }
+    public Guid UserId { get; init; }
     
+    public required double Timestamp { get; init; }
     public required int Page { get; init; }
     
     public required DateTime CreatedAt { get; init; }

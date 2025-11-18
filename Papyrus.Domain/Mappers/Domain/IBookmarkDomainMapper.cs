@@ -7,6 +7,5 @@ namespace Papyrus.Domain.Mappers.Domain;
 public interface IBookmarkDomainMapper
 {
     BookmarkModel MapToDomain(CreateBookmarkRequest request);
-    BookmarkModel MapToDomain(UpdateBookmarkRequest request);
     BookmarkModel MapToDomain(Bookmark bookmark);
 }

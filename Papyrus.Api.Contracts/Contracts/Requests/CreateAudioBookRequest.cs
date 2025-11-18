@@ -5,6 +5,7 @@ public record CreateAudioBookRequest
     public Guid DocumentGroupId { get; init; }
     
     public Guid UserId { get; init; }
+    
     public string VoiceId { get; init; }
     
     public int[] Pages { get; init; }

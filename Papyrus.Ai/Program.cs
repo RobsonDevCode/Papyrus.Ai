@@ -45,9 +45,12 @@ builder.Services.AddCors(options =>
             .AllowAnyMethod();
     }); 
 });
+
+
+
 builder.Services.Configure<JwtSettings>(builder.Configuration.GetSection(nameof(JwtSettings)));
 builder.Services.AddPapyrusAuthentication(builder.Configuration);
-
+builder.Services.AddPapyrusRateLimiting();
 
 var app = builder.Build();
 
@@ -65,6 +68,7 @@ if (app.Environment.IsDevelopment())
 app.UseAuthentication();
 app.UseAuthorization();
 
+app.UseRateLimiter();
 // Map endpoints last
 app.MapEndpoints();
 

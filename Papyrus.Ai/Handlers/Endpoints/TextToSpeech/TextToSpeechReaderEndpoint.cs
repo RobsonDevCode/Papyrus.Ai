@@ -14,7 +14,8 @@ internal static class TextToSpeechReaderEndpoint
     internal static void MapTextToSpeechReaderEndpoints(this RouteGroupBuilder app)
     {
         app.MapGet("setting/{userId}", GetSettings);
-        app.MapGet("{userId}/{documentGroupId:guid}/{voiceId}", Get);
+        app.MapGet("{userId}/{documentGroupId:guid}/{voiceId}", Get)
+            .RequireRateLimiting(RateLimitPolicyConstants.IpPolicy);
     }
 
 
@@ -34,10 +35,11 @@ internal static class TextToSpeechReaderEndpoint
             [Operation] = $"Get Audio {documentGroupId}",
             [DocumentGroupId] = documentGroupId
         });
-        
+
         logger.LogInformation("Getting Audio for {userId}, on document {documentGroupId}", userId, documentGroupId);
-        
-        var audioStream = await audioReaderService.GetAsync(userId, documentGroupId, voiceId, pageNumbers, cancellationToken);
+
+        var audioStream =
+            await audioReaderService.GetAsync(userId, documentGroupId, voiceId, pageNumbers, cancellationToken);
         if (audioStream == null)
         {
             return TypedResults.NotFound();

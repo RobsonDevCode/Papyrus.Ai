@@ -1,9 +1,12 @@
 ﻿using Microsoft.Extensions.Logging;
 using MongoDB.Driver;
+using MongoDB.Driver.Linq;
 using Papyrus.Ai.Configuration;
 using Papyrus.Persistance.Interfaces.Contracts;
 using Papyrus.Persistance.Interfaces.Reader;
 using Papyrus.Persistence.MongoDb.Connectors;
+using Papyrus.Persistence.MongoDb.Extensions;
+using Papyrus.Perstistance.Interfaces.Contracts.Filters;
 
 namespace Papyrus.Persistence.MongoDb.Reader;
 
@@ -23,18 +26,14 @@ public sealed class PageReader : IPageReader
         return await _pageCollection.Find(p => p.DocumentId == id).SingleOrDefaultAsync(cancellationToken);
     }
 
-    public async IAsyncEnumerable<Page?> GetByGroupIdAsync(Guid documentId, CancellationToken cancellationToken)
+    public async Task<Page?> GetAsync(PageReaderFilters filters, CancellationToken cancellationToken)
     {
-        var filter = Builders<Page>.Filter.Eq(x => x.DocumentGroupId, documentId);
-        using var cursor = await _pageCollection.Find(filter).ToCursorAsync(cancellationToken);
-
-        while (await cursor.MoveNextAsync(cancellationToken))
-        {
-            foreach (var page in cursor.Current)
-            {
-                yield return page;
-            }
-        }
+        return await _pageCollection.AsQueryable()
+            .WhereIf(filters.DocumentGroupId.HasValue, p => p.DocumentGroupId == filters.DocumentGroupId!.Value)
+            .WhereIf(filters.PageNumber.HasValue, p => p.PageNumber == filters.PageNumber!.Value)
+            .WhereIf(filters.UserId.HasValue, p => p.UserId == filters.UserId!.Value)
+            .WhereIf(filters.Id.HasValue, p => p.DocumentId == filters.Id!.Value)
+            .SingleOrDefaultAsync(cancellationToken);
     }
 
 

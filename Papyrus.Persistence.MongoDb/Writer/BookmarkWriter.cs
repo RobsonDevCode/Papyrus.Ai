@@ -23,6 +23,7 @@ public sealed class BookmarkWriter : IBookmarkWriter
             .Set(x => x.Page, bookmark.Page)
             .Set(x => x.UserId, bookmark.UserId)
             .Set(x => x.UpdatedAt, DateTime.UtcNow)
+            .Set(x => x.Timestamp, bookmark.Timestamp)
             .SetOnInsert(x => x.Id, bookmark.Id)
             .SetOnInsert(x => x.CreatedAt, bookmark.CreatedAt);
 

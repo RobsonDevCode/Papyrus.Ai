@@ -1,5 +1,6 @@
 ﻿using Papyrus.Ai.Handlers.Endpoints.Bookmark;
 using Papyrus.Ai.Handlers.Endpoints.Documents;
+using Papyrus.Ai.Handlers.Endpoints.Explanation;
 using Papyrus.Ai.Handlers.Endpoints.Images;
 using Papyrus.Ai.Handlers.Endpoints.Notes;
 using Papyrus.Ai.Handlers.Endpoints.TextToSpeech;
@@ -17,6 +18,7 @@ public static class EndpointMapper
         app.MapTextToSpeechEndpoints();
         app.MapVoiceEndpoints();
         app.MapUserEndpoints();
+        app.MapExplanationEndpointMappers();
         
         app.MapNoteWriterEndpoints();
         app.MapNoteReaderEndpoints();

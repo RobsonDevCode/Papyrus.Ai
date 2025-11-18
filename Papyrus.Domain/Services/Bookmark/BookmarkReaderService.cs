@@ -22,13 +22,13 @@ public sealed class BookmarkReaderService : IBookmarkReaderService
         _mapper = mapper;
         _logger = logger;
     }
-    public async Task<BookmarkModel?> GetByGroupIdAsync(Guid documentGroupId,
+    public async Task<BookmarkModel?> GetByGroupIdAsync(Guid userId, Guid documentGroupId,
         CancellationToken cancellationToken)
     {
-        return await _cache.GetOrCreateAsync(key: $"{documentGroupId}", async entry =>
+        return await _cache.GetOrCreateAsync(key: $"{userId}-{documentGroupId}", async entry =>
         {
             entry.SetAbsoluteExpiration(TimeSpan.FromMinutes(1));
-            var bookmark = await _bookmarkReader.GetByGroupIdAsync(documentGroupId, cancellationToken);
+            var bookmark = await _bookmarkReader.GetByGroupIdAsync(userId, documentGroupId, cancellationToken);
             if (bookmark == null)
             {
                 _logger.LogInformation("No bookmark found for group {documentGroupId}", documentGroupId);

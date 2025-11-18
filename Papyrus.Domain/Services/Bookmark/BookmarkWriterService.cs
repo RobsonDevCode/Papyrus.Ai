@@ -26,7 +26,7 @@ public sealed class BookmarkWriterService : IBookmarkWriterService
     
     public async Task UpsertAsync(BookmarkModel bookmark, CancellationToken cancellationToken)
     {
-        if (await _pageReaderService.GetByGroupIdAsync(bookmark.DocumentGroupId, (Guid)bookmark.UserId!, bookmark.Page, cancellationToken)
+        if (await _pageReaderService.GetByGroupIdAsync(bookmark.DocumentGroupId, bookmark.UserId, bookmark.Page, cancellationToken)
             is null)
         {
             _logger.LogError("Document group {id} page {page} not found", bookmark.DocumentGroupId, bookmark.Page);

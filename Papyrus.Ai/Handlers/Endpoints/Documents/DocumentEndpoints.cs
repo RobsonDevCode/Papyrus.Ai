@@ -1,4 +1,5 @@
-﻿namespace Papyrus.Ai.Handlers.Endpoints.Documents;
+﻿
+namespace Papyrus.Ai.Handlers.Endpoints.Documents;
 
 internal static class DocumentEndpoints
 {

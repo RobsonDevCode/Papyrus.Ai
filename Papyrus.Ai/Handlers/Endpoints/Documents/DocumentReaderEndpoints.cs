@@ -20,7 +20,8 @@ internal static class DocumentReaderEndpoints
 
         app.MapGet("pages/{userId}/{documentGroupId}", GetPages);
         
-        app.MapGet("{userId}/{documentGroupId}", GetDocument);
+        app.MapGet("{userId}/{documentGroupId}", GetDocument)
+            .RequireRateLimiting(RateLimitPolicyConstants.IpPolicy);
         
         app.MapGet("{userId}", GetDocuments);
     }

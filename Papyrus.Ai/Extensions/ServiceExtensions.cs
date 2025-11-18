@@ -8,6 +8,7 @@ using Papyrus.Domain.Services;
 using Papyrus.Domain.Services.AudioBook;
 using Papyrus.Domain.Services.Authentication;
 using Papyrus.Domain.Services.Bookmark;
+using Papyrus.Domain.Services.Explanation;
 using Papyrus.Domain.Services.Images;
 using Papyrus.Domain.Services.Interfaces;
 using Papyrus.Domain.Services.Interfaces.AudioBook;
@@ -92,6 +93,7 @@ public static class ServiceExtensions
         serviceCollection.AddScoped<IUserWriterService, UserWriterService>();
         serviceCollection.AddScoped<IUserReaderService, UserReaderService>();
         serviceCollection.AddScoped<IJwtService, JwtService>();
+        serviceCollection.AddScoped<IExplanationReaderService, ExplanationReaderService>();
         
         serviceCollection.AddScoped<IMapper, Mapper>();
         serviceCollection.AddMemoryCache();
@@ -140,6 +142,7 @@ public static class ServiceExtensions
             .AddScoped<IValidator<CreateAudioBookRequest>, CreateAudioBookRequestValidator>()
             .AddScoped<IValidator<AudioSettingsRequest>, AudioSettingsRequestValidator>()
             .AddScoped<IValidator<CreateUserRequest>, CreateUserValidator>()
-            .AddScoped<IValidator<LoginRequest>, LoginRequestValidator>();
+            .AddScoped<IValidator<LoginRequest>, LoginRequestValidator>()
+            .AddScoped<IValidator<CreateExplanationRequest>, CreateExplanationRequestValidator>();
     }
 }

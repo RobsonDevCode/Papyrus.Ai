@@ -45,7 +45,7 @@ internal static class UserReaderEndpoints
         }
 
         logger.LogInformation("Attempting to Login");
-        var user = await userReaderService.LoginAsync( request.Email, request.Password,
+        var user = await userReaderService.LoginAsync(request.Email, request.Password,
             cancellationToken);
 
         var authToken = await jwtService.GenerateJwtToken(user.Id, user.Username, user.Email, ["User"], cancellationToken);

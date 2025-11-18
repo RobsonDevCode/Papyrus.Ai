@@ -4,5 +4,5 @@ namespace Papyrus.Domain.Services.Interfaces.Bookmark;
 
 public interface IBookmarkReaderService
 {
-    Task<BookmarkModel?> GetByGroupIdAsync(Guid documentGroupId, CancellationToken cancellationToken);
+    Task<BookmarkModel?> GetByGroupIdAsync(Guid userId, Guid documentGroupId, CancellationToken cancellationToken);
 }

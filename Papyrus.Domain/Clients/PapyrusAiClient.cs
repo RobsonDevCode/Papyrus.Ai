@@ -16,7 +16,7 @@ public sealed class PapyrusAiClient : IPapyrusAiClient
         _httpClient = httpClient;
     }
 
-    public async Task<LlmResponseModel> CreateNoteAsync(string prompt, List<PromptModel>? previousPrompts,
+    public async Task<LlmResponseModel> PromptAsync(string prompt, List<PromptModel>? previousPrompts,
         string? image, CancellationToken cancellationToken)
     {
         var requestBody = BuildRequestBody(prompt, image: image);

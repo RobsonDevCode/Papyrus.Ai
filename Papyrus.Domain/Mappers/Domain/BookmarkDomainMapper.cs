@@ -13,19 +13,9 @@ public partial class Mapper
             Id = request.Id ?? Guid.Empty,
             DocumentGroupId = request.DocumentGroupId,
             UserId = request.UserId,
+            Timestamp = request.TimeStamp,
             Page = request.Page,
-            CreatedAt = request.CreateAt
-        };
-    }
-
-    public BookmarkModel MapToDomain(UpdateBookmarkRequest request)
-    {
-        return new BookmarkModel
-        {
-            Id = request.Id,
-            DocumentGroupId = request.DocumentGroupId,
-            UserId = request.UserId,
-            Page = request.NewPage
+            CreatedAt = DateTime.UtcNow,
         };
     }
 
@@ -34,9 +24,11 @@ public partial class Mapper
         return new BookmarkModel
         {
             Id = bookmark.Id,
+            UserId = bookmark.UserId,
             DocumentGroupId = bookmark.DocumentGroupId,
+            Timestamp = bookmark.Timestamp,
             Page = bookmark.Page,
-            CreatedAt = bookmark.CreatedAt
+            CreatedAt = bookmark.CreatedAt,
         };
     }
 }

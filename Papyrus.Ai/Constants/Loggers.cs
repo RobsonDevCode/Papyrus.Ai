@@ -13,4 +13,5 @@ public static class Loggers
     public const string VoiceReader = nameof(VoiceReader);
     public const string UserWriter = nameof(UserWriter);
     public const string UserReader = nameof(UserReader);
+    public const string ExplanationReader = nameof(ExplanationReader);
 }

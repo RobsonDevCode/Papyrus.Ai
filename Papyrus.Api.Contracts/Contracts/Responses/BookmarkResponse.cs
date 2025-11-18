@@ -6,6 +6,8 @@ public record BookmarkResponse
     
     public required Guid DocumentGroupId { get; init; }
     
+    public required double Timestamp { get; init; }
+    
     public required int Page { get; init; }
     
     public required DateTime CreateAt { get; init; }

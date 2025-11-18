@@ -1,4 +1,5 @@
-﻿namespace Papyrus.Ai.Handlers.Endpoints.TextToSpeech;
+﻿
+namespace Papyrus.Ai.Handlers.Endpoints.TextToSpeech;
 
 internal static class TextToSpeechEndpointMapper
 {
