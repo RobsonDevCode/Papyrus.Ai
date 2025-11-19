@@ -54,6 +54,6 @@ internal static class ExplanationWriterEndpoint
 
         var response =
             await explanationReaderService.GetAsync(mapper.MapToDomain(request, userId.Value), cancellationToken);
-        return TypedResults.Ok(new ExplanationResponse(response));
+        return TypedResults.Ok(new ExplanationResponse(Guid.NewGuid(), response));
     }
 }

@@ -4,8 +4,8 @@ using Papyrus.Domain.Models.Client.Audio;
 
 namespace Papyrus.Domain.Services.Interfaces.AudioBook;
 
-public interface IAudiobookWriterService
+public interface IAudioBookWriterService
 {
-    Task<AudioAlignmentResultModel> CreateWithAlignmentAsync(CreateAudioRequestModel request,
+    Task<AudioAlignmentResultModel> CreateWithAlignmentAsync(CreateAudioBookRequestModel bookRequest,
         CancellationToken cancellationToken);
 }

@@ -8,5 +8,5 @@ public record Content
    public string Role { get; init; }
    
    [JsonPropertyName("parts")]
-   public required List<Part> Parts { get; set; } 
+   public List<Part> Parts { get; set; } 
 }

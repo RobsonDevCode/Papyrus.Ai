@@ -5,5 +5,6 @@ namespace Papyrus.Domain.Mappers.Domain;
 
 public interface IAudioDomainMapper
 {
-    CreateAudioRequestModel MapToDomain(CreateAudioBookRequest request);
+    CreateAudioBookRequestModel MapToDomain(CreateAudioBookRequest request);
+    CreateTextToSpeechRequestModel MapToDomain(CreateExplanationTextToSpeechRequest request);
 }

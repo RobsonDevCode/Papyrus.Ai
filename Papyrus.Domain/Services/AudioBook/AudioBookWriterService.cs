@@ -10,65 +10,71 @@ using Papyrus.Persistence.S3Bucket;
 
 namespace Papyrus.Domain.Services.AudioBook;
 
-public sealed class AudiobookWriterService : IAudiobookWriterService
+public sealed class AudioBookWriterService : IAudioBookWriterService
 {
     private readonly IAudioClient _audioClient;
     private readonly IAudioWriter _audioWriter;
     private readonly IAudioReader _audioReader;
     private readonly IMapper _mapper;
     private readonly string _papyrusApiUrl;
-    private readonly ILogger<AudiobookWriterService> _logger;
+    private readonly ILogger<AudioBookWriterService> _logger;
 
-    public AudiobookWriterService(
+    public AudioBookWriterService(
         IAudioClient audioClient,
         IAudioWriter audioWriter,
         IAudioReader audioReader,
         IMapper mapper,
         IConfiguration config,
-        ILogger<AudiobookWriterService> logger)
+        ILogger<AudioBookWriterService> logger)
     {
         _audioClient = audioClient;
         _audioWriter = audioWriter;
         _audioReader = audioReader;
         _mapper = mapper;
         _papyrusApiUrl = config.GetValue<string>("PapyrusApiUrl")
-                         ?? throw new NullReferenceException("PapyrusApiUrl cannot be null when saving document");
+                         ?? throw new NullReferenceException("PapyrusApiUrl cannot be null when creating audiobook");
         _logger = logger;
     }
 
-    public async Task<AudioAlignmentResultModel> CreateWithAlignmentAsync(CreateAudioRequestModel request,
+    public async Task<AudioAlignmentResultModel> CreateWithAlignmentAsync(CreateAudioBookRequestModel bookRequest,
         CancellationToken cancellationToken)
     {
-        var formattedPages = string.Join("-", request.Pages);
-        var baseKey = $"{request.UserId}/{request.DocumentGroupId}-{request.VoiceId}/{formattedPages}";
+        var formattedPages = string.Join("-", bookRequest.Pages);
+        var baseKey = $"{bookRequest.UserId}/{bookRequest.DocumentGroupId}-{bookRequest.VoiceId}/{formattedPages}";
         var audioS3 = $"{baseKey}/Audio";
         var alignmentS3Key = $"{baseKey}/alignment";
-        
+
         if (await _audioReader.ExistsAsync(audioS3, cancellationToken))
         {
             _logger.LogInformation(
                 "Audio previously created for pages {pages} on document {id} with voice id {voiceId}",
-                formattedPages, request.DocumentGroupId, request.VoiceId);
-            
+                formattedPages, bookRequest.DocumentGroupId, bookRequest.VoiceId);
+
             var alignment = await _audioReader.GetAlignmentInformationAsync(alignmentS3Key, cancellationToken);
             if (alignment is null)
             {
-                throw new Exception($"{request.DocumentGroupId} on pages {formattedPages} has audio but no alignment exists");
+                throw new Exception(
+                    $"{bookRequest.DocumentGroupId} on pages {formattedPages} has audio but no alignment exists");
             }
-            
+
             return new AudioAlignmentResultModel
             {
-                AudioUrl = $"{_papyrusApiUrl}/text-to-speech/{request.UserId}/{request.DocumentGroupId}/{request.VoiceId}?pageNumbers={request.Pages[0]}&pageNumbers={request.Pages[1]}",
-                Alignment = _mapper.MapToDomain(alignment!).ToList() 
+                AudioUrl =
+                    $"{_papyrusApiUrl}/text-to-speech/{bookRequest.UserId}/{bookRequest.DocumentGroupId}/{bookRequest.VoiceId}?pageNumbers={bookRequest.Pages[0]}&pageNumbers={bookRequest.Pages[1]}",
+                Alignment = _mapper.MapToDomain(alignment!).ToList()
             };
         }
 
-        var audioResult = await _audioClient.CreateWithAlignmentAsync(request, cancellationToken);
+        var audioResult = await _audioClient.CreateWithAlignmentAsync(bookRequest.Text, bookRequest.VoiceSettings,
+            bookRequest.VoiceId, cancellationToken);
+        
         await _audioWriter.SaveAsync(audioS3, audioResult.AudioStream, cancellationToken);
-        await _audioWriter.SaveAlignmentsAsync(alignmentS3Key,_mapper.MapToPersistence(audioResult.NormalizedAlignment), cancellationToken);
+        await _audioWriter.SaveAlignmentsAsync(alignmentS3Key,
+            _mapper.MapToPersistence(audioResult.NormalizedAlignment), cancellationToken);
         return new AudioAlignmentResultModel
         {
-            AudioUrl =  $"{_papyrusApiUrl}/text-to-speech/{request.UserId}/{request.DocumentGroupId}/{request.VoiceId}?pageNumbers={request.Pages[0]}&pageNumbers={request.Pages[1]}",
+            AudioUrl =
+                $"{_papyrusApiUrl}/text-to-speech/{bookRequest.UserId}/{bookRequest.DocumentGroupId}/{bookRequest.VoiceId}?pageNumbers={bookRequest.Pages[0]}&pageNumbers={bookRequest.Pages[1]}",
             Alignment = audioResult.NormalizedAlignment.ToList()
         };
     }

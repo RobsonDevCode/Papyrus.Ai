@@ -5,9 +5,9 @@ namespace Papyrus.Mappers;
 
 public partial class Mapper
 {
-    public CreateAudioRequestModel MapToDomain(CreateAudioBookRequest request)
+    public CreateAudioBookRequestModel MapToDomain(CreateAudioBookRequest request)
     {
-        return new CreateAudioRequestModel
+        return new CreateAudioBookRequestModel
         {
             DocumentGroupId = request.DocumentGroupId,
             UserId = request.UserId,
@@ -15,6 +15,17 @@ public partial class Mapper
             Pages = request.Pages,
             Text = request.Text,
             VoiceSettings = MapToDomain(request.Settings)
+        };
+    }
+
+    public CreateTextToSpeechRequestModel MapToDomain(CreateExplanationTextToSpeechRequest request)
+    {
+        return new CreateTextToSpeechRequestModel
+        {
+            Text = request.Text,
+            Id = request.Id,
+            VoiceId = request.VoiceId,
+            VoiceSettings = MapToDomain(request.VoiceSettings) 
         };
     }
 }

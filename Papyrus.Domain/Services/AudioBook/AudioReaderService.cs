@@ -25,4 +25,13 @@ public sealed class AudioReaderService : IAudioReaderService
         var result = await _audioReader.GetAudioAsync(s3Key, cancellationToken);
         return result;
     }
+
+    public async Task<Stream?> GetAsync(Guid userId, Guid explanationId, CancellationToken cancellationToken)
+    {
+        var s3Key = $"explanations/{userId}/{explanationId}/audio";
+        _logger.LogInformation("Getting audio for explanation {id}", explanationId);
+        
+        var result = await _audioReader.GetAudioAsync(s3Key, cancellationToken);
+        return result;
+    }
 }

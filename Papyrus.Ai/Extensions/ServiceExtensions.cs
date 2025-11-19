@@ -9,11 +9,13 @@ using Papyrus.Domain.Services.AudioBook;
 using Papyrus.Domain.Services.Authentication;
 using Papyrus.Domain.Services.Bookmark;
 using Papyrus.Domain.Services.Explanation;
+using Papyrus.Domain.Services.ExplanationTextToSpeech;
 using Papyrus.Domain.Services.Images;
 using Papyrus.Domain.Services.Interfaces;
 using Papyrus.Domain.Services.Interfaces.AudioBook;
 using Papyrus.Domain.Services.Interfaces.Authentication;
 using Papyrus.Domain.Services.Interfaces.Bookmark;
+using Papyrus.Domain.Services.Interfaces.ExplanationTextToSpeech;
 using Papyrus.Domain.Services.Interfaces.Images;
 using Papyrus.Domain.Services.Interfaces.Notes;
 using Papyrus.Domain.Services.Interfaces.User;
@@ -88,12 +90,13 @@ public static class ServiceExtensions
         serviceCollection.AddScoped<IAudioSettingsWriterService, AudioSettingsWriterService>();
         serviceCollection.AddScoped<IAudioSettingsReaderService, AudioSettingsReaderService>();
         serviceCollection.AddScoped<IVoiceReaderService, VoiceReaderService>();
-        serviceCollection.AddScoped<IAudiobookWriterService, AudiobookWriterService>();
+        serviceCollection.AddScoped<IAudioBookWriterService, AudioBookWriterService>();
         serviceCollection.AddScoped<IAudioReaderService, AudioReaderService>();
         serviceCollection.AddScoped<IUserWriterService, UserWriterService>();
         serviceCollection.AddScoped<IUserReaderService, UserReaderService>();
         serviceCollection.AddScoped<IJwtService, JwtService>();
         serviceCollection.AddScoped<IExplanationReaderService, ExplanationReaderService>();
+        serviceCollection.AddScoped<IExplanationTextToSpeechService, ExplanationTextToSpeechService>();
         
         serviceCollection.AddScoped<IMapper, Mapper>();
         serviceCollection.AddMemoryCache();
@@ -143,6 +146,7 @@ public static class ServiceExtensions
             .AddScoped<IValidator<AudioSettingsRequest>, AudioSettingsRequestValidator>()
             .AddScoped<IValidator<CreateUserRequest>, CreateUserValidator>()
             .AddScoped<IValidator<LoginRequest>, LoginRequestValidator>()
-            .AddScoped<IValidator<CreateExplanationRequest>, CreateExplanationRequestValidator>();
+            .AddScoped<IValidator<CreateExplanationRequest>, CreateExplanationRequestValidator>()
+            .AddScoped<IValidator<CreateExplanationTextToSpeechRequest>, CreateExplanationTextToSpeechValidator>();
     }
 }

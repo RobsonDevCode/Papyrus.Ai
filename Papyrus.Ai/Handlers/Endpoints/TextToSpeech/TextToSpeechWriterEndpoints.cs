@@ -4,8 +4,10 @@ using Microsoft.AspNetCore.Mvc;
 using Papyrus.Ai.Constants;
 using Papyrus.Api.Contracts.Contracts.Requests;
 using Papyrus.Api.Contracts.Contracts.Responses;
+using Papyrus.Domain.Extensions;
 using Papyrus.Domain.Mappers;
 using Papyrus.Domain.Services.Interfaces.AudioBook;
+using Papyrus.Domain.Services.Interfaces.ExplanationTextToSpeech;
 using static Papyrus.Ai.Constants.LoggingCategories;
 
 
@@ -18,13 +20,16 @@ internal static class TextToSpeechWriterEndpoints
         app.MapPost("", CreateWithAlignment)
             .RequireRateLimiting(RateLimitPolicyConstants.IpPolicy);
 
+        app.MapPost("explanation", CreateExplanationWithAlignment)
+            .RequireRateLimiting(RateLimitPolicyConstants.IpPolicy);
+        
         app.MapPost("setting", AddSettings);
     }
 
     private static async Task<Results<Ok<AudioWithAlignmentResponse>, BadRequest<string>>> CreateWithAlignment(
         [FromBody] CreateAudioBookRequest request,
         [FromServices] IValidator<CreateAudioBookRequest> requestValidator,
-        [FromServices] IAudiobookWriterService audioBookWriterService,
+        [FromServices] IAudioBookWriterService audioBookWriterService,
         [FromServices] IMapper mapper,
         [FromServices] ILoggerFactory loggerFactory,
         CancellationToken cancellationToken)
@@ -32,7 +37,7 @@ internal static class TextToSpeechWriterEndpoints
         var logger = loggerFactory.CreateLogger(Loggers.TextToSpeech);
         using var _ = logger.BeginScope(new Dictionary<string, object>
         {
-            [Operation] = "Creating Audio Book",
+            [Operation] = "Creating Audio with Alignment",
             [DocumentGroupId] = request.DocumentGroupId,
             [Filter] = request,
             [User] = request.UserId
@@ -52,6 +57,42 @@ internal static class TextToSpeechWriterEndpoints
         var audioResult = await audioBookWriterService.CreateWithAlignmentAsync(mappedRequest, cancellationToken);
 
         return TypedResults.Ok(mapper.MapToResponse(audioResult));
+    }
+
+    private static async Task<Results<Ok<AudioWithAlignmentResponse>, BadRequest<string>>> CreateExplanationWithAlignment(
+        [FromBody] CreateExplanationTextToSpeechRequest request,
+        [FromServices] IValidator<CreateExplanationTextToSpeechRequest> requestValidator,
+        [FromServices] IExplanationTextToSpeechService explanationTextToSpeechService,
+        [FromServices] IMapper mapper,
+        [FromServices] ILoggerFactory loggerFactory,
+        HttpContext context,
+        CancellationToken cancellationToken)
+    {
+        var logger = loggerFactory.CreateLogger(Loggers.TextToSpeech);
+        using var _ = logger.BeginScope(new Dictionary<string, object>
+        {
+            [Operation] = "Creating Explanation Text To Speech with Alignment",
+            [Filter] = request
+        });
+        
+        var validationResult = await requestValidator.ValidateAsync(request, cancellationToken);
+        if (!validationResult.IsValid)
+        {
+            var errors = string.Join(" | " + validationResult.Errors.Select(x => x.ErrorMessage));
+            return TypedResults.BadRequest(errors);
+        }
+        
+        var userId = context.User.GetUserId();
+        if (userId == null)
+        {
+            throw new UnauthorizedAccessException("User is not authenticated");
+        }
+        
+        logger.LogInformation("Creating audio for explanation text: {text}", request.Text);
+        var mappedRequest = mapper.MapToDomain(request);
+        var audioResults = await explanationTextToSpeechService.CreateWithAlignmentAsync(userId.Value, mappedRequest, cancellationToken);
+        
+        return TypedResults.Ok(mapper.MapToResponse(audioResults));
     }
 
 

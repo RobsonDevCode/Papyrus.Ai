@@ -4,9 +4,11 @@ using System.Text.Json;
 using Microsoft.Extensions.Caching.Memory;
 using Microsoft.Extensions.Logging;
 using Papyrus.Domain.Extensions;
+using Papyrus.Domain.Models;
 using Papyrus.Domain.Models.Audio;
 using Papyrus.Domain.Models.Client.Audio;
 using Papyrus.Domain.Models.Voices;
+using Papyrus.Persistance.Interfaces.Contracts;
 
 namespace Papyrus.Domain.Clients;
 
@@ -25,33 +27,35 @@ public sealed class AudioClient : IAudioClient
         _logger = logger;
     }
     
-    public async Task<Stream> CreateAudioAsync(CreateAudioRequestModel requestModel, CancellationToken cancellationToken)
+    public async Task<Stream> CreateAudioAsync(CreateAudioBookRequestModel bookRequestModel, CancellationToken cancellationToken)
     {
-        _logger.LogInformation("Creating audio for {id}", requestModel.DocumentGroupId);
+        _logger.LogInformation("Creating audio for {id}", bookRequestModel.DocumentGroupId);
         var payload = JsonSerializer.Serialize(new CreateTextToSpeechModel
         {
-            Text = requestModel.Text,
-            VoiceSettings = requestModel.VoiceSettings
+            Text = bookRequestModel.Text,
+            VoiceSettings = bookRequestModel.VoiceSettings
         });
         
         var content = new StringContent(payload, Encoding.UTF8, "application/json");
 
-        var response = await _client.PostAsync($"v1/text-to-speech/{requestModel.VoiceId}/stream", content, cancellationToken); 
+        var response = await _client.PostAsync($"v1/text-to-speech/{bookRequestModel.VoiceId}/stream", content, cancellationToken); 
         response.EnsureSuccessStatusCode();
         
         return await response.Content.ReadAsStreamAsync(cancellationToken);
     }
 
-    public async Task<AudioWithAlignmentResult> CreateWithAlignmentAsync(CreateAudioRequestModel request, CancellationToken cancellationToken)
+    public async Task<AudioWithAlignmentResult> CreateWithAlignmentAsync(string text, VoiceSettingModel voiceSettings,
+        string voiceId,
+        CancellationToken cancellationToken)
     {
         var payload = JsonSerializer.Serialize(new CreateTextToSpeechModel
         {
-            Text = request.Text,
-            VoiceSettings = request.VoiceSettings
+            Text = text,
+            VoiceSettings = voiceSettings
         });
         
         var content = new StringContent(payload, Encoding.UTF8, "application/json");
-        var response = await _client.PostAsync($"v1/text-to-speech/{request.VoiceId}/stream/with-timestamps",
+        var response = await _client.PostAsync($"v1/text-to-speech/{voiceId}/stream/with-timestamps",
             content,
             cancellationToken);
         
